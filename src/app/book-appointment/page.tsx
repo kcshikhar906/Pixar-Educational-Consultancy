@@ -102,15 +102,16 @@ export default function AppointmentBookingPage() {
         subtitle="Schedule a session with our expert advisors for personalized guidance on your educational journey."
       />
 
-      <Card className="max-w-2xl mx-auto shadow-xl bg-card">
+      <Card className="max-w-4xl mx-auto shadow-xl bg-card">
         <CardHeader>
           <CardTitle className="font-headline text-primary">Appointment Details</CardTitle>
           <CardDescription>Please fill out the form below to request an appointment.</CardDescription>
         </CardHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <CardContent className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
+            <CardContent className="grid md:grid-cols-2 gap-x-8 gap-y-6">
+              {/* Column 1: Personal Details & Service */}
+              <div className="space-y-6">
                 <FormField
                   control={form.control}
                   name="name"
@@ -133,59 +134,68 @@ export default function AppointmentBookingPage() {
                     </FormItem>
                   )}
                 />
+                 <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone Number</FormLabel>
+                      <FormControl><Input type="tel" placeholder="e.g., +977 98XXXXXXXX" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="service"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Service Required</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl><SelectTrigger><SelectValue placeholder="Select a service" /></SelectTrigger></FormControl>
+                        <SelectContent>
+                          {appointmentServices.map(service => (
+                            <SelectItem key={service.value} value={service.value}>{service.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="preferredStaff"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Preferred Staff Member</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl><SelectTrigger><SelectValue placeholder="Select a staff member" /></SelectTrigger></FormControl>
+                        <SelectContent>
+                          {appointmentStaff.map(staff => (
+                            <SelectItem key={staff.value} value={staff.value}>{staff.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="notes"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Additional Notes (Optional)</FormLabel>
+                      <FormControl><Textarea placeholder="Any specific questions or details..." {...field} rows={4} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
 
-              <FormField
-                control={form.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone Number</FormLabel>
-                    <FormControl><Input type="tel" placeholder="e.g., +977 98XXXXXXXX" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="service"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Service Required</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl><SelectTrigger><SelectValue placeholder="Select a service" /></SelectTrigger></FormControl>
-                      <SelectContent>
-                        {appointmentServices.map(service => (
-                          <SelectItem key={service.value} value={service.value}>{service.label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="preferredStaff"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Preferred Staff Member</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl><SelectTrigger><SelectValue placeholder="Select a staff member" /></SelectTrigger></FormControl>
-                      <SelectContent>
-                        {appointmentStaff.map(staff => (
-                          <SelectItem key={staff.value} value={staff.value}>{staff.label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <div className="grid md:grid-cols-2 gap-6">
+              {/* Column 2: Date & Time */}
+              <div className="space-y-6">
                 <FormField
                   control={form.control}
                   name="preferredDate"
@@ -198,7 +208,7 @@ export default function AppointmentBookingPage() {
                             <Button
                               variant={"outline"}
                               className={cn(
-                                "w-full pl-3 text-left font-normal",
+                                "w-full justify-start text-left font-normal",
                                 !field.value && "text-muted-foreground"
                               )}
                             >
@@ -230,7 +240,6 @@ export default function AppointmentBookingPage() {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="preferredTime"
@@ -250,20 +259,8 @@ export default function AppointmentBookingPage() {
                   )}
                 />
               </div>
-
-              <FormField
-                control={form.control}
-                name="notes"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Additional Notes (Optional)</FormLabel>
-                    <FormControl><Textarea placeholder="Any specific questions or details..." {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </CardContent>
-            <CardFooter>
+            <CardFooter className="md:col-span-2 pt-6">
               <Button type="submit" disabled={isSubmitting} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
                 {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
                 Request Appointment
