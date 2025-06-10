@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import SectionTitle from '@/components/ui/section-title';
-import { ArrowRight, CheckCircle, Star, Loader2, Sparkles, MapPin, BookOpen, University as UniversityIcon, Info, Search, ExternalLink } from 'lucide-react';
+import { ArrowRight, CheckCircle, Star, Loader2, Sparkles, MapPin, BookOpen, University as UniversityIcon, Info, Search, ExternalLink, Wand2 } from 'lucide-react';
 import { testimonials, services, fieldsOfStudy } from '@/lib/data';
 import type { Testimonial, Service } from '@/lib/data';
 import { useState, useEffect } from 'react';
@@ -31,10 +31,10 @@ const taglines = [
   "Your Bridge to World-Class Universities",
 ];
 
-const FADE_DURATION_MS = 300; // 0.3 seconds for fade
-const DISPLAY_DURATION_MS = 2500; // 2.5 seconds display time
+const FADE_DURATION_MS = 300; 
+const DISPLAY_DURATION_MS = 2500; 
 
-const selectableCountries = [
+const selectableCountriesHomepage = [
   { name: 'USA', value: 'USA' },
   { name: 'UK', value: 'UK' },
   { name: 'Australia', value: 'Australia' },
@@ -132,7 +132,7 @@ export default function HomePage() {
               "text-4xl md:text-5xl font-headline font-bold text-primary-foreground mb-6",
               "transition-transform ease-out duration-700 delay-100",
               heroAnimated ? "translate-y-0" : "translate-y-10 opacity-0",
-              "transition-opacity ease-in-out", // Opacity handled by isTaglineVisible
+              "transition-opacity ease-in-out", 
               isTaglineVisible && heroAnimated ? "opacity-100" : "opacity-0"
             )}
             style={{ transitionDuration: `${FADE_DURATION_MS}ms` }}
@@ -154,8 +154,8 @@ export default function HomePage() {
             <Button size="lg" asChild className="bg-background text-primary hover:bg-background/90 shadow-lg">
               <Link href="/services">Explore Services <ArrowRight className="ml-2 h-5 w-5" /></Link>
             </Button>
-            <Button size="lg" variant="outline" asChild className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10 shadow-lg">
-              <Link href="/contact">Contact Us</Link>
+            <Button size="lg" variant="outline" asChild className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10 shadow-lg bg-accent text-accent-foreground hover:bg-accent/90">
+              <Link href="/ai-assistants">Use our AI Assistants <Wand2 className="ml-2 h-5 w-5" /></Link>
             </Button>
           </div>
         </div>
@@ -184,7 +184,7 @@ export default function HomePage() {
                             <SelectTrigger><SelectValue placeholder="Select a country" /></SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {selectableCountries.map(country => (
+                            {selectableCountriesHomepage.map(country => (
                               <SelectItem key={country.value} value={country.value}>{country.name}</SelectItem>
                             ))}
                           </SelectContent>
@@ -363,3 +363,5 @@ export default function HomePage() {
     </div>
   );
 }
+
+    

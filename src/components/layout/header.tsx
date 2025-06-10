@@ -1,7 +1,8 @@
+
 'use client';
 
 import Link from 'next/link';
-import { BookOpenText, Briefcase, Home, Info, Mail, MapPin, GraduationCap, Brain, ChevronDown, Menu } from 'lucide-react';
+import { Home, Info, Briefcase, MapPin, GraduationCap, Mail, ChevronDown, Menu, Wand2 } from 'lucide-react'; // Added Wand2
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -26,8 +27,7 @@ const navItems = [
       { href: '/countries/new-zealand', label: 'New Zealand', icon: MapPin },
     ],
   },
-  { href: '/english-test-advisor', label: 'English Test Advisor', icon: BookOpenText },
-  { href: '/pathway-planner', label: 'Pathway Planner', icon: Brain },
+  { href: '/ai-assistants', label: 'AI Assistants', icon: Wand2 }, // Changed
   { href: '/contact', label: 'Contact Us', icon: Mail },
 ];
 
@@ -120,3 +120,5 @@ export default function Header() {
     </header>
   );
 }
+
+    
