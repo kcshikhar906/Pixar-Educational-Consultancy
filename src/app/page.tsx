@@ -17,6 +17,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { pathwayPlanner, type PathwayPlannerInput, type PathwayPlannerOutput } from '@/ai/flows/pathway-planner';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { cn } from '@/lib/utils';
 
 const pathwayFormSchema = z.object({
   country: z.string().min(1, "Please select a country."),
@@ -25,17 +26,56 @@ const pathwayFormSchema = z.object({
 
 type PathwayFormValues = z.infer<typeof pathwayFormSchema>;
 
+const taglines = [
+  "Unlock Your Global Education Journey",
+  "Your Bridge to World-Class Universities",
+];
+
 export default function HomePage() {
   const [isLoadingPathway, setIsLoadingPathway] = useState(false);
   const [pathwayError, setPathwayError] = useState<string | null>(null);
   const [pathwayResult, setPathwayResult] = useState<PathwayPlannerOutput | null>(null);
   const [heroAnimated, setHeroAnimated] = useState(false);
 
+  const [currentTaglineText, setCurrentTaglineText] = useState(taglines[0]);
+  const [isTaglineVisible, setIsTaglineVisible] = useState(false);
+
   useEffect(() => {
-    // Trigger animation after a short delay to ensure elements are rendered
+    // Trigger initial hero animation
     const timer = setTimeout(() => setHeroAnimated(true), 100);
     return () => clearTimeout(timer);
   }, []);
+
+  // Tagline cycling animation
+  useEffect(() => {
+    if (!heroAnimated) {
+      setIsTaglineVisible(false); // Ensure tagline is hidden if hero isn't animated yet
+      return;
+    }
+
+    // Start by making the first tagline visible as part of the sequence
+    setIsTaglineVisible(true);
+    let currentIdx = 0;
+
+    const displayDuration = 4000; // How long a tagline stays fully visible
+    const fadeDuration = 500;   // Duration of fade-in/out
+    const cycleTime = displayDuration + fadeDuration; // Total time before next cycle begins
+
+    const intervalId = setInterval(() => {
+      setIsTaglineVisible(false); // Trigger fade-out
+
+      setTimeout(() => {
+        currentIdx = (currentIdx + 1) % taglines.length;
+        setCurrentTaglineText(taglines[currentIdx]);
+        setIsTaglineVisible(true); // Trigger fade-in of new tagline
+      }, fadeDuration);
+    }, cycleTime);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [heroAnimated]);
+
 
   const pathwayForm = useForm<PathwayFormValues>({
     resolver: zodResolver(pathwayFormSchema),
@@ -82,11 +122,17 @@ export default function HomePage() {
             Pixar Education
           </div>
           <h1
-            className={`text-4xl md:text-5xl font-headline font-bold text-primary-foreground mb-6 transition-all ease-out duration-700 delay-100 ${
-              heroAnimated ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-            }`}
+            className={cn(
+              "text-4xl md:text-5xl font-headline font-bold text-primary-foreground mb-6",
+              // Initial animation for transform (slide-up)
+              "transition-transform ease-out duration-700 delay-100",
+              heroAnimated ? "translate-y-0" : "translate-y-10 opacity-0", // Initial transform and hide before animation
+              // Opacity transition for both initial fade-in and cycling fade-in/out
+              "transition-opacity duration-500 ease-in-out",
+              isTaglineVisible && heroAnimated ? "opacity-100" : "opacity-0" // Control opacity via state
+            )}
           >
-            Unlock Your Global Education Journey
+            {currentTaglineText}
           </h1>
           <p
             className={`text-lg md:text-xl text-primary-foreground/90 max-w-3xl mx-auto mb-10 transition-all ease-out duration-700 delay-200 ${
