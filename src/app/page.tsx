@@ -31,8 +31,8 @@ const taglines = [
   "Your Bridge to World-Class Universities",
 ];
 
-const FADE_DURATION_MS = 300; 
-const DISPLAY_DURATION_MS = 2500; 
+const FADE_DURATION_MS = 300;
+const DISPLAY_DURATION_MS = 2500;
 
 const selectableCountriesHomepage = [
   { name: 'USA', value: 'USA' },
@@ -101,7 +101,7 @@ export default function HomePage() {
     setIsLoadingPathway(true);
 
     if (!showResultsArea) {
-        setShowResultsArea(true); 
+        setShowResultsArea(true);
         requestAnimationFrame(() => {
             setResultsContainerAnimatedIn(true);
         });
@@ -176,70 +176,120 @@ export default function HomePage() {
         <SectionTitle title="Pathway Quick Search" subtitle="Find universities matching your interests instantly." />
         <div className={cn(
             "grid grid-cols-1 gap-8 items-start",
-            showResultsArea ? "md:grid-cols-3" : "md:justify-items-center"
+            showResultsArea && "md:grid-cols-3" 
         )}>
-          <div className={cn(
-            "flex flex-col w-full",
-            showResultsArea ? "md:col-span-1" : "md:max-w-2xl"
+          <div className={cn( // Form container
+            "w-full", 
+            showResultsArea ? "md:col-span-1" : "" 
            )}>
-            <Card className="shadow-xl bg-card flex flex-col flex-grow w-full">
-              <CardHeader>
-                <CardTitle className="font-headline text-primary flex items-center"><Search className="mr-2 h-6 w-6"/>Find Your University</CardTitle>
-                <CardDescription>Select a country and field of study.</CardDescription>
-              </CardHeader>
-              <Form {...pathwayForm}>
-                <form onSubmit={pathwayForm.handleSubmit(onPathwaySubmit)} className="flex flex-col flex-grow">
-                  <CardContent className="space-y-6 flex-grow">
-                    <FormField
-                      control={pathwayForm.control}
-                      name="country"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="flex items-center"><MapPin className="mr-2 h-4 w-4 text-accent"/>Country</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger><SelectValue placeholder="Select a country" /></SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {selectableCountriesHomepage.map(country => (
-                                <SelectItem key={country.value} value={country.value}>{country.name}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={pathwayForm.control}
-                      name="fieldOfStudy"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="flex items-center"><BookOpen className="mr-2 h-4 w-4 text-accent"/>Field of Study</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger><SelectValue placeholder="Select a field" /></SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {fieldsOfStudy.map(fos => (
-                                <SelectItem key={fos} value={fos}>{fos}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </CardContent>
-                  <CardFooter>
-                    <Button type="submit" disabled={isLoadingPathway} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-                      {isLoadingPathway ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                      Get Suggestions
-                    </Button>
-                  </CardFooter>
+            <Form {...pathwayForm}>
+              {!showResultsArea ? (
+                // Initial Single-Row Form Layout
+                <form
+                  onSubmit={pathwayForm.handleSubmit(onPathwaySubmit)}
+                  className="flex flex-col md:flex-row md:items-end gap-4 p-6 bg-card rounded-lg shadow-xl w-full"
+                >
+                  <FormField
+                    control={pathwayForm.control}
+                    name="country"
+                    render={({ field }) => (
+                      <FormItem className="flex-1 min-w-[200px] md:min-w-[250px]">
+                        <FormLabel className="flex items-center"><MapPin className="mr-2 h-4 w-4 text-accent"/>Country</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl><SelectTrigger><SelectValue placeholder="Select a country" /></SelectTrigger></FormControl>
+                          <SelectContent>
+                            {selectableCountriesHomepage.map(country => (
+                              <SelectItem key={country.value} value={country.value}>{country.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={pathwayForm.control}
+                    name="fieldOfStudy"
+                    render={({ field }) => (
+                      <FormItem className="flex-1 min-w-[200px] md:min-w-[250px]">
+                        <FormLabel className="flex items-center"><BookOpen className="mr-2 h-4 w-4 text-accent"/>Field of Study</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl><SelectTrigger><SelectValue placeholder="Select a field" /></SelectTrigger></FormControl>
+                          <SelectContent>
+                            {fieldsOfStudy.map(fos => (
+                              <SelectItem key={fos} value={fos}>{fos}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" disabled={isLoadingPathway} className="h-10 w-full md:w-auto mt-4 md:mt-0">
+                    {isLoadingPathway ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                    Get Suggestions
+                  </Button>
                 </form>
-              </Form>
-            </Card>
+              ) : (
+                // Standard Card Form Layout (when results are shown)
+                <Card className="shadow-xl bg-card flex flex-col flex-grow w-full">
+                  <CardHeader>
+                    <CardTitle className="font-headline text-primary flex items-center"><Search className="mr-2 h-6 w-6"/>Find Your University</CardTitle>
+                    <CardDescription>Select a country and field of study.</CardDescription>
+                  </CardHeader>
+                  <form onSubmit={pathwayForm.handleSubmit(onPathwaySubmit)} className="flex flex-col flex-grow">
+                    <CardContent className="space-y-6 flex-grow">
+                      <FormField
+                        control={pathwayForm.control}
+                        name="country"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="flex items-center"><MapPin className="mr-2 h-4 w-4 text-accent"/>Country</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger><SelectValue placeholder="Select a country" /></SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {selectableCountriesHomepage.map(country => (
+                                  <SelectItem key={country.value} value={country.value}>{country.name}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={pathwayForm.control}
+                        name="fieldOfStudy"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="flex items-center"><BookOpen className="mr-2 h-4 w-4 text-accent"/>Field of Study</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger><SelectValue placeholder="Select a field" /></SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {fieldsOfStudy.map(fos => (
+                                  <SelectItem key={fos} value={fos}>{fos}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </CardContent>
+                    <CardFooter>
+                      <Button type="submit" disabled={isLoadingPathway} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+                        {isLoadingPathway ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                        Get Suggestions
+                      </Button>
+                    </CardFooter>
+                  </form>
+                </Card>
+              )}
+            </Form>
           </div>
 
           {showResultsArea && (
@@ -271,7 +321,7 @@ export default function HomePage() {
                         Based on your selection of {pathwayForm.getValues('country')} and {pathwayForm.getValues('fieldOfStudy')}.
                     </CardDescription>
                     </CardHeader>
-                    <CardContent className="overflow-y-auto space-y-4 max-h-96 md:max-h-[450px] p-6 flex-1">
+                    <CardContent className="flex-grow overflow-y-auto space-y-4 max-h-96 md:max-h-[450px] p-6">
                     {pathwayResult.universitySuggestions && pathwayResult.universitySuggestions.length > 0 ? (
                         <ul className="space-y-4">
                         {pathwayResult.universitySuggestions.map((uni, index) => (
@@ -296,7 +346,6 @@ export default function HomePage() {
                     </CardContent>
                 </Card>
                 )}
-                {/* This placeholder is for when the results area is visible, but nothing is loading, no error, no results. */}
                 {!isLoadingPathway && !pathwayError && !pathwayResult && (
                     <Card className="shadow-xl bg-card flex flex-col items-center justify-center flex-grow min-h-[200px]">
                         <CardContent className="text-center p-6">
@@ -389,4 +438,3 @@ export default function HomePage() {
     </div>
   );
 }
-
