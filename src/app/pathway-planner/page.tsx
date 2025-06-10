@@ -15,7 +15,6 @@ import { generateDocumentChecklist, type DocumentChecklistInput, type DocumentCh
 import { Loader2, Sparkles, FileText, Download, Info, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { countryData } from '@/lib/data'; // For populating country dropdown
 
 const formSchema = z.object({
   educationLevel: z.string().min(1, "Please select your education level."),
@@ -23,6 +22,14 @@ const formSchema = z.object({
 });
 
 type DocumentChecklistFormValues = z.infer<typeof formSchema>;
+
+const selectableCountries = [
+  { name: 'USA', value: 'USA' },
+  { name: 'UK', value: 'UK' },
+  { name: 'Australia', value: 'Australia' },
+  { name: 'New Zealand', value: 'New Zealand' },
+  { name: 'Europe', value: 'Europe' },
+];
 
 export default function DocumentChecklistPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -72,26 +79,18 @@ export default function DocumentChecklistPage() {
     currentY += 6;
     doc.text(`Desired Country: ${form.getValues('desiredCountry')}`, 14, currentY);
     currentY += 10;
-
-    const tableHeaders = ["English Name", "Nepali Name", "Description"];
-    const tableData = result.checklist.map(item => [
-      item.englishName,
-      item.nepaliName,
-      item.description
-    ]);
-
-    // Using autoTable for better formatting if available and configured
-    // For simplicity, using basic text for now.
-    // Note: Nepali characters might not render correctly without font embedding.
     
     doc.setFontSize(12);
     doc.text("Document Checklist:", 14, currentY);
     currentY += 7;
 
     result.checklist.forEach((item, index) => {
-      if (currentY > 270) { // Basic page break
+      if (currentY > 270) { 
         doc.addPage();
         currentY = 15;
+        doc.setFontSize(12);
+        doc.text("Document Checklist (Continued):", 14, currentY);
+        currentY += 7;
       }
       doc.setFontSize(10);
       doc.text(`${index + 1}. English: ${item.englishName}`, 14, currentY);
@@ -99,10 +98,9 @@ export default function DocumentChecklistPage() {
       doc.text(`   Nepali: ${item.nepaliName}`, 14, currentY);
       currentY += 5;
       
-      // Wrap description text
       const splitDescription = doc.splitTextToSize(`   Description: ${item.description}`, 180);
       doc.text(splitDescription, 14, currentY);
-      currentY += (splitDescription.length * 4) + 3; // Adjust spacing based on lines
+      currentY += (splitDescription.length * 4) + 3; 
     });
     
     if (result.notes) {
@@ -170,12 +168,10 @@ export default function DocumentChecklistPage() {
                         <SelectTrigger><SelectValue placeholder="Select a country" /></SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {countryData.map(country => (
-                          <SelectItem key={country.id} value={country.name}>{country.name}</SelectItem>
+                        {selectableCountries.map(country => (
+                          <SelectItem key={country.value} value={country.value}>{country.name}</SelectItem>
                         ))}
-                        {/* Add more common countries if needed or allow text input for 'Other' */}
                          <SelectItem value="Canada">Canada</SelectItem>
-                         <SelectItem value="UK">United Kingdom</SelectItem>
                          <SelectItem value="Germany">Germany</SelectItem>
                          <SelectItem value="Japan">Japan</SelectItem>
                          <SelectItem value="Other">Other (Specify if AI allows)</SelectItem>
@@ -195,6 +191,14 @@ export default function DocumentChecklistPage() {
           </form>
         </Form>
       </Card>
+
+       <Alert className="max-w-2xl mx-auto bg-secondary/50 border-secondary">
+        <Info className="h-5 w-5 text-primary" />
+        <AlertTitle className="font-semibold text-primary">Important Disclaimer</AlertTitle>
+        <AlertDescription className="text-foreground/80">
+          The checklist provided here includes commonly required documents. Additional documents may be necessary based on your specific academic profile, chosen institution, and personal circumstances. For a comprehensive and personalized document list, we highly recommend visiting our office or contacting us directly.
+        </AlertDescription>
+      </Alert>
 
       {error && (
          <Alert variant="destructive" className="max-w-2xl mx-auto">

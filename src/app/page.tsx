@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import SectionTitle from '@/components/ui/section-title';
 import { ArrowRight, CheckCircle, Star, Loader2, Sparkles, MapPin, BookOpen, University as UniversityIcon, Info, Search, ExternalLink } from 'lucide-react';
-import { testimonials, services, countryData, fieldsOfStudy } from '@/lib/data';
+import { testimonials, services, fieldsOfStudy } from '@/lib/data';
 import type { Testimonial, Service } from '@/lib/data';
 import { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -31,6 +31,17 @@ const taglines = [
   "Your Bridge to World-Class Universities",
 ];
 
+const FADE_DURATION_MS = 300; // 0.3 seconds for fade
+const DISPLAY_DURATION_MS = 2500; // 2.5 seconds display time
+
+const selectableCountries = [
+  { name: 'USA', value: 'USA' },
+  { name: 'UK', value: 'UK' },
+  { name: 'Australia', value: 'Australia' },
+  { name: 'New Zealand', value: 'New Zealand' },
+  { name: 'Europe', value: 'Europe' },
+];
+
 export default function HomePage() {
   const [isLoadingPathway, setIsLoadingPathway] = useState(false);
   const [pathwayError, setPathwayError] = useState<string | null>(null);
@@ -41,34 +52,29 @@ export default function HomePage() {
   const [isTaglineVisible, setIsTaglineVisible] = useState(false);
 
   useEffect(() => {
-    // Trigger initial hero animation
     const timer = setTimeout(() => setHeroAnimated(true), 100);
     return () => clearTimeout(timer);
   }, []);
 
-  // Tagline cycling animation
   useEffect(() => {
     if (!heroAnimated) {
-      setIsTaglineVisible(false); // Ensure tagline is hidden if hero isn't animated yet
+      setIsTaglineVisible(false);
       return;
     }
 
-    // Start by making the first tagline visible as part of the sequence
     setIsTaglineVisible(true);
     let currentIdx = 0;
 
-    const displayDuration = 4000; // How long a tagline stays fully visible
-    const fadeDuration = 500;   // Duration of fade-in/out
-    const cycleTime = displayDuration + fadeDuration; // Total time before next cycle begins
+    const cycleTime = DISPLAY_DURATION_MS + FADE_DURATION_MS;
 
     const intervalId = setInterval(() => {
-      setIsTaglineVisible(false); // Trigger fade-out
+      setIsTaglineVisible(false);
 
       setTimeout(() => {
         currentIdx = (currentIdx + 1) % taglines.length;
         setCurrentTaglineText(taglines[currentIdx]);
-        setIsTaglineVisible(true); // Trigger fade-in of new tagline
-      }, fadeDuration);
+        setIsTaglineVisible(true);
+      }, FADE_DURATION_MS);
     }, cycleTime);
 
     return () => {
@@ -124,13 +130,12 @@ export default function HomePage() {
           <h1
             className={cn(
               "text-4xl md:text-5xl font-headline font-bold text-primary-foreground mb-6",
-              // Initial animation for transform (slide-up)
               "transition-transform ease-out duration-700 delay-100",
-              heroAnimated ? "translate-y-0" : "translate-y-10 opacity-0", // Initial transform and hide before animation
-              // Opacity transition for both initial fade-in and cycling fade-in/out
-              "transition-opacity duration-500 ease-in-out",
-              isTaglineVisible && heroAnimated ? "opacity-100" : "opacity-0" // Control opacity via state
+              heroAnimated ? "translate-y-0" : "translate-y-10 opacity-0",
+              "transition-opacity ease-in-out", // Opacity handled by isTaglineVisible
+              isTaglineVisible && heroAnimated ? "opacity-100" : "opacity-0"
             )}
+            style={{ transitionDuration: `${FADE_DURATION_MS}ms` }}
           >
             {currentTaglineText}
           </h1>
@@ -179,8 +184,8 @@ export default function HomePage() {
                             <SelectTrigger><SelectValue placeholder="Select a country" /></SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {countryData.map(country => (
-                              <SelectItem key={country.id} value={country.name}>{country.name}</SelectItem>
+                            {selectableCountries.map(country => (
+                              <SelectItem key={country.value} value={country.value}>{country.name}</SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
