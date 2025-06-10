@@ -6,10 +6,10 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import SectionTitle from '@/components/ui/section-title';
-import { ArrowRight, CheckCircle, Star, Loader2, Sparkles, MapPin, BookOpen, University as UniversityIcon, Info, Search } from 'lucide-react';
+import { ArrowRight, CheckCircle, Star, Loader2, Sparkles, MapPin, BookOpen, University as UniversityIcon, Info, Search, ExternalLink } from 'lucide-react';
 import { testimonials, services, countryData, fieldsOfStudy } from '@/lib/data';
 import type { Testimonial, Service } from '@/lib/data';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -29,6 +29,13 @@ export default function HomePage() {
   const [isLoadingPathway, setIsLoadingPathway] = useState(false);
   const [pathwayError, setPathwayError] = useState<string | null>(null);
   const [pathwayResult, setPathwayResult] = useState<PathwayPlannerOutput | null>(null);
+  const [heroAnimated, setHeroAnimated] = useState(false);
+
+  useEffect(() => {
+    // Trigger animation after a short delay to ensure elements are rendered
+    const timer = setTimeout(() => setHeroAnimated(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   const pathwayForm = useForm<PathwayFormValues>({
     resolver: zodResolver(pathwayFormSchema),
@@ -57,20 +64,25 @@ export default function HomePage() {
       setIsLoadingPathway(false);
     }
   }
+  
+  const heroTextContainerClasses = `transition-all ease-out duration-1000 ${
+    heroAnimated ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+  }`;
+
 
   return (
     <div className="space-y-16 md:space-y-24">
       {/* Hero Section */}
       <section className="relative py-20 md:py-32 bg-gradient-to-br from-primary to-accent/80 rounded-lg shadow-xl overflow-hidden">
-        <div className="absolute inset-0 opacity-10 SvgHeroPattern">
-            {/* Placeholder for a subtle background pattern if desired */}
+        <div className="absolute inset-0 opacity-10">
+            {/* Placeholder for a subtle background pattern if desired e.g. <SvgHeroPattern /> */}
         </div>
-        <div className="container mx-auto px-4 text-center relative z-10">
+        <div className={`container mx-auto px-4 text-center relative z-10 ${heroTextContainerClasses}`}>
           <h1 className="text-4xl md:text-6xl font-headline font-bold text-primary-foreground mb-6">
             Unlock Your Global Education Journey
           </h1>
-          <p className="text-lg md:text-xl text-primary-foreground/90 max-w-2xl mx-auto mb-10">
-            Pixar Educational Consultancy guides you to the best universities worldwide. Start your adventure today!
+          <p className="text-lg md:text-xl text-primary-foreground/90 max-w-3xl mx-auto mb-10">
+            Your trusted partner for international studies, specializing in guiding Nepali students to U.S. success. 🇺🇸 Start your adventure today!
           </p>
           <div className="space-x-4">
             <Button size="lg" asChild className="bg-background text-primary hover:bg-background/90 shadow-lg">
@@ -86,15 +98,15 @@ export default function HomePage() {
       {/* Pathway Quick Search Section */}
       <section>
         <SectionTitle title="Pathway Quick Search" subtitle="Find universities matching your interests instantly." />
-        <div className="grid md:grid-cols-3 gap-8 items-start">
-          <Card className="md:col-span-1 shadow-xl bg-card">
+        <div className="grid md:grid-cols-3 gap-8 items-stretch">
+          <Card className="md:col-span-1 shadow-xl bg-card flex flex-col h-[550px]">
             <CardHeader>
               <CardTitle className="font-headline text-primary flex items-center"><Search className="mr-2 h-6 w-6"/>Find Your University</CardTitle>
               <CardDescription>Select a country and field of study.</CardDescription>
             </CardHeader>
             <Form {...pathwayForm}>
-              <form onSubmit={pathwayForm.handleSubmit(onPathwaySubmit)}>
-                <CardContent className="space-y-6">
+              <form onSubmit={pathwayForm.handleSubmit(onPathwaySubmit)} className="flex flex-col flex-grow">
+                <CardContent className="space-y-6 flex-grow">
                   <FormField
                     control={pathwayForm.control}
                     name="country"
@@ -146,21 +158,21 @@ export default function HomePage() {
             </Form>
           </Card>
 
-          <div className="md:col-span-2">
+          <div className="md:col-span-2 flex flex-col h-[550px]">
             {isLoadingPathway && (
-              <div className="flex justify-center items-center h-64">
+              <div className="flex justify-center items-center h-full">
                 <Loader2 className="h-12 w-12 text-primary animate-spin" />
               </div>
             )}
             {pathwayError && (
-              <Alert variant="destructive" className="bg-card">
+              <Alert variant="destructive" className="bg-card m-auto">
                 <Info className="h-4 w-4" />
                 <AlertTitle>Error</AlertTitle>
                 <AlertDescription>{pathwayError}</AlertDescription>
               </Alert>
             )}
             {pathwayResult && !isLoadingPathway && (
-              <Card className="shadow-xl bg-card">
+              <Card className="shadow-xl bg-card flex flex-col flex-grow">
                 <CardHeader>
                   <CardTitle className="font-headline text-accent flex items-center">
                     <Sparkles className="mr-2 h-6 w-6" /> University Suggestions
@@ -169,14 +181,20 @@ export default function HomePage() {
                     Based on your selection of {pathwayForm.getValues('country')} and {pathwayForm.getValues('fieldOfStudy')}.
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex-grow overflow-y-auto space-y-4">
                   {pathwayResult.universitySuggestions && pathwayResult.universitySuggestions.length > 0 ? (
                     <ul className="space-y-4">
                       {pathwayResult.universitySuggestions.map((uni, index) => (
                         <li key={index} className="p-4 border rounded-lg bg-background/50 hover:shadow-md transition-shadow">
                           <h4 className="font-semibold text-primary flex items-center mb-1">
                             <UniversityIcon className="mr-2 h-5 w-5 text-accent" />
-                            {uni.name}
+                            {uni.website ? (
+                              <a href={uni.website} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center">
+                                {uni.name} <ExternalLink className="ml-1.5 h-4 w-4 text-muted-foreground" />
+                              </a>
+                            ) : (
+                              uni.name
+                            )}
                           </h4>
                           <p className="text-sm text-foreground/80 ml-7">Category: {uni.category}</p>
                         </li>
@@ -189,7 +207,7 @@ export default function HomePage() {
               </Card>
             )}
              {!pathwayResult && !isLoadingPathway && !pathwayError && (
-                <Card className="shadow-xl bg-card md:col-span-2 flex flex-col items-center justify-center min-h-[300px]">
+                <Card className="shadow-xl bg-card flex flex-col items-center justify-center flex-grow">
                     <CardContent className="text-center">
                         <Search className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                         <p className="text-muted-foreground">Your university suggestions will appear here.</p>
