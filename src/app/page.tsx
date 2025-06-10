@@ -132,10 +132,9 @@ export default function HomePage() {
               "text-4xl md:text-5xl font-headline font-bold text-primary-foreground mb-6",
               "transition-transform ease-out duration-700 delay-100",
               heroAnimated ? "translate-y-0" : "translate-y-10 opacity-0",
-              "transition-opacity ease-in-out", 
-              isTaglineVisible && heroAnimated ? "opacity-100" : "opacity-0"
+              "transition-opacity ease-in-out"
             )}
-            style={{ transitionDuration: `${FADE_DURATION_MS}ms` }}
+            style={{ transitionDuration: `${FADE_DURATION_MS}ms`, opacity: isTaglineVisible && heroAnimated ? 1 : 0 }}
           >
             {currentTaglineText}
           </h1>
@@ -164,8 +163,8 @@ export default function HomePage() {
       {/* Pathway Quick Search Section */}
       <section>
         <SectionTitle title="Pathway Quick Search" subtitle="Find universities matching your interests instantly." />
-        <div className="grid md:grid-cols-3 gap-8 items-stretch">
-          <div className="md:col-span-1 flex flex-col h-[550px]">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+          <div className="md:col-span-1 flex flex-col">
             <Card className="shadow-xl bg-card flex flex-col flex-grow">
               <CardHeader>
                 <CardTitle className="font-headline text-primary flex items-center"><Search className="mr-2 h-6 w-6"/>Find Your University</CardTitle>
@@ -226,14 +225,15 @@ export default function HomePage() {
             </Card>
           </div>
 
-          <div className="md:col-span-2 flex flex-col h-[550px]">
+          <div className="md:col-span-2 flex flex-col">
             {isLoadingPathway && (
-              <div className="flex justify-center items-center h-full">
+              <Card className="shadow-xl bg-card flex flex-col items-center justify-center flex-grow min-h-[200px] p-6">
                 <Loader2 className="h-12 w-12 text-primary animate-spin" />
-              </div>
+                 <p className="text-muted-foreground mt-2">Finding universities...</p>
+              </Card>
             )}
             {pathwayError && (
-              <Alert variant="destructive" className="bg-card m-auto">
+              <Alert variant="destructive" className="bg-card">
                 <Info className="h-4 w-4" />
                 <AlertTitle>Error</AlertTitle>
                 <AlertDescription>{pathwayError}</AlertDescription>
@@ -249,7 +249,7 @@ export default function HomePage() {
                     Based on your selection of {pathwayForm.getValues('country')} and {pathwayForm.getValues('fieldOfStudy')}.
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="flex-grow overflow-y-auto space-y-4">
+                <CardContent className="overflow-y-auto space-y-4 max-h-96 md:max-h-[450px] p-6 flex-1">
                   {pathwayResult.universitySuggestions && pathwayResult.universitySuggestions.length > 0 ? (
                     <ul className="space-y-4">
                       {pathwayResult.universitySuggestions.map((uni, index) => (
@@ -275,9 +275,9 @@ export default function HomePage() {
               </Card>
             )}
              {!pathwayResult && !isLoadingPathway && !pathwayError && (
-                <Card className="shadow-xl bg-card flex flex-col items-center justify-center flex-grow">
-                    <CardContent className="text-center">
-                        <Search className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                <Card className="shadow-xl bg-card flex flex-col items-center justify-center flex-grow min-h-[200px]">
+                    <CardContent className="text-center p-6">
+                        <Search className="h-12 w-12 md:h-16 md:w-16 text-muted-foreground mx-auto mb-4" />
                         <p className="text-muted-foreground">Your university suggestions will appear here.</p>
                     </CardContent>
                 </Card>
@@ -365,3 +365,4 @@ export default function HomePage() {
     </div>
   );
 }
+
