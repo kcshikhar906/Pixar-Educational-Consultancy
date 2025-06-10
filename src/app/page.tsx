@@ -65,10 +65,6 @@ export default function HomePage() {
     }
   }
   
-  const heroTextContainerClasses = `transition-all ease-out duration-1000 ${
-    heroAnimated ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-  }`;
-
 
   return (
     <div className="space-y-16 md:space-y-24">
@@ -77,14 +73,33 @@ export default function HomePage() {
         <div className="absolute inset-0 opacity-10">
             {/* Placeholder for a subtle background pattern if desired e.g. <SvgHeroPattern /> */}
         </div>
-        <div className={`container mx-auto px-4 text-center relative z-10 ${heroTextContainerClasses}`}>
-          <h1 className="text-4xl md:text-6xl font-headline font-bold text-primary-foreground mb-6">
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <div
+            className={`text-5xl md:text-7xl font-headline font-bold text-primary-foreground mb-4 transition-all ease-out duration-700 ${
+              heroAnimated ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+            }`}
+          >
+            Pixar Education
+          </div>
+          <h1
+            className={`text-4xl md:text-5xl font-headline font-bold text-primary-foreground mb-6 transition-all ease-out duration-700 delay-100 ${
+              heroAnimated ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+            }`}
+          >
             Unlock Your Global Education Journey
           </h1>
-          <p className="text-lg md:text-xl text-primary-foreground/90 max-w-3xl mx-auto mb-10">
+          <p
+            className={`text-lg md:text-xl text-primary-foreground/90 max-w-3xl mx-auto mb-10 transition-all ease-out duration-700 delay-200 ${
+              heroAnimated ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+            }`}
+          >
             Your trusted partner for international studies, specializing in guiding Nepali students to U.S. success. 🇺🇸 Start your adventure today!
           </p>
-          <div className="space-x-4">
+          <div
+             className={`space-x-4 transition-all ease-out duration-700 delay-300 ${
+              heroAnimated ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+            }`}
+          >
             <Button size="lg" asChild className="bg-background text-primary hover:bg-background/90 shadow-lg">
               <Link href="/services">Explore Services <ArrowRight className="ml-2 h-5 w-5" /></Link>
             </Button>
