@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import SectionTitle from '@/components/ui/section-title';
 import { ArrowRight, CheckCircle, Star, Loader2, Sparkles, MapPin, BookOpen, University as UniversityIconLucide, Info, Search, ExternalLink, Wand2, Briefcase, DollarSign, Award as AwardIconLucideComp, ClipboardCheck } from 'lucide-react';
-import { testimonials, services, fieldsOfStudy, gpaScaleOptions, educationLevelOptions, AwardIcon, UniversityIcon } from '@/lib/data'; 
+import { testimonials, services, fieldsOfStudy, gpaScaleOptions, educationLevelOptions, AwardIcon, UniversityIcon } from '@/lib/data';
 import type { Testimonial, Service } from '@/lib/data';
 import { useState, useEffect, useMemo } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,7 +18,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { pathwayPlanner, type PathwayPlannerInput, type PathwayPlannerOutput } from '@/ai/flows/pathway-planner';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from '@/lib/utils';
-import { Label } from '@/components/ui/label';
 
 
 const pathwayFormSchema = z.object({
@@ -129,12 +128,14 @@ export default function HomePage() {
 
   const universitySuggestions = useMemo(() => {
     if (!pathwayResult?.universitySuggestions) return [];
-    // Return all suggestions directly as sorting/filtering is removed
     return pathwayResult.universitySuggestions;
   }, [pathwayResult]);
   
   const renderPathwayForm = () => (
-    <Card className={cn("shadow-xl bg-card w-full", !showResultsArea ? "md:max-w-3xl mx-auto" : "")}>
+    <Card className={cn(
+        "shadow-xl bg-card w-full",
+        !showResultsArea ? "" : "" // Removed md:max-w-3xl mx-auto for initial state
+    )}>
       <CardHeader>
         <CardTitle className="font-headline text-primary flex items-center">
           <Search className="mr-2 h-6 w-6"/> Plan Your Study Pathway
@@ -319,7 +320,6 @@ export default function HomePage() {
                         For {pathwayForm.getValues('country')} - {pathwayForm.getValues('fieldOfStudy')} (GPA: {pathwayForm.getValues('gpa')}, Level: {pathwayForm.getValues('targetEducationLevel')}).
                         {pathwayResult.searchSummary && <span className="block mt-1 text-xs italic">{pathwayResult.searchSummary}</span>}
                     </CardDescription>
-                    {/* Removed filtering and sorting controls */}
                     </CardHeader>
                     <CardContent className="flex-grow overflow-y-auto space-y-4 max-h-96 md:max-h-[450px] p-6">
                     {universitySuggestions.length > 0 ? (
