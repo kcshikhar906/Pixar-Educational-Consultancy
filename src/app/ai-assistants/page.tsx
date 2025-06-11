@@ -20,6 +20,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 import { englishTestAdvisor, type EnglishTestAdvisorInput, type EnglishTestAdvisorOutput } from '@/ai/flows/english-test-advisor';
 import { generateDocumentChecklist, type DocumentChecklistInput, type DocumentChecklistOutput } from '@/ai/flows/document-checklist-flow';
@@ -73,6 +74,9 @@ export default function AiAssistantsPage() {
   const [docChecklistResult, setDocChecklistResult] = useState<DocumentChecklistOutput | null>(null);
   const [showDocChecklistResultsArea, setShowDocChecklistResultsArea] = useState(false);
   const [docChecklistResultsAnimatedIn, setDocChecklistResultsAnimatedIn] = useState(false);
+
+  const [titleSectionRef, isTitleSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true });
+  const [tabsRef, isTabsVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.05 });
 
 
   const englishTestForm = useForm<EnglishTestAdvisorFormValues>({
@@ -145,35 +149,26 @@ export default function AiAssistantsPage() {
     if (!docChecklistResult || !docChecklistResult.checklist) return;
     const userName = docChecklistForm.getValues('userName');
     const doc = new jsPDF();
-    const logoSrc = '/logo.png'; // Ensure 'logo.png' is in your /public folder
+    const logoSrc = '/logo.png'; 
 
-    // Function to add elements to each page (watermark, header)
     const addPageElementsAndWatermark = () => {
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
-
-      // 1. Add Watermark (centered) - Drawn first to be in the background
-      // For best results, logo.png should be semi-transparent.
-      const watermarkWidth = 80; // mm
-      const watermarkHeight = 80; // mm (adjust as needed, or calculate aspect ratio)
+      const watermarkWidth = 80; 
+      const watermarkHeight = 80; 
       const watermarkX = (pageWidth - watermarkWidth) / 2;
       const watermarkY = (pageHeight - watermarkHeight) / 2;
       
       try {
-        // Note: For client-side PDF generation with images from URLs,
-        // pre-loading or Base64 conversion is most reliable.
-        // This attempts direct use of the public path.
         doc.addImage(logoSrc, 'PNG', watermarkX, watermarkY, watermarkWidth, watermarkHeight, undefined, 'FAST');
       } catch (e) {
         console.warn("Watermark image could not be added. Ensure " + logoSrc + " exists in /public. Error: ", e);
-        // Fallback: maybe draw a placeholder text if image fails, or do nothing
         doc.setFontSize(10);
-        doc.setTextColor(200, 200, 200); // Light grey for placeholder
+        doc.setTextColor(200, 200, 200); 
         doc.text("Pixar Edu", pageWidth / 2, pageHeight / 2, { align: 'center', angle: 45 });
-        doc.setTextColor(0, 0, 0); // Reset text color
+        doc.setTextColor(0, 0, 0); 
       }
 
-      // 2. Header Content (Company Name, Website) - Drawn after watermark
       doc.setFontSize(20);
       doc.setFont('helvetica', 'bold');
       doc.text("Pixar Educational Consultancy", pageWidth / 2, 15, { align: 'center' });
@@ -182,29 +177,25 @@ export default function AiAssistantsPage() {
       doc.setFont('helvetica', 'normal');
       doc.textWithLink("www.pixaredu.com", pageWidth / 2, 23, { align: 'center', url: 'https://www.pixaredu.com' });
       
-      // Line Separator
       doc.setLineWidth(0.5);
-      doc.line(14, 30, pageWidth - 14, 30); // from x1, y1, to x2, y2
+      doc.line(14, 30, pageWidth - 14, 30); 
     };
 
-    let currentY = 35; // Initial Y position after header elements for the first page
+    let currentY = 35; 
 
     const startNewPage = () => {
       doc.addPage();
       addPageElementsAndWatermark();
-      currentY = 35; // Reset Y for new page content
+      currentY = 35; 
     };
 
-    // Add elements to the first page
     addPageElementsAndWatermark();
     
-    // Personalized Title
     doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
     doc.text(`Document Checklist for ${userName}`, doc.internal.pageSize.getWidth() / 2, currentY, { align: 'center' });
     currentY += 10;
     
-    // Education Level and Desired Country
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
     doc.text(`Education Level: ${docChecklistForm.getValues('educationLevel')}`, 14, currentY);
@@ -212,13 +203,11 @@ export default function AiAssistantsPage() {
     doc.text(`Desired Country: ${docChecklistForm.getValues('desiredCountry')}`, 14, currentY);
     currentY += 10;
     
-    // Checklist Section Title
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
     doc.text("Document Checklist:", 14, currentY);
     currentY += 7;
 
-    // Checklist Items
     docChecklistResult.checklist.forEach((item, index) => {
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
@@ -227,19 +216,16 @@ export default function AiAssistantsPage() {
       const englishNameText = item.englishName;
       const fullItemText = itemNumberText + englishNameText;
       
-      // Calculate height for item name
-      const itemNameLines = doc.splitTextToSize(fullItemText, doc.internal.pageSize.getWidth() - 28); // 14mm margin each side
-      const itemNameHeight = itemNameLines.length * 4.5; // Approximate height per line
+      const itemNameLines = doc.splitTextToSize(fullItemText, doc.internal.pageSize.getWidth() - 28); 
+      const itemNameHeight = itemNameLines.length * 4.5; 
 
-      // Calculate height for description
-      const descriptionLines = doc.splitTextToSize(`   Description: ${item.description}`, doc.internal.pageSize.getWidth() - 32); // Slightly more indented
-      const descriptionHeight = descriptionLines.length * 4.5; // Approximate height per line
+      const descriptionLines = doc.splitTextToSize(`   Description: ${item.description}`, doc.internal.pageSize.getWidth() - 32); 
+      const descriptionHeight = descriptionLines.length * 4.5; 
       
-      const totalItemHeight = itemNameHeight + descriptionHeight + 3; // +3 for spacing
+      const totalItemHeight = itemNameHeight + descriptionHeight + 3; 
 
-      if (currentY + totalItemHeight > doc.internal.pageSize.getHeight() - 20) { // 20mm bottom margin
+      if (currentY + totalItemHeight > doc.internal.pageSize.getHeight() - 20) { 
         startNewPage();
-        // Optionally, re-add "Document Checklist (Continued)"
         doc.setFontSize(12);
         doc.setFont('helvetica', 'bold');
         doc.text("Document Checklist (Continued):", 14, currentY);
@@ -249,11 +235,10 @@ export default function AiAssistantsPage() {
       doc.text(itemNameLines, 14, currentY);
       currentY += itemNameHeight;
       
-      doc.text(descriptionLines, 14, currentY); // Description text
-      currentY += descriptionHeight + 3; // Add some space after each item
+      doc.text(descriptionLines, 14, currentY); 
+      currentY += descriptionHeight + 3; 
     });
     
-    // Notes Section (if any)
     if (docChecklistResult.notes) {
       doc.setFontSize(12);
       doc.setFont('helvetica', 'bold');
@@ -266,7 +251,7 @@ export default function AiAssistantsPage() {
       const notesBodyHeight = notesLines.length * 4.5;
       const totalNotesHeight = notesTitleHeight + notesBodyHeight;
 
-      if (currentY + totalNotesHeight > doc.internal.pageSize.getHeight() - 20) { // 20mm bottom margin
+      if (currentY + totalNotesHeight > doc.internal.pageSize.getHeight() - 20) { 
         startNewPage();
       }
       doc.setFontSize(12);
@@ -285,382 +270,386 @@ export default function AiAssistantsPage() {
 
   return (
     <div className="space-y-12">
-      <SectionTitle
-        title="AI-Powered Assistants"
-        subtitle="Get personalized advice and checklists for your study abroad journey."
-      />
+      <div ref={titleSectionRef} className={cn("transition-all duration-700 ease-out", isTitleSectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")}>
+        <SectionTitle
+          title="AI-Powered Assistants"
+          subtitle="Get personalized advice and checklists for your study abroad journey."
+        />
+      </div>
 
-      <Tabs defaultValue="english-advisor" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 md:w-1/2 mx-auto mb-8">
-          <TabsTrigger value="english-advisor" className="py-2.5">
-            <BookOpenText className="mr-2 h-5 w-5" /> English Test Advisor
-          </TabsTrigger>
-          <TabsTrigger value="document-checklist" className="py-2.5">
-            <ListChecks className="mr-2 h-5 w-5" /> Document Checklist
-          </TabsTrigger>
-        </TabsList>
+      <div ref={tabsRef} className={cn("transition-all duration-700 ease-out", isTabsVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")}>
+        <Tabs defaultValue="english-advisor" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 md:w-1/2 mx-auto mb-8">
+            <TabsTrigger value="english-advisor" className="py-2.5">
+              <BookOpenText className="mr-2 h-5 w-5" /> English Test Advisor
+            </TabsTrigger>
+            <TabsTrigger value="document-checklist" className="py-2.5">
+              <ListChecks className="mr-2 h-5 w-5" /> Document Checklist
+            </TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="english-advisor">
-          <div className={cn(
-              "w-full",
-              showEnglishTestResultsArea ? "grid grid-cols-1 md:grid-cols-2 gap-8 items-start" : "flex flex-col items-center"
-          )}>
-            <Card className={cn(
-                "shadow-xl bg-card w-full",
-                showEnglishTestResultsArea ? "md:col-span-1" : "max-w-2xl"
+          <TabsContent value="english-advisor">
+            <div className={cn(
+                "w-full",
+                showEnglishTestResultsArea ? "grid grid-cols-1 md:grid-cols-2 gap-8 items-start" : "flex flex-col items-center"
             )}>
-              <CardHeader>
-                <CardTitle className="font-headline text-primary flex items-center"><BookOpenText className="mr-2 h-6 w-6" />Find Your Ideal English Test</CardTitle>
-                <CardDescription>Fill in your details below for a tailored recommendation (IELTS, PTE, TOEFL, Duolingo, etc.).</CardDescription>
-              </CardHeader>
-              <Form {...englishTestForm}>
-                <form onSubmit={englishTestForm.handleSubmit(onEnglishTestSubmit)}>
-                  <CardContent className="space-y-6">
-                    <FormField
-                      control={englishTestForm.control}
-                      name="currentLevel"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Current English Proficiency Level</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl><SelectTrigger><SelectValue placeholder="Select your level" /></SelectTrigger></FormControl>
-                            <SelectContent>
-                              <SelectItem value="beginner">Beginner</SelectItem>
-                              <SelectItem value="intermediate">Intermediate</SelectItem>
-                              <SelectItem value="advanced">Advanced</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={englishTestForm.control}
-                      name="timeline"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Timeline for Taking the Test</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl><SelectTrigger><SelectValue placeholder="Select your timeline" /></SelectTrigger></FormControl>
-                            <SelectContent>
-                              <SelectItem value="1 month">Within 1 month</SelectItem>
-                              <SelectItem value="3 months">Within 3 months</SelectItem>
-                              <SelectItem value="6 months">Within 6 months</SelectItem>
-                              <SelectItem value="flexible">Flexible</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={englishTestForm.control}
-                      name="budget"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Budget for the Test (NPR)</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl><SelectTrigger><SelectValue placeholder="Select your budget (रु)" /></SelectTrigger></FormControl>
-                            <SelectContent>
-                              <SelectItem value="< NPR 15000">Less than रु १५,०००</SelectItem>
-                              <SelectItem value="NPR 15000 - NPR 30000">रु १५,००० - रु ३०,०००</SelectItem>
-                              <SelectItem value="NPR 30000 - NPR 45000">रु ३०,००० - रु ४५,०००</SelectItem>
-                              <SelectItem value="> NPR 45000">More than रु ४५,०००</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={englishTestForm.control}
-                      name="purpose"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Purpose of the Test</FormLabel>
-                          <FormControl><Textarea placeholder="e.g., University application, immigration, job requirement" {...field} /></FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </CardContent>
-                  <CardFooter>
-                    <Button type="submit" disabled={isEnglishTestLoading} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-                      {isEnglishTestLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                      Get Recommendation
-                    </Button>
-                  </CardFooter>
-                </form>
-              </Form>
-            </Card>
-            
-            {showEnglishTestResultsArea && (
-              <div className={cn(
-                  "w-full md:col-span-1 space-y-6",
-                  "transition-all duration-700 ease-out",
-                  englishTestResultsAnimatedIn ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"
+              <Card className={cn(
+                  "shadow-xl bg-card w-full",
+                  showEnglishTestResultsArea ? "md:col-span-1" : "max-w-2xl"
               )}>
-                {isEnglishTestLoading && (
-                  <Card className="shadow-xl bg-card">
-                    <CardContent className="p-10 text-center">
-                      <Loader2 className="h-12 w-12 text-primary animate-spin mx-auto mb-4" />
-                      <p className="text-muted-foreground">Generating your recommendation...</p>
+                <CardHeader>
+                  <CardTitle className="font-headline text-primary flex items-center"><BookOpenText className="mr-2 h-6 w-6" />Find Your Ideal English Test</CardTitle>
+                  <CardDescription>Fill in your details below for a tailored recommendation (IELTS, PTE, TOEFL, Duolingo, etc.).</CardDescription>
+                </CardHeader>
+                <Form {...englishTestForm}>
+                  <form onSubmit={englishTestForm.handleSubmit(onEnglishTestSubmit)}>
+                    <CardContent className="space-y-6">
+                      <FormField
+                        control={englishTestForm.control}
+                        name="currentLevel"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Current English Proficiency Level</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl><SelectTrigger><SelectValue placeholder="Select your level" /></SelectTrigger></FormControl>
+                              <SelectContent>
+                                <SelectItem value="beginner">Beginner</SelectItem>
+                                <SelectItem value="intermediate">Intermediate</SelectItem>
+                                <SelectItem value="advanced">Advanced</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={englishTestForm.control}
+                        name="timeline"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Timeline for Taking the Test</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl><SelectTrigger><SelectValue placeholder="Select your timeline" /></SelectTrigger></FormControl>
+                              <SelectContent>
+                                <SelectItem value="1 month">Within 1 month</SelectItem>
+                                <SelectItem value="3 months">Within 3 months</SelectItem>
+                                <SelectItem value="6 months">Within 6 months</SelectItem>
+                                <SelectItem value="flexible">Flexible</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={englishTestForm.control}
+                        name="budget"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Budget for the Test (NPR)</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl><SelectTrigger><SelectValue placeholder="Select your budget (रु)" /></SelectTrigger></FormControl>
+                              <SelectContent>
+                                <SelectItem value="< NPR 15000">Less than रु १५,०००</SelectItem>
+                                <SelectItem value="NPR 15000 - NPR 30000">रु १५,००० - रु ३०,०००</SelectItem>
+                                <SelectItem value="NPR 30000 - NPR 45000">रु ३०,००० - रु ४५,०००</SelectItem>
+                                <SelectItem value="> NPR 45000">More than रु ४५,०००</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={englishTestForm.control}
+                        name="purpose"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Purpose of the Test</FormLabel>
+                            <FormControl><Textarea placeholder="e.g., University application, immigration, job requirement" {...field} /></FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </CardContent>
-                  </Card>
-                )}
-                {englishTestError && !isEnglishTestLoading && (
-                  <Alert variant="destructive">
-                    <Info className="h-4 w-4" />
-                    <AlertTitle>Error</AlertTitle>
-                    <AlertDescription>{englishTestError}</AlertDescription>
+                    <CardFooter>
+                      <Button type="submit" disabled={isEnglishTestLoading} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+                        {isEnglishTestLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                        Get Recommendation
+                      </Button>
+                    </CardFooter>
+                  </form>
+                </Form>
+              </Card>
+              
+              {showEnglishTestResultsArea && (
+                <div className={cn(
+                    "w-full md:col-span-1 space-y-6",
+                    "transition-all duration-700 ease-out",
+                    englishTestResultsAnimatedIn ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"
+                )}>
+                  {isEnglishTestLoading && (
+                    <Card className="shadow-xl bg-card">
+                      <CardContent className="p-10 text-center">
+                        <Loader2 className="h-12 w-12 text-primary animate-spin mx-auto mb-4" />
+                        <p className="text-muted-foreground">Generating your recommendation...</p>
+                      </CardContent>
+                    </Card>
+                  )}
+                  {englishTestError && !isEnglishTestLoading && (
+                    <Alert variant="destructive">
+                      <Info className="h-4 w-4" />
+                      <AlertTitle>Error</AlertTitle>
+                      <AlertDescription>{englishTestError}</AlertDescription>
+                    </Alert>
+                  )}
+                  {englishTestResult && !isEnglishTestLoading && (
+                    <div className="space-y-6">
+                      <Card className="shadow-xl bg-gradient-to-br from-accent/10 to-background">
+                        <CardHeader>
+                          <CardTitle className="font-headline text-accent flex items-center"><Sparkles className="mr-2 h-6 w-6" /> Your Personalized Recommendation</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div>
+                            <h3 className="font-semibold text-lg text-primary">Recommended Test:</h3>
+                            <p className="text-foreground/90 text-xl font-medium">{englishTestResult.testRecommendation}</p>
+                          </div>
+                          {englishTestResult.badges && englishTestResult.badges.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                              {englishTestResult.badges.map((badge, index) => (
+                                <Badge key={index} variant="secondary" className="text-sm">
+                                  <CheckCircleIcon className="mr-1.5 h-4 w-4 text-green-500" />
+                                  {badge}
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
+                          <div>
+                            <h3 className="font-semibold text-lg text-primary">Reasoning:</h3>
+                            <p className="text-foreground/90 whitespace-pre-line">{englishTestResult.reasoning}</p>
+                          </div>
+                          <div className="pt-4 text-center">
+                              <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
+                                  <Link href="/contact">
+                                      <MessageSquare className="mr-2 h-5 w-5" /> Want help preparing or booking your test? Talk to our experts!
+                                  </Link>
+                              </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      <Card className="shadow-xl bg-card">
+                        <CardHeader>
+                            <CardTitle className="font-headline text-primary flex items-center"><HelpCircle className="mr-2 h-6 w-6" /> Compare Test Types</CardTitle>
+                            <CardDescription>General comparison of popular English proficiency tests.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Test Name</TableHead>
+                                            <TableHead>Typical Cost</TableHead>
+                                            <TableHead>Duration</TableHead>
+                                            <TableHead>Acceptance</TableHead>
+                                            <TableHead>Format</TableHead>
+                                            <TableHead>Result Time</TableHead>
+                                            <TableHead>Key Features</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {testComparisonData.map((test) => (
+                                            <TableRow key={test.name}>
+                                                <TableCell className="font-medium">{test.name}</TableCell>
+                                                <TableCell>{test.cost}</TableCell>
+                                                <TableCell>{test.typicalDuration}</TableCell>
+                                                <TableCell>{test.acceptance}</TableCell>
+                                                <TableCell>{test.format}</TableCell>
+                                                <TableCell>{test.resultTime}</TableCell>
+                                                <TableCell className="text-xs">{test.keyFeatures.join(', ')}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="document-checklist">
+            <div className={cn(
+                "w-full",
+                showDocChecklistResultsArea ? "grid grid-cols-1 md:grid-cols-2 gap-8 items-start" : "flex flex-col items-center"
+            )}>
+              <Card className={cn(
+                  "shadow-xl bg-card w-full",
+                  showDocChecklistResultsArea ? "md:col-span-1" : "max-w-2xl"
+              )}>
+                <CardHeader>
+                  <CardTitle className="font-headline text-primary flex items-center"><ListChecks className="mr-2 h-6 w-6" />Generate Your Document Checklist</CardTitle>
+                  <CardDescription>Provide your details to receive a tailored document list.</CardDescription>
+                </CardHeader>
+                <Form {...docChecklistForm}>
+                  <form onSubmit={docChecklistForm.handleSubmit(onDocChecklistSubmit)}>
+                    <CardContent className="space-y-6">
+                      <FormField
+                        control={docChecklistForm.control}
+                        name="userName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="flex items-center"><User className="mr-2 h-4 w-4 text-accent"/>Full Name</FormLabel>
+                            <FormControl><Input placeholder="e.g., Jane Doe" {...field} /></FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={docChecklistForm.control}
+                        name="educationLevel"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Your Current/Recent Education Level</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl><SelectTrigger><SelectValue placeholder="Select your education level" /></SelectTrigger></FormControl>
+                              <SelectContent>
+                                <SelectItem value="High School Diploma or Equivalent (e.g., +2, A-Levels)">High School Diploma or Equivalent (e.g., +2, A-Levels)</SelectItem>
+                                <SelectItem value="Associate Degree">Associate Degree</SelectItem>
+                                <SelectItem value="Bachelor's Degree">Bachelor's Degree</SelectItem>
+                                <SelectItem value="Master's Degree">Master's Degree</SelectItem>
+                                <SelectItem value="Doctorate (PhD)">Doctorate (PhD)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={docChecklistForm.control}
+                        name="desiredCountry"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Desired Country for Study</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl><SelectTrigger><SelectValue placeholder="Select a country" /></SelectTrigger></FormControl>
+                              <SelectContent>
+                                {selectableCountries.map(country => (
+                                  <SelectItem key={country.value} value={country.value}>{country.name}</SelectItem>
+                                ))}
+                                <SelectItem value="Canada">Canada</SelectItem>
+                                <SelectItem value="Germany">Germany</SelectItem>
+                                <SelectItem value="Japan">Japan</SelectItem>
+                                <SelectItem value="Other">Other (Specify if AI allows)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </CardContent>
+                    <CardFooter>
+                      <Button type="submit" disabled={isDocChecklistLoading} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+                        {isDocChecklistLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                        Generate Checklist
+                      </Button>
+                    </CardFooter>
+                  </form>
+                </Form>
+              </Card>
+              
+              {showDocChecklistResultsArea && (
+                <div className={cn(
+                    "w-full md:col-span-1 space-y-6",
+                    "transition-all duration-700 ease-out",
+                    docChecklistResultsAnimatedIn ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"
+                )}>
+                  <Alert className="bg-secondary/50 border-secondary">
+                    <Info className="h-5 w-5 text-primary" />
+                    <AlertTitle className="font-semibold text-primary">Important Disclaimer</AlertTitle>
+                    <AlertDescription className="text-foreground/80">
+                      The checklist provided here includes commonly required documents. Additional documents may be necessary based on your specific academic profile, chosen institution, and personal circumstances. For a comprehensive and personalized document list, we highly recommend visiting our office or contacting us directly.
+                    </AlertDescription>
                   </Alert>
-                )}
-                {englishTestResult && !isEnglishTestLoading && (
-                  <div className="space-y-6">
+
+                  {isDocChecklistLoading && (
+                    <Card className="shadow-xl bg-card">
+                      <CardContent className="p-10 text-center">
+                        <Loader2 className="h-12 w-12 text-primary animate-spin mx-auto mb-4" />
+                        <p className="text-muted-foreground">Generating your checklist...</p>
+                      </CardContent>
+                    </Card>
+                  )}
+                  {docChecklistError && !isDocChecklistLoading && (
+                    <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertTitle>Error</AlertTitle>
+                      <AlertDescription>{docChecklistError}</AlertDescription>
+                    </Alert>
+                  )}
+                  {docChecklistResult && !isDocChecklistLoading && (
                     <Card className="shadow-xl bg-gradient-to-br from-accent/10 to-background">
-                      <CardHeader>
-                        <CardTitle className="font-headline text-accent flex items-center"><Sparkles className="mr-2 h-6 w-6" /> Your Personalized Recommendation</CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
+                      <CardHeader className="flex flex-row justify-between items-center">
                         <div>
-                          <h3 className="font-semibold text-lg text-primary">Recommended Test:</h3>
-                          <p className="text-foreground/90 text-xl font-medium">{englishTestResult.testRecommendation}</p>
+                          <CardTitle className="font-headline text-accent flex items-center"><FileText className="mr-2 h-6 w-6" /> Document Checklist for {docChecklistForm.getValues('userName')}</CardTitle>
+                          <CardDescription>For {docChecklistForm.getValues('educationLevel')} to {docChecklistForm.getValues('desiredCountry')}</CardDescription>
                         </div>
-                        {englishTestResult.badges && englishTestResult.badges.length > 0 && (
-                          <div className="flex flex-wrap gap-2">
-                            {englishTestResult.badges.map((badge, index) => (
-                              <Badge key={index} variant="secondary" className="text-sm">
-                                <CheckCircleIcon className="mr-1.5 h-4 w-4 text-green-500" />
-                                {badge}
-                              </Badge>
-                            ))}
+                        <Button onClick={handleDownloadPdf} variant="outline" size="sm" className="ml-auto">
+                          <Download className="mr-2 h-4 w-4" /> Download PDF
+                        </Button>
+                      </CardHeader>
+                      <CardContent className="space-y-6">
+                        <Alert>
+                          <Info className="h-4 w-4" />
+                          <AlertTitle>PDF Generation Note</AlertTitle>
+                          <AlertDescription>
+                            Nepali names for documents are shown below for web view but will be excluded from the PDF. Other Nepali text in descriptions (if any) might not render correctly in the PDF due to font limitations. Ensure your logo is at `public/logo.png` for the PDF watermark.
+                          </AlertDescription>
+                        </Alert>
+                        <div className="overflow-x-auto">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead className="w-[30%]">English Name</TableHead>
+                                <TableHead className="w-[30%]">Nepali Name (नेपाली नाम)</TableHead>
+                                <TableHead>Description</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {docChecklistResult.checklist && docChecklistResult.checklist.length > 0 ? (
+                                docChecklistResult.checklist.map((item, index) => (
+                                  <TableRow key={index}>
+                                    <TableCell className="font-medium">{item.englishName}</TableCell>
+                                    <TableCell>{item.nepaliName}</TableCell>
+                                    <TableCell className="text-sm text-foreground/80">{item.description}</TableCell>
+                                  </TableRow>
+                                ))
+                              ) : (
+                                <TableRow>
+                                  <TableCell colSpan={3} className="text-center text-muted-foreground">No specific documents found for your criteria. This might be an error or a very unique case.</TableCell>
+                                </TableRow>
+                              )}
+                            </TableBody>
+                          </Table>
+                        </div>
+                        {docChecklistResult.notes && (
+                          <div className="mt-6 p-4 border-t border-border">
+                            <h4 className="font-semibold text-lg text-primary mb-2">Important Notes & Advice:</h4>
+                            <p className="text-foreground/90 whitespace-pre-line text-sm">{docChecklistResult.notes}</p>
                           </div>
                         )}
-                        <div>
-                          <h3 className="font-semibold text-lg text-primary">Reasoning:</h3>
-                          <p className="text-foreground/90 whitespace-pre-line">{englishTestResult.reasoning}</p>
-                        </div>
-                        <div className="pt-4 text-center">
-                            <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
-                                <Link href="/contact">
-                                    <MessageSquare className="mr-2 h-5 w-5" /> Want help preparing or booking your test? Talk to our experts!
-                                </Link>
-                            </Button>
-                        </div>
                       </CardContent>
                     </Card>
-
-                    <Card className="shadow-xl bg-card">
-                      <CardHeader>
-                          <CardTitle className="font-headline text-primary flex items-center"><HelpCircle className="mr-2 h-6 w-6" /> Compare Test Types</CardTitle>
-                          <CardDescription>General comparison of popular English proficiency tests.</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                          <div className="overflow-x-auto">
-                              <Table>
-                                  <TableHeader>
-                                      <TableRow>
-                                          <TableHead>Test Name</TableHead>
-                                          <TableHead>Typical Cost</TableHead>
-                                          <TableHead>Duration</TableHead>
-                                          <TableHead>Acceptance</TableHead>
-                                          <TableHead>Format</TableHead>
-                                          <TableHead>Result Time</TableHead>
-                                          <TableHead>Key Features</TableHead>
-                                      </TableRow>
-                                  </TableHeader>
-                                  <TableBody>
-                                      {testComparisonData.map((test) => (
-                                          <TableRow key={test.name}>
-                                              <TableCell className="font-medium">{test.name}</TableCell>
-                                              <TableCell>{test.cost}</TableCell>
-                                              <TableCell>{test.typicalDuration}</TableCell>
-                                              <TableCell>{test.acceptance}</TableCell>
-                                              <TableCell>{test.format}</TableCell>
-                                              <TableCell>{test.resultTime}</TableCell>
-                                              <TableCell className="text-xs">{test.keyFeatures.join(', ')}</TableCell>
-                                          </TableRow>
-                                      ))}
-                                  </TableBody>
-                              </Table>
-                          </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="document-checklist">
-          <div className={cn(
-              "w-full",
-              showDocChecklistResultsArea ? "grid grid-cols-1 md:grid-cols-2 gap-8 items-start" : "flex flex-col items-center"
-          )}>
-            <Card className={cn(
-                "shadow-xl bg-card w-full",
-                showDocChecklistResultsArea ? "md:col-span-1" : "max-w-2xl"
-            )}>
-              <CardHeader>
-                <CardTitle className="font-headline text-primary flex items-center"><ListChecks className="mr-2 h-6 w-6" />Generate Your Document Checklist</CardTitle>
-                <CardDescription>Provide your details to receive a tailored document list.</CardDescription>
-              </CardHeader>
-              <Form {...docChecklistForm}>
-                <form onSubmit={docChecklistForm.handleSubmit(onDocChecklistSubmit)}>
-                  <CardContent className="space-y-6">
-                    <FormField
-                      control={docChecklistForm.control}
-                      name="userName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="flex items-center"><User className="mr-2 h-4 w-4 text-accent"/>Full Name</FormLabel>
-                          <FormControl><Input placeholder="e.g., Jane Doe" {...field} /></FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={docChecklistForm.control}
-                      name="educationLevel"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Your Current/Recent Education Level</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl><SelectTrigger><SelectValue placeholder="Select your education level" /></SelectTrigger></FormControl>
-                            <SelectContent>
-                              <SelectItem value="High School Diploma or Equivalent (e.g., +2, A-Levels)">High School Diploma or Equivalent (e.g., +2, A-Levels)</SelectItem>
-                              <SelectItem value="Associate Degree">Associate Degree</SelectItem>
-                              <SelectItem value="Bachelor's Degree">Bachelor's Degree</SelectItem>
-                              <SelectItem value="Master's Degree">Master's Degree</SelectItem>
-                              <SelectItem value="Doctorate (PhD)">Doctorate (PhD)</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={docChecklistForm.control}
-                      name="desiredCountry"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Desired Country for Study</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl><SelectTrigger><SelectValue placeholder="Select a country" /></SelectTrigger></FormControl>
-                            <SelectContent>
-                              {selectableCountries.map(country => (
-                                <SelectItem key={country.value} value={country.value}>{country.name}</SelectItem>
-                              ))}
-                              <SelectItem value="Canada">Canada</SelectItem>
-                              <SelectItem value="Germany">Germany</SelectItem>
-                              <SelectItem value="Japan">Japan</SelectItem>
-                              <SelectItem value="Other">Other (Specify if AI allows)</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </CardContent>
-                  <CardFooter>
-                    <Button type="submit" disabled={isDocChecklistLoading} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-                      {isDocChecklistLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                      Generate Checklist
-                    </Button>
-                  </CardFooter>
-                </form>
-              </Form>
-            </Card>
-            
-            {showDocChecklistResultsArea && (
-              <div className={cn(
-                  "w-full md:col-span-1 space-y-6",
-                  "transition-all duration-700 ease-out",
-                  docChecklistResultsAnimatedIn ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"
-              )}>
-                <Alert className="bg-secondary/50 border-secondary">
-                  <Info className="h-5 w-5 text-primary" />
-                  <AlertTitle className="font-semibold text-primary">Important Disclaimer</AlertTitle>
-                  <AlertDescription className="text-foreground/80">
-                    The checklist provided here includes commonly required documents. Additional documents may be necessary based on your specific academic profile, chosen institution, and personal circumstances. For a comprehensive and personalized document list, we highly recommend visiting our office or contacting us directly.
-                  </AlertDescription>
-                </Alert>
-
-                {isDocChecklistLoading && (
-                  <Card className="shadow-xl bg-card">
-                    <CardContent className="p-10 text-center">
-                      <Loader2 className="h-12 w-12 text-primary animate-spin mx-auto mb-4" />
-                      <p className="text-muted-foreground">Generating your checklist...</p>
-                    </CardContent>
-                  </Card>
-                )}
-                {docChecklistError && !isDocChecklistLoading && (
-                  <Alert variant="destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Error</AlertTitle>
-                    <AlertDescription>{docChecklistError}</AlertDescription>
-                  </Alert>
-                )}
-                {docChecklistResult && !isDocChecklistLoading && (
-                  <Card className="shadow-xl bg-gradient-to-br from-accent/10 to-background">
-                    <CardHeader className="flex flex-row justify-between items-center">
-                      <div>
-                        <CardTitle className="font-headline text-accent flex items-center"><FileText className="mr-2 h-6 w-6" /> Document Checklist for {docChecklistForm.getValues('userName')}</CardTitle>
-                        <CardDescription>For {docChecklistForm.getValues('educationLevel')} to {docChecklistForm.getValues('desiredCountry')}</CardDescription>
-                      </div>
-                      <Button onClick={handleDownloadPdf} variant="outline" size="sm" className="ml-auto">
-                        <Download className="mr-2 h-4 w-4" /> Download PDF
-                      </Button>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                      <Alert>
-                        <Info className="h-4 w-4" />
-                        <AlertTitle>PDF Generation Note</AlertTitle>
-                        <AlertDescription>
-                          Nepali names for documents are shown below for web view but will be excluded from the PDF. Other Nepali text in descriptions (if any) might not render correctly in the PDF due to font limitations. Ensure your logo is at `public/logo.png` for the PDF watermark.
-                        </AlertDescription>
-                      </Alert>
-                      <div className="overflow-x-auto">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead className="w-[30%]">English Name</TableHead>
-                              <TableHead className="w-[30%]">Nepali Name (नेपाली नाम)</TableHead>
-                              <TableHead>Description</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {docChecklistResult.checklist && docChecklistResult.checklist.length > 0 ? (
-                              docChecklistResult.checklist.map((item, index) => (
-                                <TableRow key={index}>
-                                  <TableCell className="font-medium">{item.englishName}</TableCell>
-                                  <TableCell>{item.nepaliName}</TableCell>
-                                  <TableCell className="text-sm text-foreground/80">{item.description}</TableCell>
-                                </TableRow>
-                              ))
-                            ) : (
-                              <TableRow>
-                                <TableCell colSpan={3} className="text-center text-muted-foreground">No specific documents found for your criteria. This might be an error or a very unique case.</TableCell>
-                              </TableRow>
-                            )}
-                          </TableBody>
-                        </Table>
-                      </div>
-                      {docChecklistResult.notes && (
-                        <div className="mt-6 p-4 border-t border-border">
-                          <h4 className="font-semibold text-lg text-primary mb-2">Important Notes & Advice:</h4>
-                          <p className="text-foreground/90 whitespace-pre-line text-sm">{docChecklistResult.notes}</p>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
-            )}
-          </div>
-        </TabsContent>
-      </Tabs>
+                  )}
+                </div>
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 }

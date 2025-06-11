@@ -1,3 +1,5 @@
+
+'use client';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import SectionTitle from '@/components/ui/section-title';
@@ -7,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { ExternalLink } from 'lucide-react';
 import { countryData } from '@/lib/data';
 import type { CountryInfo, University } from '@/lib/data';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { cn } from '@/lib/utils';
 
 interface CountryPageProps {
   params: {
@@ -14,14 +18,20 @@ interface CountryPageProps {
   };
 }
 
-export async function generateStaticParams() {
-  return countryData.map((country) => ({
-    country: country.slug,
-  }));
-}
+// export async function generateStaticParams() { // Needs to be client component for hooks
+//   return countryData.map((country) => ({
+//     country: country.slug,
+//   }));
+// }
 
 export default function CountryPage({ params }: CountryPageProps) {
   const countryInfo = countryData.find((c) => c.slug === params.country);
+
+  const [headerRef, isHeaderVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.05, initialVisible: true });
+  const [whySectionRef, isWhySectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.1 });
+  const [universitiesSectionRef, isUniversitiesSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.1 });
+  const [ctaSectionRef, isCtaSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.1 });
+
 
   if (!countryInfo) {
     notFound();
@@ -29,7 +39,13 @@ export default function CountryPage({ params }: CountryPageProps) {
 
   return (
     <div className="space-y-12 md:space-y-16">
-      <header className="relative h-[300px] md:h-[400px] rounded-lg overflow-hidden shadow-xl">
+      <header 
+        ref={headerRef}
+        className={cn(
+          "relative h-[300px] md:h-[400px] rounded-lg overflow-hidden shadow-xl transition-all duration-700 ease-out",
+          isHeaderVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+        )}
+      >
         <Image
           src={countryInfo.imageUrl}
           alt={`Studying in ${countryInfo.name}`}
@@ -45,27 +61,44 @@ export default function CountryPage({ params }: CountryPageProps) {
         </div>
       </header>
 
-      <section>
+      <section 
+        ref={whySectionRef}
+        className={cn(
+          "transition-all duration-700 ease-out",
+          isWhySectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+        )}
+      >
         <SectionTitle title={`Why ${countryInfo.name}?`} />
         <p className="text-lg text-foreground/80 max-w-3xl mx-auto text-center mb-12">
           {countryInfo.description}
         </p>
         <div className="grid md:grid-cols-3 gap-6">
-          {countryInfo.facts.map((fact) => (
-            <Card key={fact.label} className="bg-card shadow-lg">
-              <CardContent className="p-6 flex items-center space-x-4">
-                <fact.icon className="h-10 w-10 text-primary flex-shrink-0" />
-                <div>
-                  <p className="font-semibold text-primary">{fact.label}</p>
-                  <p className="text-foreground/70">{fact.value}</p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          {countryInfo.facts.map((fact, index) => {
+             const [factCardRef, isFactCardVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.2 });
+            return (
+            <div key={fact.label} ref={factCardRef} className={cn("transition-all duration-500 ease-out", isFactCardVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")} style={{transitionDelay: `${index * 100}ms`}}>
+              <Card className="bg-card shadow-lg h-full">
+                <CardContent className="p-6 flex items-center space-x-4">
+                  <fact.icon className="h-10 w-10 text-primary flex-shrink-0" />
+                  <div>
+                    <p className="font-semibold text-primary">{fact.label}</p>
+                    <p className="text-foreground/70">{fact.value}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            );
+          })}
         </div>
       </section>
 
-      <section className="bg-secondary/50 py-16 rounded-lg shadow-inner">
+      <section 
+        ref={universitiesSectionRef}
+        className={cn(
+          "bg-secondary/50 py-16 rounded-lg shadow-inner transition-all duration-700 ease-out",
+          isUniversitiesSectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+        )}
+      >
          <div className="container mx-auto px-4">
             <SectionTitle title={`Top Universities in ${countryInfo.name}`} />
             <Card className="shadow-xl bg-card">
@@ -103,7 +136,13 @@ export default function CountryPage({ params }: CountryPageProps) {
         </div>
       </section>
 
-      <section className="text-center">
+      <section 
+        ref={ctaSectionRef}
+        className={cn(
+          "text-center transition-all duration-700 ease-out",
+          isCtaSectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+        )}
+      >
         <SectionTitle title="Ready to Explore?" subtitle={`Find out more about your study options in ${countryInfo.name}.`} />
         <a href="/contact">
             <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
