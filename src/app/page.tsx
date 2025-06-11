@@ -173,8 +173,8 @@ export default function HomePage() {
   return (
     <div className="space-y-16 md:space-y-24">
       {/* Hero Section */}
-      <section className="relative py-20 md:py-32 bg-gradient-to-br from-primary to-accent/80 rounded-lg shadow-xl overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
+ <section className="relative py-20 md:py-32 rounded-lg shadow-xl overflow-hidden" style={{ backgroundImage: 'url("/main.jpg")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+ <div className="absolute inset-0 bg-black opacity-70">
             {/* Placeholder for a subtle background pattern if desired e.g. <SvgHeroPattern /> */}
         </div>
         <div className="container mx-auto px-4 text-center relative z-10">

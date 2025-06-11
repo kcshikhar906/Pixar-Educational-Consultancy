@@ -30,7 +30,7 @@ export default function AboutPage() {
         <div className="grid md:grid-cols-2 gap-10 items-center">
           <div className="relative aspect-[4/3] rounded-lg shadow-xl overflow-hidden">
             <Image 
-              src="https://placehold.co/600x450.png" 
+              src="/pixar.webp" 
               alt="Pixar Educational Consultancy Office or Team" 
               layout="fill"
               objectFit="cover"

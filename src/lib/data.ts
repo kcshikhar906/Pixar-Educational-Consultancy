@@ -51,7 +51,7 @@ export const services: Service[] = [
     description: 'Comprehensive support for all your application paperwork.',
     longDescription: 'Navigating the complex documentation requirements for international university applications can be daunting. We provide meticulous assistance with preparing, organizing, and reviewing all necessary documents, including transcripts, recommendation letters, statements of purpose, and financial proofs. Our goal is to ensure your application is complete, accurate, and compelling.',
     icon: Briefcase,
-    imageUrl: 'https://placehold.co/600x400.png',
+    imageUrl: '/da.png',
     dataAiHint: 'documents application',
   },
   {
@@ -60,7 +60,7 @@ export const services: Service[] = [
     description: 'Tailored advice to match your academic goals and preferences.',
     longDescription: 'Every student is unique, with different aspirations and academic backgrounds. We offer personalized guidance sessions to understand your specific needs, help you choose the right courses and universities, and develop a strategic application plan. Our experienced counselors provide insights into various education systems and career pathways.',
     icon: Lightbulb,
-    imageUrl: 'https://placehold.co/600x400.png',
+    imageUrl: '/pg.jpg',
     dataAiHint: 'student guidance',
   },
   {
@@ -69,7 +69,7 @@ export const services: Service[] = [
     description: 'Expert help with visa applications and pre-departure preparations.',
     longDescription: 'Securing a student visa and preparing for life in a new country are crucial steps. We offer expert assistance with visa applications, including mock interviews and document checklists. Additionally, we provide comprehensive pre-departure briefings covering accommodation, cultural adaptation, and essential travel tips to ensure a smooth transition.',
     icon: Users,
-    imageUrl: 'https://placehold.co/600x400.png',
+    imageUrl: '/vsa.jpg',
     dataAiHint: 'travel preparation',
   },
 ];
@@ -86,10 +86,10 @@ export interface TeamMember {
 export const teamMembers: TeamMember[] = [
   {
     id: '1',
-    name: 'Dr. Emily Carter',
-    role: 'Founder & Chief Consultant',
+    name: 'Pradeep Khadka',
+    role: 'Founder & CEO',
     bio: 'With over 15 years of experience in international education, Dr. Carter is passionate about helping students achieve their academic dreams.',
-    imageUrl: 'https://placehold.co/300x300.png',
+    imageUrl: '/co.jpg',
     dataAiHint: 'professional woman',
   },
   {
