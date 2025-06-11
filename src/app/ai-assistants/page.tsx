@@ -30,7 +30,7 @@ import { Loader2, Sparkles, Info, FileText, Download, AlertCircle, BookOpenText,
 const englishTestFormSchema = z.object({
   currentLevel: z.string().min(1, "Please select your current English level."),
   timeline: z.string().min(1, "Please select your timeline."),
-  budget: z.string().min(1, "Please select your budget."),
+  budget: z.string().min(1, "Please select your budget in NPR."),
   purpose: z.string().min(1, "Please state the purpose for the test.").max(200, "Purpose too long"),
 });
 type EnglishTestAdvisorFormValues = z.infer<typeof englishTestFormSchema>;
@@ -51,10 +51,10 @@ const selectableCountries = [
 ];
 
 const testComparisonData = [
-  { name: "IELTS Academic", cost: "~$250 USD", typicalDuration: "2h 45m", acceptance: "Very High (Academia, Immigration globally)", format: "Paper or Computer", resultTime: "3-13 days", keyFeatures: ["Face-to-face speaking test option", "Widely available test centers"] },
-  { name: "TOEFL iBT", cost: "~$245 USD", typicalDuration: "~3 hours", acceptance: "Very High (Especially US Academia)", format: "Computer-based", resultTime: "4-8 days", keyFeatures: ["Strong academic focus", "Integrated tasks simulating university environment"] },
-  { name: "PTE Academic", cost: "~$220 USD", typicalDuration: "2 hours", acceptance: "High (Academia, Immigration in Australia, NZ, UK)", format: "Computer-based, AI scored", resultTime: "Typically 2-5 days", keyFeatures: ["Fast results", "Fully computer-scored including speaking"] },
-  { name: "Duolingo English Test", cost: "~$59 USD", typicalDuration: "~1 hour (including setup)", acceptance: "Growing (Many US universities, some others)", format: "Computer-adaptive, at-home", resultTime: "Within 2 days", keyFeatures: ["Affordable and accessible", "Can be taken online anytime"] }
+  { name: "IELTS Academic", cost: "~$250 USD / ~रु ३३,०००", typicalDuration: "2h 45m", acceptance: "Very High (Academia, Immigration globally)", format: "Paper or Computer", resultTime: "3-13 days", keyFeatures: ["Face-to-face speaking test option", "Widely available test centers"] },
+  { name: "TOEFL iBT", cost: "~$245 USD / ~रु ३२,५००", typicalDuration: "~3 hours", acceptance: "Very High (Especially US Academia)", format: "Computer-based", resultTime: "4-8 days", keyFeatures: ["Strong academic focus", "Integrated tasks simulating university environment"] },
+  { name: "PTE Academic", cost: "~$220 USD / ~रु २९,०००", typicalDuration: "2 hours", acceptance: "High (Academia, Immigration in Australia, NZ, UK)", format: "Computer-based, AI scored", resultTime: "Typically 2-5 days", keyFeatures: ["Fast results", "Fully computer-scored including speaking"] },
+  { name: "Duolingo English Test", cost: "~$59 USD / ~रु ७,८००", typicalDuration: "~1 hour (including setup)", acceptance: "Growing (Many US universities, some others)", format: "Computer-adaptive, at-home", resultTime: "Within 2 days", keyFeatures: ["Affordable and accessible", "Can be taken online anytime"] }
 ];
 
 
@@ -263,14 +263,14 @@ export default function AiAssistantsPage() {
                       name="budget"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Budget for the Test</FormLabel>
+                          <FormLabel>Budget for the Test (NPR)</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl><SelectTrigger><SelectValue placeholder="Select your budget" /></SelectTrigger></FormControl>
+                            <FormControl><SelectTrigger><SelectValue placeholder="Select your budget (रु)" /></SelectTrigger></FormControl>
                             <SelectContent>
-                              <SelectItem value="< $100">Less than $100</SelectItem>
-                              <SelectItem value="$100 - $200">$100 - $200</SelectItem>
-                              <SelectItem value="$200 - $300">$200 - $300</SelectItem>
-                              <SelectItem value="> $300">More than $300</SelectItem>
+                              <SelectItem value="< NPR 15000">Less than रु १५,०००</SelectItem>
+                              <SelectItem value="NPR 15000 - NPR 30000">रु १५,००० - रु ३०,०००</SelectItem>
+                              <SelectItem value="NPR 30000 - NPR 45000">रु ३०,००० - रु ४५,०००</SelectItem>
+                              <SelectItem value="> NPR 45000">More than रु ४५,०००</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -366,7 +366,7 @@ export default function AiAssistantsPage() {
                                   <TableHeader>
                                       <TableRow>
                                           <TableHead>Test Name</TableHead>
-                                          <TableHead>Typical Cost (USD)</TableHead>
+                                          <TableHead>Typical Cost</TableHead>
                                           <TableHead>Duration</TableHead>
                                           <TableHead>Acceptance</TableHead>
                                           <TableHead>Format</TableHead>
@@ -558,5 +558,7 @@ export default function AiAssistantsPage() {
     </div>
   );
 }
+
+    
 
     
