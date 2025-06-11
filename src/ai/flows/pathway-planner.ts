@@ -60,7 +60,8 @@ const pathwayPlannerPrompt = ai.definePrompt({
   prompt: `You are an expert educational consultant. A student is seeking university suggestions.
   Based on their desired country ('{{{country}}}'), field of study ('{{{fieldOfStudy}}}'), GPA ('{{{gpa}}}'), and target education level ('{{{targetEducationLevel}}}'), provide a list of university suggestions.
 
-  Consider the student's GPA ({{{gpa}}}) and their target education level ({{{targetEducationLevel}}}) when suggesting universities. Aim for institutions where a student with this academic standing might generally be competitive for programs at their desired level. However, still try to provide as many relevant universities as possible for the country and field. If the GPA is low, you might focus on universities with broader admission criteria or pathway programs, if appropriate for the field, country and target education level.
+  Consider the student's GPA ({{{gpa}}}) and their target education level ({{{targetEducationLevel}}}) when suggesting universities. Aim for institutions where a student with this academic standing might generally be competitive for programs at their desired level.
+  Please provide a DIVERSE range of suitable universities. While you can include well-known institutions, also make an effort to suggest other strong universities that might be excellent fits but perhaps less globally famous. The goal is to offer a broad spectrum of choices, not just the top 5-10 most internationally recognized names. Focus on relevance to the student's criteria.
 
   For each university, provide the following details:
   1.  'name': The official name of the university.
@@ -88,7 +89,7 @@ const pathwayPlannerPrompt = ai.definePrompt({
   12. 'englishTestRequirements': (Optional) CONCISE typical English proficiency test scores required (e.g., "IELTS: 6.5+", "TOEFL iBT: 90+").
 
   Only list universities located within the specified country. Ensure the website is a direct link to the university.
-  Provide a diverse list if possible, aiming for as many relevant suggestions as you can find for the given criteria.
+  Provide as many relevant suggestions as you can find for the given criteria.
 
   Desired Country: {{{country}}}
   Desired Field of Study: {{{fieldOfStudy}}}

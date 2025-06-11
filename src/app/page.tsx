@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import SectionTitle from '@/components/ui/section-title';
 import { ArrowRight, CheckCircle, Star, Loader2, Sparkles, MapPin, BookOpen, University as UniversityIconLucide, Info, Search, ExternalLink, Wand2, Briefcase, DollarSign, Award as AwardIconLucideComp, ClipboardCheck } from 'lucide-react';
-import { testimonials, services, fieldsOfStudy, gpaScaleOptions, educationLevelOptions } from '@/lib/data'; 
+import { testimonials, services, fieldsOfStudy, gpaScaleOptions, educationLevelOptions, AwardIcon, UniversityIcon } from '@/lib/data'; 
 import type { Testimonial, Service } from '@/lib/data';
 import { useState, useEffect, useMemo } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -19,7 +19,6 @@ import { pathwayPlanner, type PathwayPlannerInput, type PathwayPlannerOutput } f
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
-import { AwardIcon, UniversityIcon } from '@/lib/data';
 
 
 const pathwayFormSchema = z.object({
@@ -49,9 +48,6 @@ const selectableCountriesHomepage = [
   { name: 'Europe', value: 'Europe' },
 ];
 
-const tuitionCategories = ["All", "Affordable", "Mid-Range", "Premium", "Varies", "Unknown"];
-const scholarshipLevels = ["All", "High", "Medium", "Low", "None", "Varies", "Unknown"];
-
 
 export default function HomePage() {
   const [isLoadingPathway, setIsLoadingPathway] = useState(false);
@@ -64,11 +60,6 @@ export default function HomePage() {
 
   const [showResultsArea, setShowResultsArea] = useState(false);
   const [resultsContainerAnimatedIn, setResultsContainerAnimatedIn] = useState(false);
-
-  const [filterType, setFilterType] = useState<'all' | 'Public' | 'Private'>('all');
-  const [sortOrder, setSortOrder] = useState<string>('name_asc');
-  const [filterTuitionCategory, setFilterTuitionCategory] = useState<string>('All');
-  const [filterScholarshipLevel, setFilterScholarshipLevel] = useState<string>('All');
 
 
   useEffect(() => {
@@ -136,46 +127,11 @@ export default function HomePage() {
     }
   }
 
-  const tuitionCategoryOrder: Record<string, number> = { "Affordable": 1, "Mid-Range": 2, "Premium": 3, "Varies": 4, "Unknown": 5, "All": 0 };
-  const scholarshipLevelOrder: Record<string, number> = { "High": 1, "Medium": 2, "Low": 3, "None": 4, "Varies": 5, "Unknown": 6, "All": 0 };
-
-  const filteredAndSortedUniversities = useMemo(() => {
+  const universitySuggestions = useMemo(() => {
     if (!pathwayResult?.universitySuggestions) return [];
-
-    let universities = [...pathwayResult.universitySuggestions];
-
-    if (filterType !== 'all') {
-      universities = universities.filter(uni => uni.type === filterType);
-    }
-    if (filterTuitionCategory !== 'All') {
-      universities = universities.filter(uni => uni.tuitionCategory === filterTuitionCategory);
-    }
-    if (filterScholarshipLevel !== 'All') {
-      universities = universities.filter(uni => uni.scholarshipLevel === filterScholarshipLevel);
-    }
-    
-    switch (sortOrder) {
-      case 'name_asc':
-        universities.sort((a, b) => a.name.localeCompare(b.name));
-        break;
-      case 'name_desc':
-        universities.sort((a, b) => b.name.localeCompare(a.name));
-        break;
-      case 'tuition_asc':
-        universities.sort((a, b) => (tuitionCategoryOrder[a.tuitionCategory] || 99) - (tuitionCategoryOrder[b.tuitionCategory] || 99));
-        break;
-      case 'tuition_desc':
-        universities.sort((a, b) => (tuitionCategoryOrder[b.tuitionCategory] || 99) - (tuitionCategoryOrder[a.tuitionCategory] || 99));
-        break;
-      case 'scholarship_asc': 
-        universities.sort((a, b) => (scholarshipLevelOrder[a.scholarshipLevel] || 99) - (scholarshipLevelOrder[b.scholarshipLevel] || 99));
-        break;
-      case 'scholarship_desc': 
-        universities.sort((a, b) => (scholarshipLevelOrder[b.scholarshipLevel] || 99) - (scholarshipLevelOrder[a.scholarshipLevel] || 99));
-        break;
-    }
-    return universities;
-  }, [pathwayResult, filterType, sortOrder, filterTuitionCategory, filterScholarshipLevel]);
+    // Return all suggestions directly as sorting/filtering is removed
+    return pathwayResult.universitySuggestions;
+  }, [pathwayResult]);
   
   const renderPathwayForm = () => (
     <Card className={cn("shadow-xl bg-card w-full", !showResultsArea ? "md:max-w-3xl mx-auto" : "")}>
@@ -363,45 +319,12 @@ export default function HomePage() {
                         For {pathwayForm.getValues('country')} - {pathwayForm.getValues('fieldOfStudy')} (GPA: {pathwayForm.getValues('gpa')}, Level: {pathwayForm.getValues('targetEducationLevel')}).
                         {pathwayResult.searchSummary && <span className="block mt-1 text-xs italic">{pathwayResult.searchSummary}</span>}
                     </CardDescription>
-                     <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 items-end">
-                        <div>
-                            <Label htmlFor="filterType" className="text-xs text-muted-foreground">Filter by Type</Label>
-                            <Select value={filterType} onValueChange={(value) => setFilterType(value as 'all' | 'Public' | 'Private')}>
-                                <SelectTrigger id="filterType" className="h-9"><SelectValue /></SelectTrigger>
-                                <SelectContent><SelectItem value="all">All Types</SelectItem><SelectItem value="Public">Public</SelectItem><SelectItem value="Private">Private</SelectItem></SelectContent>
-                            </Select>
-                        </div>
-                        <div>
-                            <Label htmlFor="filterTuition" className="text-xs text-muted-foreground">Tuition</Label>
-                            <Select value={filterTuitionCategory} onValueChange={setFilterTuitionCategory}>
-                                <SelectTrigger id="filterTuition" className="h-9"><SelectValue /></SelectTrigger>
-                                <SelectContent>{tuitionCategories.map(tc => <SelectItem key={tc} value={tc}>{tc === "All" ? "All Tuitions" : tc}</SelectItem>)}</SelectContent>
-                            </Select>
-                        </div>
-                        <div>
-                            <Label htmlFor="filterScholarship" className="text-xs text-muted-foreground">Scholarship</Label>
-                            <Select value={filterScholarshipLevel} onValueChange={setFilterScholarshipLevel}>
-                                <SelectTrigger id="filterScholarship" className="h-9"><SelectValue /></SelectTrigger>
-                                <SelectContent>{scholarshipLevels.map(sl => <SelectItem key={sl} value={sl}>{sl === "All" ? "All Levels" : sl}</SelectItem>)}</SelectContent>
-                            </Select>
-                        </div>
-                        <div>
-                            <Label htmlFor="sortOrder" className="text-xs text-muted-foreground">Sort By</Label>
-                            <Select value={sortOrder} onValueChange={setSortOrder}>
-                                <SelectTrigger id="sortOrder" className="h-9"><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="name_asc">Name (A-Z)</SelectItem><SelectItem value="name_desc">Name (Z-A)</SelectItem>
-                                    <SelectItem value="tuition_asc">Tuition (Affordable First)</SelectItem><SelectItem value="tuition_desc">Tuition (Premium First)</SelectItem>
-                                    <SelectItem value="scholarship_asc">Scholarship (High First)</SelectItem><SelectItem value="scholarship_desc">Scholarship (None First)</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
+                    {/* Removed filtering and sorting controls */}
                     </CardHeader>
                     <CardContent className="flex-grow overflow-y-auto space-y-4 max-h-96 md:max-h-[450px] p-6">
-                    {filteredAndSortedUniversities.length > 0 ? (
+                    {universitySuggestions.length > 0 ? (
                         <ul className="space-y-4">
-                        {filteredAndSortedUniversities.map((uni: UniversitySuggestion, index: number) => (
+                        {universitySuggestions.map((uni: UniversitySuggestion, index: number) => (
                             <li key={index} className="p-4 border rounded-lg bg-background/50 hover:shadow-md transition-shadow">
                                 <div className="flex flex-col sm:flex-row gap-4">
                                     <Image src={`https://placehold.co/100x60.png?text=${encodeURIComponent(uni.name.substring(0,3))}`} alt={`${uni.name} logo placeholder`} width={100} height={60} className="rounded object-cover self-start" data-ai-hint={uni.logoDataAiHint || 'university building'} />
@@ -450,7 +373,7 @@ export default function HomePage() {
                         ))}
                         </ul>
                     ) : (
-                        <p className="text-foreground/70 text-center py-8">No university suggestions match your current filters. Try adjusting them or broaden your search!</p>
+                        <p className="text-foreground/70 text-center py-8">No university suggestions match your current query. Please try different criteria.</p>
                     )}
                     </CardContent>
                 </Card>
