@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Image from 'next/image';
@@ -109,14 +110,14 @@ export default function HomePage() {
   async function onPathwaySubmit(values: PathwayFormValues) {
     setPathwayResult(null);
     setPathwayError(null);
-    setIsLoadingPathway(true);
-
+    
     if (!showResultsArea) {
         setShowResultsArea(true);
         requestAnimationFrame(() => {
             setResultsContainerAnimatedIn(true);
         });
     }
+    setIsLoadingPathway(true);
     
     try {
       const aiInput: PathwayPlannerInput = {
@@ -235,20 +236,20 @@ export default function HomePage() {
         )}>
           <div className={cn( 
             "w-full", 
-            showResultsArea ? "md:col-span-1" : "md:col-span-3" 
+            showResultsArea ? "md:col-span-1" : "md:col-span-3 md:max-w-none" // Changed from md:col-span-3 to md:max-w-none for full width initial form
            )}>
             <Form {...pathwayForm}>
               {!showResultsArea ? (
                 // Initial Single-Row Form Layout
                 <form
                   onSubmit={pathwayForm.handleSubmit(onPathwaySubmit)}
-                  className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 items-end p-6 bg-card rounded-lg shadow-xl w-full"
+                  className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end p-6 bg-card rounded-lg shadow-xl w-full"
                 >
                   <FormField
                     control={pathwayForm.control}
                     name="country"
                     render={({ field }) => (
-                      <FormItem className="min-w-[180px]">
+                      <FormItem className="min-w-[180px] md:col-span-1">
                         <FormLabel className="flex items-center"><MapPin className="mr-2 h-4 w-4 text-accent"/>Country</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl><SelectTrigger><SelectValue placeholder="Select a country" /></SelectTrigger></FormControl>
@@ -266,7 +267,7 @@ export default function HomePage() {
                     control={pathwayForm.control}
                     name="fieldOfStudy"
                     render={({ field }) => (
-                      <FormItem className="min-w-[180px]">
+                      <FormItem className="min-w-[180px] md:col-span-1">
                         <FormLabel className="flex items-center"><BookOpen className="mr-2 h-4 w-4 text-accent"/>Field of Study</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl><SelectTrigger><SelectValue placeholder="Select a field" /></SelectTrigger></FormControl>
@@ -284,7 +285,7 @@ export default function HomePage() {
                     control={pathwayForm.control}
                     name="gpa"
                     render={({ field }) => (
-                      <FormItem className="min-w-[180px]">
+                      <FormItem className="min-w-[180px] md:col-span-1">
                         <FormLabel className="flex items-center"><AwardIcon className="mr-2 h-4 w-4 text-accent"/>GPA / Academic Standing</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl><SelectTrigger><SelectValue placeholder="Select GPA" /></SelectTrigger></FormControl>
@@ -298,7 +299,7 @@ export default function HomePage() {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" disabled={isLoadingPathway} className="h-10 w-full lg:mt-auto bg-primary text-primary-foreground">
+                  <Button type="submit" disabled={isLoadingPathway} className="h-10 w-full md:col-span-1 md:mt-auto bg-primary text-primary-foreground">
                     {isLoadingPathway ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                     Get Suggestions
                   </Button>
@@ -444,13 +445,13 @@ export default function HomePage() {
                         </div>
                     </div>
                     </CardHeader>
-                    <CardContent className="flex-grow overflow-y-auto space-y-4 max-h-96 md:max-h-[calc(550px-180px)] p-6">
+                    <CardContent className="flex-grow overflow-y-auto space-y-4 max-h-96 md:max-h-[450px] p-6">
                     {filteredAndSortedUniversities.length > 0 ? (
                         <ul className="space-y-4">
                         {filteredAndSortedUniversities.map((uni: UniversitySuggestion, index: number) => (
                             <li key={index} className="p-4 border rounded-lg bg-background/50 hover:shadow-md transition-shadow">
                                 <div className="flex flex-col sm:flex-row gap-4">
-                                    <Image src={`https://placehold.co/100x60.png?text=${uni.name.substring(0,3)}`} alt={`${uni.name} logo placeholder`} width={100} height={60} className="rounded object-cover self-start" data-ai-hint={uni.logoDataAiHint || 'university building'} />
+                                    <Image src={`https://placehold.co/100x60.png?text=${encodeURIComponent(uni.name.substring(0,3))}`} alt={`${uni.name} logo placeholder`} width={100} height={60} className="rounded object-cover self-start" data-ai-hint={uni.logoDataAiHint || 'university building'} />
                                     <div className="flex-1">
                                         <h4 className="font-semibold text-primary flex items-center text-lg mb-1">
                                             <UniversityIcon className="mr-2 h-5 w-5 text-accent flex-shrink-0" />
@@ -582,4 +583,5 @@ export default function HomePage() {
     </div>
   );
 }
+
 
