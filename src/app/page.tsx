@@ -141,7 +141,6 @@ export default function HomePage() {
   const renderPathwayForm = () => (
      <Card className={cn(
         "shadow-xl bg-card w-full",
-         !showResultsArea ? "" : ""
      )}>
       <CardHeader>
         <CardTitle className="font-headline text-primary flex items-center">
@@ -307,7 +306,7 @@ export default function HomePage() {
         )}>
           <div className={cn(
             "w-full", 
-            showResultsArea ? "md:col-span-1" : (!showResultsArea ? "" : "")
+            !showResultsArea ? "" : "md:col-span-1" 
            )}>
             {renderPathwayForm()}
           </div>
@@ -316,7 +315,7 @@ export default function HomePage() {
             <div className={cn(
                 "md:col-span-2 flex flex-col min-h-[300px]", 
                 "transition-all duration-700 ease-out",
-                resultsContainerAnimatedIn ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"
+                resultsContainerAnimatedIn ? "opacity-100" : "opacity-0 pointer-events-none" 
             )}>
                 {isLoadingPathway && (
                 <Card className="shadow-xl bg-card flex flex-col items-center justify-center flex-grow min-h-[200px] p-6">
@@ -524,3 +523,5 @@ export default function HomePage() {
     </div>
   );
 }
+
+    
