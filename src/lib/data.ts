@@ -1,5 +1,5 @@
 
-import { Award, Briefcase, Lightbulb, Users, MapPin, Landmark, TrendingUp, Globe, CalendarPlus, FileText, BookOpen, University as UniversityIcon, CheckCircle, Building, Heart, Handshake, Goal, MessageSquare, Search, Wand2, ExternalLink, Home, Info } from 'lucide-react';
+import { Award, Briefcase, Lightbulb, Users, MapPin, Landmark, TrendingUp, Globe, CalendarPlus, FileText, BookOpen, University as UniversityIcon, CheckCircle, Building, Heart, Handshake, Goal, MessageSquare, Search, Wand2, ExternalLink, Home, Info, Award as AwardIcon } from 'lucide-react';
 import type { ReactElement } from 'react';
 
 export interface Testimonial {
@@ -375,6 +375,17 @@ export const appointmentTimeSlots = [
   '04:30 PM - 05:00 PM',
 ];
 
+export const gpaScaleOptions = [
+  { value: "4.0", label: "4.0 (or equivalent)" },
+  { value: "3.7-3.9", label: "3.7 - 3.9 (or equivalent)" },
+  { value: "3.3-3.6", label: "3.3 - 3.6 (or equivalent)" },
+  { value: "3.0-3.2", label: "3.0 - 3.2 (or equivalent)" },
+  { value: "2.5-2.9", label: "2.5 - 2.9 (or equivalent)" },
+  { value: "Below 2.5", label: "Below 2.5 (or equivalent)" },
+  { value: "N/A", label: "Not Applicable / Varies" },
+];
+
+
 // Consolidating all icon exports from lucide-react that are used across the app
 export {
   Award,
@@ -399,7 +410,8 @@ export {
   Wand2,
   ExternalLink,
   Home,
-  Info
+  Info,
+  AwardIcon,
 };
 
     

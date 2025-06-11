@@ -6,8 +6,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import SectionTitle from '@/components/ui/section-title';
-import { ArrowRight, CheckCircle, Star, Loader2, Sparkles, MapPin, BookOpen, University as UniversityIcon, Info, Search, ExternalLink, Wand2, Briefcase, DollarSign, AwardIcon } from 'lucide-react';
-import { testimonials, services, fieldsOfStudy } from '@/lib/data';
+import { ArrowRight, CheckCircle, Star, Loader2, Sparkles, MapPin, BookOpen, University as UniversityIcon, Info, Search, ExternalLink, Wand2, Briefcase, DollarSign, Award as AwardIconLucide } from 'lucide-react'; // Renamed AwardIcon to AwardIconLucide
+import { testimonials, services, fieldsOfStudy, gpaScaleOptions } from '@/lib/data'; // Added gpaScaleOptions
 import type { Testimonial, Service } from '@/lib/data';
 import { useState, useEffect, useMemo } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -19,11 +19,13 @@ import { pathwayPlanner, type PathwayPlannerInput, type PathwayPlannerOutput } f
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
+import { AwardIcon } from '@/lib/data'; // Using AwardIcon from lib/data which is already used for other academic related icons
 
 
 const pathwayFormSchema = z.object({
   country: z.string().min(1, "Please select a country."),
   fieldOfStudy: z.string().min(1, "Please select a field of study."),
+  gpa: z.string().min(1, "Please select your GPA."),
 });
 
 type PathwayFormValues = z.infer<typeof pathwayFormSchema>;
@@ -100,6 +102,7 @@ export default function HomePage() {
     defaultValues: {
       country: '',
       fieldOfStudy: '',
+      gpa: '',
     },
   });
 
@@ -116,7 +119,12 @@ export default function HomePage() {
     }
     
     try {
-      const aiResult = await pathwayPlanner(values);
+      const aiInput: PathwayPlannerInput = {
+        country: values.country,
+        fieldOfStudy: values.fieldOfStudy,
+        gpa: values.gpa,
+      };
+      const aiResult = await pathwayPlanner(aiInput);
       setPathwayResult(aiResult);
     } catch (e) {
       setPathwayError(e instanceof Error ? e.message : 'An unexpected error occurred.');
@@ -227,20 +235,20 @@ export default function HomePage() {
         )}>
           <div className={cn( 
             "w-full", 
-            showResultsArea ? "md:col-span-1" : "md:col-span-3" // Full width when only form is shown
+            showResultsArea ? "md:col-span-1" : "md:col-span-3" 
            )}>
             <Form {...pathwayForm}>
               {!showResultsArea ? (
                 // Initial Single-Row Form Layout
                 <form
                   onSubmit={pathwayForm.handleSubmit(onPathwaySubmit)}
-                  className="flex flex-col md:flex-row md:items-end gap-4 p-6 bg-card rounded-lg shadow-xl w-full"
+                  className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 items-end p-6 bg-card rounded-lg shadow-xl w-full"
                 >
                   <FormField
                     control={pathwayForm.control}
                     name="country"
                     render={({ field }) => (
-                      <FormItem className="flex-1 min-w-[200px] md:min-w-[250px]">
+                      <FormItem className="min-w-[180px]">
                         <FormLabel className="flex items-center"><MapPin className="mr-2 h-4 w-4 text-accent"/>Country</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl><SelectTrigger><SelectValue placeholder="Select a country" /></SelectTrigger></FormControl>
@@ -258,7 +266,7 @@ export default function HomePage() {
                     control={pathwayForm.control}
                     name="fieldOfStudy"
                     render={({ field }) => (
-                      <FormItem className="flex-1 min-w-[200px] md:min-w-[250px]">
+                      <FormItem className="min-w-[180px]">
                         <FormLabel className="flex items-center"><BookOpen className="mr-2 h-4 w-4 text-accent"/>Field of Study</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl><SelectTrigger><SelectValue placeholder="Select a field" /></SelectTrigger></FormControl>
@@ -272,7 +280,25 @@ export default function HomePage() {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" disabled={isLoadingPathway} className="h-10 w-full md:w-auto mt-4 md:mt-0 bg-primary text-primary-foreground">
+                   <FormField
+                    control={pathwayForm.control}
+                    name="gpa"
+                    render={({ field }) => (
+                      <FormItem className="min-w-[180px]">
+                        <FormLabel className="flex items-center"><AwardIcon className="mr-2 h-4 w-4 text-accent"/>GPA / Academic Standing</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl><SelectTrigger><SelectValue placeholder="Select GPA" /></SelectTrigger></FormControl>
+                          <SelectContent>
+                            {gpaScaleOptions.map(gpa => (
+                              <SelectItem key={gpa.value} value={gpa.value}>{gpa.label}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" disabled={isLoadingPathway} className="h-10 w-full lg:mt-auto bg-primary text-primary-foreground">
                     {isLoadingPathway ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                     Get Suggestions
                   </Button>
@@ -322,6 +348,24 @@ export default function HomePage() {
                           </FormItem>
                         )}
                       />
+                       <FormField
+                        control={pathwayForm.control}
+                        name="gpa"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="flex items-center"><AwardIcon className="mr-2 h-4 w-4 text-accent"/>GPA / Academic Standing</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl><SelectTrigger><SelectValue placeholder="Select GPA" /></SelectTrigger></FormControl>
+                              <SelectContent>
+                                {gpaScaleOptions.map(gpa => (
+                                  <SelectItem key={gpa.value} value={gpa.value}>{gpa.label}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </CardContent>
                     <CardFooter>
                       <Button type="submit" disabled={isLoadingPathway} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
@@ -337,7 +381,7 @@ export default function HomePage() {
 
           {showResultsArea && (
             <div className={cn(
-                "md:col-span-2 flex flex-col min-h-[300px]", // Ensure it takes up space
+                "md:col-span-2 flex flex-col min-h-[300px]", 
                 "transition-all duration-700 ease-out",
                 resultsContainerAnimatedIn ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"
             )}>
@@ -361,7 +405,7 @@ export default function HomePage() {
                         <Sparkles className="mr-2 h-6 w-6" /> University Suggestions
                     </CardTitle>
                     <CardDescription>
-                        For {pathwayForm.getValues('country')} - {pathwayForm.getValues('fieldOfStudy')}.
+                        For {pathwayForm.getValues('country')} - {pathwayForm.getValues('fieldOfStudy')} (GPA: {pathwayForm.getValues('gpa')}).
                         {pathwayResult.searchSummary && <span className="block mt-1 text-xs italic">{pathwayResult.searchSummary}</span>}
                     </CardDescription>
                      {/* Filters and Sort */}
@@ -400,7 +444,7 @@ export default function HomePage() {
                         </div>
                     </div>
                     </CardHeader>
-                    <CardContent className="flex-grow overflow-y-auto space-y-4 max-h-96 md:max-h-[calc(550px-180px)] p-6"> {/* Adjusted max-h */}
+                    <CardContent className="flex-grow overflow-y-auto space-y-4 max-h-96 md:max-h-[calc(550px-180px)] p-6">
                     {filteredAndSortedUniversities.length > 0 ? (
                         <ul className="space-y-4">
                         {filteredAndSortedUniversities.map((uni: UniversitySuggestion, index: number) => (
@@ -424,7 +468,7 @@ export default function HomePage() {
                                             <div className="flex items-center" title="University Type"><Briefcase className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0" /><span className="text-foreground/80">Type: {uni.type}</span></div>
                                             <div className="flex items-center" title="Program Duration"><BookOpen className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0" /><span className="text-foreground/80">Duration: {uni.programDuration}</span></div>
                                             <div className="flex items-center" title="Tuition Category"><DollarSign className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0" /><span className="text-foreground/80">Tuition: {uni.tuitionCategory}</span></div>
-                                            <div className="flex items-center" title="Scholarship Level"><AwardIcon className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0" /><span className="text-foreground/80">Scholarships: {uni.scholarshipLevel}</span></div>
+                                            <div className="flex items-center" title="Scholarship Level"><AwardIconLucide className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0" /><span className="text-foreground/80">Scholarships: {uni.scholarshipLevel}</span></div>
                                         </div>
                                         {uni.rawTuitionInfo && <p className="text-xs text-foreground/70 mb-1 italic">Tuition Note: {uni.rawTuitionInfo}</p>}
                                         {uni.rawScholarshipInfo && <p className="text-xs text-foreground/70 mb-1 italic">Scholarship Note: {uni.rawScholarshipInfo}</p>}
@@ -432,7 +476,7 @@ export default function HomePage() {
                                 </div>
                                 <div className="mt-3 text-right">
                                     <Button asChild size="sm" variant="outline" className="text-accent hover:text-accent-foreground hover:bg-accent/10">
-                                        <Link href={`/book-appointment?collegeName=${encodeURIComponent(uni.name)}&country=${encodeURIComponent(pathwayForm.getValues('country'))}&field=${encodeURIComponent(pathwayForm.getValues('fieldOfStudy'))}`}>
+                                        <Link href={`/book-appointment?collegeName=${encodeURIComponent(uni.name)}&country=${encodeURIComponent(pathwayForm.getValues('country'))}&field=${encodeURIComponent(pathwayForm.getValues('fieldOfStudy'))}&gpa=${encodeURIComponent(pathwayForm.getValues('gpa'))}`}>
                                             Book Consultation
                                         </Link>
                                     </Button>
