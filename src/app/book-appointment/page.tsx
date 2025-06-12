@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ExternalLink, Clock, DollarSign, Award, BarChart3, ListChecks, ClipboardText } from 'lucide-react'; // Updated icons
+import { ExternalLink, Clock, DollarSign, Award, BarChart3, ListChecks, ClipboardType } from 'lucide-react'; // Updated icons
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { cn } from '@/lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -126,7 +126,7 @@ export default function EnglishTestGuidePage() {
               <BarChart3 className="mr-2 h-5 w-5" /> Test Structures
             </TabsTrigger>
             <TabsTrigger value="score-requirements" className="py-2.5">
-              <ClipboardText className="mr-2 h-5 w-5" /> Score Requirements
+              <ClipboardType className="mr-2 h-5 w-5" /> Score Requirements
             </TabsTrigger>
           </TabsList>
 
@@ -142,7 +142,7 @@ export default function EnglishTestGuidePage() {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Test Name</TableHead>
-                        <TableHead><DollarSign className="inline mr-1 h-4 w-4"/>Typical Cost (NPR)</TableHead>
+                        <TableHead><DollarSign className="inline mr-1 h-4 w-4"/>Typical Cost (Rs.)</TableHead>
                         <TableHead><Clock className="inline mr-1 h-4 w-4"/>Duration</TableHead>
                         <TableHead><Award className="inline mr-1 h-4 w-4"/>Acceptance</TableHead>
                         <TableHead>Format</TableHead>
@@ -177,7 +177,7 @@ export default function EnglishTestGuidePage() {
           </TabsContent>
 
           <TabsContent value="test-structures">
-            <div className="space-y-8"> {/* Replaces the need for a section with SectionTitle */}
+            <div className="space-y-8">
               {testStructures.map((test, index) => {
                 const [cardRef, cardVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
                 return (
@@ -239,5 +239,3 @@ export default function EnglishTestGuidePage() {
     </div>
   );
 }
-
-    
