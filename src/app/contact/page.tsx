@@ -168,7 +168,7 @@ export default function ContactPage() {
                 <MapPin className="h-6 w-6 text-accent mt-1 flex-shrink-0" />
                 <div>
                   <h4 className="font-semibold">Our Office</h4>
-                  <p className="text-foreground/80">123 Education Lane, Knowledge City, Global</p>
+                  <p className="text-foreground/80">New Baneshwor, Kathmandu, Nepal, 44600</p>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
@@ -182,14 +182,14 @@ export default function ContactPage() {
                 <Phone className="h-6 w-6 text-accent mt-1 flex-shrink-0" />
                 <div>
                   <h4 className="font-semibold">Call Us</h4>
-                  <a href="tel:+1234567890" className="text-foreground/80 hover:text-primary transition-colors">+1 (234) 567-890</a>
+                  <a href="tel:+9779761859757" className="text-foreground/80 hover:text-primary transition-colors">+977 9761859757</a>
                 </div>
               </div>
                <div className="flex items-start space-x-3">
                 <MessageSquare className="h-6 w-6 text-accent mt-1 flex-shrink-0" />
                 <div>
                   <h4 className="font-semibold">Direct Chat</h4>
-                  <a href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer" className="text-foreground/80 hover:text-primary transition-colors">Chat with us on WhatsApp</a>
+                  <a href="https://wa.me/+9779761859757" target="_blank" rel="noopener noreferrer" className="text-foreground/80 hover:text-primary transition-colors">Chat with us on WhatsApp</a>
                 </div>
               </div>
             </CardContent>
@@ -201,10 +201,8 @@ export default function ContactPage() {
             </CardHeader>
             <CardContent>
               {/* Placeholder for Google Map */}
-              <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                <p className="text-muted-foreground">Google Map will be embedded here.</p>
-              </div>
-              <p className="text-xs text-muted-foreground mt-2">Note: Google Maps requires an API key for full functionality. This is a placeholder.</p>
+              <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3197.165484604168!2d85.3327993749223!3d27.686924426392938!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb19a84379c423%3A0xef4effecef07815d!2sPIXAR%20EDUCATIONAL%20CONSULTANCY!5e1!3m2!1sen!2sau!4v1749691561992!5m2!1sen!2sau" width="100%" height="300" style={{border:0}} allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
+              {/* <p className="text-xs text-muted-foreground mt-2">Note: Google Maps requires an API key for full functionality. This is a placeholder.</p> */}
             </CardContent>
           </Card>
         </div>
