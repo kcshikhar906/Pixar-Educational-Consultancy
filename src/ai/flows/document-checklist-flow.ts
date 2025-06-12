@@ -69,6 +69,10 @@ const documentChecklistFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await prompt(input);
-    return output!;
+    if (!output) {
+      throw new Error(`AI model did not return the expected output for ${prompt.name}. Output was null or undefined.`);
+    }
+    return output;
   }
 );
+
