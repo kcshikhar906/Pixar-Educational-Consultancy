@@ -32,7 +32,7 @@ export default function CountryGuidesPage() {
 
       <div ref={tabsContainerRef} className={cn("transition-all duration-700 ease-out", isTabsContainerVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")}>
         <Tabs defaultValue={defaultCountrySlug} className="w-full">
-          <TabsList className="h-auto p-0 grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 mx-auto mb-8">
+          <TabsList className="h-auto p-0 grid w-full grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 mx-auto mb-8">
             {countryData.map((country) => (
               <TabsTrigger 
                 key={country.slug} 
