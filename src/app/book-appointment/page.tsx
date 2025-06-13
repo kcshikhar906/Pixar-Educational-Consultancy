@@ -118,7 +118,7 @@ export default function EnglishTestGuidePage() {
 
       <div ref={tabsContainerRef} className={cn("transition-all duration-700 ease-out", isTabsContainerVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")}>
         <Tabs defaultValue="comparison-guide" className="w-full">
-          <TabsList className="h-auto p-0 grid w-full grid-cols-1 sm:grid-cols-3 md:w-fit mx-auto mb-8">
+          <TabsList className="h-auto p-0 grid w-full grid-cols-2 sm:grid-cols-3 md:w-fit mx-auto mb-8">
             <TabsTrigger 
               value="comparison-guide" 
               className="py-2.5 whitespace-normal text-center"
@@ -245,3 +245,5 @@ export default function EnglishTestGuidePage() {
     </div>
   );
 }
+
+    
