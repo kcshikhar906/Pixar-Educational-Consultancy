@@ -62,7 +62,7 @@ export default function HomePage() {
   const [resultsContainerAnimatedIn, setResultsContainerAnimatedIn] = useState(false);
 
   const [heroSectionRef, isHeroSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.05, initialVisible: true });
-  const [pathwaySearchSectionRef, isPathwaySearchSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.1 });
+  const [pathwaySearchSectionRef, isPathwaySearchSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.1, initialVisible: false });
   const [whyChooseUsSectionRef, isWhyChooseUsSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.1 });
   const [servicesOverviewSectionRef, isServicesOverviewSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.1 });
   const [testimonialsSectionRef, isTestimonialsSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.1 });
@@ -293,6 +293,7 @@ export default function HomePage() {
 
       {/* Pathway Quick Search Section */}
       <section
+        id="pathway-search-section"
         ref={pathwaySearchSectionRef}
         className={cn(
           "transition-all duration-700 ease-out",
@@ -301,12 +302,11 @@ export default function HomePage() {
       >
         <SectionTitle title="Pathway Quick Search" subtitle="Find universities matching your interests instantly." />
         <div className={cn(
-            "grid items-start gap-8",
-            showResultsArea ? "grid-cols-1 md:grid-cols-3" : "grid-cols-1"
+            "items-start gap-8",
+            showResultsArea ? "grid grid-cols-1 md:grid-cols-3" : "flex flex-col items-center" 
         )}>
           <div className={cn(
-            "w-full",
-            !showResultsArea ? "" : "md:col-span-1"
+            showResultsArea ? "md:col-span-1 w-full" : "max-w-2xl w-full" 
            )}>
             {renderPathwayForm()}
           </div>
@@ -341,7 +341,7 @@ export default function HomePage() {
                         {pathwayResult.searchSummary && <span className="block mt-1 text-xs italic">{pathwayResult.searchSummary}</span>}
                     </CardDescription>
                     </CardHeader>
-                    <CardContent className="flex-grow overflow-y-auto space-y-4 max-h-96 md:max-h-[450px] p-6">
+                    <CardContent className="flex-grow overflow-y-auto space-y-4 max-h-96 md:max-h-[550px] p-6">
                     {universitySuggestions.length > 0 ? (
                         <ul className="space-y-4">
                         {universitySuggestions.map((uni: UniversitySuggestion, index: number) => (
@@ -353,43 +353,57 @@ export default function HomePage() {
                                             <UniversityIconLucide className="mr-2 h-5 w-5 text-accent flex-shrink-0" />
                                             {uni.website ? (
                                             <a href={uni.website} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center">
-                                                {uni.name} <ExternalLink className="ml-1.5 h-4 w-4 text-muted-foreground" />
+                                                {uni.name}
                                             </a>
                                             ) : (
                                             uni.name
                                             )}
                                         </h4>
-                                        <p className="text-xs text-muted-foreground mb-2 ml-7">{uni.category}</p>
+                                        <p className="text-xs text-muted-foreground mb-2 ml-7">{uni.category || 'N/A'}</p>
 
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-sm mb-3">
-                                            <div className="flex items-center" title="University Location"><MapPin className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0" /><span className="text-foreground/80">{uni.location}</span></div>
-                                            <div className="flex items-center" title="University Type"><Briefcase className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0" /><span className="text-foreground/80">Type: {uni.type}</span></div>
-                                            <div className="flex items-center" title="Program Duration"><BookOpen className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0" /><span className="text-foreground/80">Duration: {uni.programDuration}</span></div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-sm mb-3">
+                                            <div className="flex items-center" title="University Location">
+                                                <MapPin className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0" />
+                                                <span className="text-foreground/80">{uni.location || 'N/A'}</span>
+                                            </div>
+                                            <div className="flex items-center" title="University Type">
+                                                <Briefcase className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0" />
+                                                <span className="text-foreground/80">Type: {uni.type || 'N/A'}</span>
+                                            </div>
+                                            <div className="flex items-center" title="Program Duration">
+                                                <BookOpen className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0" />
+                                                <span className="text-foreground/80">Duration: {uni.programDuration || 'N/A'}</span>
+                                            </div>
                                             <div className="flex items-center" title="Tuition Category & Range">
                                                 <DollarSign className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0" />
-                                                <span className="text-foreground/80">Tuition: {uni.tuitionCategory} {uni.tuitionFeeRange && `(${uni.tuitionFeeRange})`}</span>
+                                                <span className="text-foreground/80">
+                                                    Tuition: {uni.tuitionCategory || 'N/A'}
+                                                    {uni.tuitionCategory && uni.tuitionCategory !== 'Unknown' && uni.tuitionCategory !== 'Varies' && uni.tuitionFeeRange ? ` (${uni.tuitionFeeRange})` : ''}
+                                                </span>
                                             </div>
-                                            {uni.nextIntakeDate && (
-                                                <div className="flex items-center" title="Next Intake Date">
-                                                    <CalendarDays className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0" />
-                                                    <span className="text-foreground/80">Next Intake: {uni.nextIntakeDate}</span>
-                                                </div>
-                                            )}
-                                            {uni.englishTestRequirements && (
-                                                <div className="flex items-center sm:col-span-2" title="English Test Requirements">
-                                                    <ClipboardCheck className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0" />
-                                                    <span className="text-foreground/80">English Tests: {uni.englishTestRequirements}</span>
-                                                </div>
-                                            )}
+                                            <div className="flex items-center" title="Next Intake Date">
+                                                <CalendarDays className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0" />
+                                                <span className="text-foreground/80">Next Intake: {uni.nextIntakeDate || 'N/A'}</span>
+                                            </div>
+                                            <div className="flex items-center sm:col-span-2" title="English Test Requirements">
+                                                <ClipboardCheck className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0" />
+                                                <span className="text-foreground/80">English Tests: {uni.englishTestRequirements || 'N/A'}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="mt-3 text-right space-x-2">
-                                    <Button asChild size="sm" variant="outline" className="text-accent hover:text-accent-foreground hover:bg-accent/10">
-                                        <Link href={`/university-info?country=${encodeURIComponent(pathwayForm.getValues('country'))}&field=${encodeURIComponent(pathwayForm.getValues('fieldOfStudy'))}&gpa=${encodeURIComponent(pathwayForm.getValues('gpa'))}&level=${encodeURIComponent(pathwayForm.getValues('targetEducationLevel'))}&index=${index}`}>
-                                            <InfoIcon className="mr-1.5 h-4 w-4" /> More Info
-                                        </Link>
-                                    </Button>
+                                    {uni.website ? (
+                                        <Button asChild size="sm" variant="outline" className="text-accent hover:text-accent-foreground hover:bg-accent/10">
+                                            <a href={uni.website} target="_blank" rel="noopener noreferrer">
+                                                <ExternalLink className="mr-1.5 h-4 w-4" /> Website
+                                            </a>
+                                        </Button>
+                                    ) : (
+                                        <Button size="sm" variant="outline" disabled className="text-muted-foreground">
+                                            Website N/A
+                                        </Button>
+                                    )}
                                     <Button asChild size="sm" variant="default" className="bg-primary text-primary-foreground hover:bg-primary/90">
                                         <Link href={`/book-appointment?collegeName=${encodeURIComponent(uni.name)}&country=${encodeURIComponent(pathwayForm.getValues('country'))}&field=${encodeURIComponent(pathwayForm.getValues('fieldOfStudy'))}&gpa=${encodeURIComponent(pathwayForm.getValues('gpa'))}&level=${encodeURIComponent(pathwayForm.getValues('targetEducationLevel'))}`}>
                                             Book Consultation
@@ -530,3 +544,4 @@ export default function HomePage() {
     </div>
   );
 }
+

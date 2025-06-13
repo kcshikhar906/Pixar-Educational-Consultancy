@@ -34,9 +34,9 @@ const UniversitySuggestionSchema = z.object({
   type: z.enum(["Public", "Private", "Unknown"]).describe("The type of university (Public, Private, or Unknown)."),
   location: z.string().describe("The city and state/region of the university (e.g., 'Cambridge, MA', 'Sydney, NSW')."),
   tuitionCategory: z.enum(["Affordable", "Mid-Range", "Premium", "Varies", "Unknown"]).describe("A category for the estimated annual tuition. Affordable: typically <$15,000 USD/year or equivalent. Mid-Range: $15,000-$30,000 USD/year or equivalent. Premium: >$30,000 USD/year or equivalent. Use 'Varies' if it's highly variable or 'Unknown' if not determinable."),
-  tuitionFeeRange: z.string().optional().describe("Estimated annual tuition fee range if available, e.g., '$10,000 - $15,000 USD', '€8,000 - €12,000'. Keep this concise."),
-  englishTestRequirements: z.string().optional().describe("Typical English proficiency test scores required (e.g., 'IELTS: 6.5+', 'TOEFL iBT: 90+'). Keep this concise."),
-  nextIntakeDate: z.string().optional().describe("Typical next intake period or application deadline information, e.g., 'Fall 2025 (Apply by Jan 2025)', 'Rolling Admissions', 'Intakes: Jan, May, Sep'. Be concise."),
+  tuitionFeeRange: z.string().optional().describe("Estimated annual tuition fee range if available, e.g., '$10,000 - $15,000 USD', '€8,000 - €12,000'. Keep this concise. Provide this if commonly known for the university and program type."),
+  englishTestRequirements: z.string().optional().describe("Typical English proficiency test scores required (e.g., 'IELTS: 6.5+', 'TOEFL iBT: 90+'). Keep this concise. Provide this if commonly known."),
+  nextIntakeDate: z.string().optional().describe("Typical next intake period or application deadline information, e.g., 'Fall 2025 (Apply by Jan 2025)', 'Rolling Admissions', 'Intakes: Jan, May, Sep'. Be concise. Provide this if commonly known or easily found."),
 });
 
 const PathwayPlannerOutputSchema = z.object({
@@ -76,9 +76,9 @@ const pathwayPlannerPrompt = ai.definePrompt({
       - "Premium": Typically more than $30,000 USD per year (or local equivalent).
       - "Varies": If tuition is highly variable across programs or student types.
       - "Unknown": If information is not readily available.
-  9.  'tuitionFeeRange': (Optional) A CONCISE estimated annual tuition fee range if available, e.g., "$10,000 - $15,000 USD", "€8,000 - €12,000".
-  10. 'englishTestRequirements': (Optional) CONCISE typical English proficiency test scores required (e.g., "IELTS: 6.5+", "TOEFL iBT: 90+").
-  11. 'nextIntakeDate': (Optional) Typical next intake period or application deadline information, e.g., "Fall 2025 (Apply by Jan 2025)", "Rolling Admissions", "Intakes: Jan, May, Sep". Be concise.
+  9.  'tuitionFeeRange': (Optional but highly encouraged if known) A CONCISE estimated annual tuition fee range, e.g., "$10,000 - $15,000 USD".
+  10. 'englishTestRequirements': (Optional but highly encouraged if known) CONCISE typical English proficiency test scores required, e.g., "IELTS: 6.5+", "TOEFL iBT: 90+".
+  11. 'nextIntakeDate': (Optional but highly encouraged if known) Typical next intake period or application deadline information, e.g., "Fall 2025 (Apply by Jan 2025)", "Rolling Admissions".
 
   Only list universities located within the specified country. Ensure the website is a direct link to the university.
   Provide as many relevant suggestions as you can find for the given criteria.
