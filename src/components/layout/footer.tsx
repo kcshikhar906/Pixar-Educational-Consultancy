@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { GraduationCap, Mail, Phone, MapPin } from 'lucide-react';
 
@@ -20,7 +21,7 @@ export default function Footer() {
             <ul className="space-y-2 text-sm">
               <li><Link href="/about" className="hover:text-accent transition-colors">About Us</Link></li>
               <li><Link href="/services" className="hover:text-accent transition-colors">Services</Link></li>
-              <li><Link href="/countries/europe" className="hover:text-accent transition-colors">Country Guides</Link></li>
+              <li><Link href="/faq" className="hover:text-accent transition-colors">FAQ</Link></li>
               <li><Link href="/contact" className="hover:text-accent transition-colors">Contact Us</Link></li>
             </ul>
           </div>
@@ -29,7 +30,7 @@ export default function Footer() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-center space-x-2">
                 <MapPin className="h-5 w-5" />
-                <span>123 Education Lane, Knowledge City, Global</span>
+                <span>New Baneshwor, Kathmandu, Nepal, 44600</span>
               </li>
               <li className="flex items-center space-x-2">
                 <Mail className="h-5 w-5" />
@@ -37,7 +38,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center space-x-2">
                 <Phone className="h-5 w-5" />
-                <a href="tel:+1234567890" className="hover:text-accent transition-colors">+1 (234) 567-890</a>
+                <a href="tel:+9779761859757" className="hover:text-accent transition-colors">+977 9761859757</a>
               </li>
             </ul>
           </div>
