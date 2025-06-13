@@ -277,14 +277,15 @@ export default function HomePage() {
             Your trusted partner for international studies, specializing in guiding Nepali students to U.S. success. 🇺🇸 Start your adventure today!
           </p>
           <div
-             className={`space-x-4 transition-all ease-out duration-700 delay-300 ${
-              heroAnimated ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-            }`}
+             className={cn(
+              "flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4 items-center justify-center",
+              `transition-all ease-out duration-700 delay-300 ${heroAnimated ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`
+            )}
           >
-            <Button size="lg" asChild className="bg-background text-primary hover:bg-background/90 shadow-lg">
+            <Button size="lg" asChild className="w-full sm:w-auto bg-background text-primary hover:bg-background/90 shadow-lg">
               <Link href="/services">Explore Services <ArrowRight className="ml-2 h-5 w-5" /></Link>
             </Button>
-            <Button size="lg" variant="outline" asChild className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10 shadow-lg bg-accent text-accent-foreground hover:bg-accent/90">
+            <Button size="lg" variant="outline" asChild className="w-full sm:w-auto border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10 shadow-lg bg-accent text-accent-foreground hover:bg-accent/90">
               <Link href="/ai-assistants">Use our AI Assistants <Wand2 className="ml-2 h-5 w-5" /></Link>
             </Button>
           </div>
@@ -396,7 +397,7 @@ export default function HomePage() {
                                       </Button>
                                     )}
                                     <Button asChild size="sm" variant="default" className="bg-accent text-accent-foreground hover:bg-accent/90">
-                                        <Link href={`/book-appointment?collegeName=${encodeURIComponent(uni.name)}&country=${encodeURIComponent(pathwayForm.getValues('country'))}&field=${encodeURIComponent(pathwayForm.getValues('fieldOfStudy'))}&gpa=${encodeURIComponent(pathwayForm.getValues('gpa'))}&level=${encodeURIComponent(pathwayForm.getValues('targetEducationLevel'))}`}>
+                                        <Link href={`/contact?service=university_guidance&collegeName=${encodeURIComponent(uni.name)}&country=${encodeURIComponent(pathwayForm.getValues('country'))}&field=${encodeURIComponent(pathwayForm.getValues('fieldOfStudy'))}&gpa=${encodeURIComponent(pathwayForm.getValues('gpa'))}&level=${encodeURIComponent(pathwayForm.getValues('targetEducationLevel'))}`}>
                                             Book Consultation
                                         </Link>
                                     </Button>
