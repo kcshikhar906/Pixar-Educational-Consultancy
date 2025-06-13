@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import SectionTitle from '@/components/ui/section-title';
-import { ArrowRight, CheckCircle, Star, Loader2, Sparkles, MapPin, BookOpen, University as UniversityIconLucide, Info as InfoIcon, Search, ExternalLink, Wand2, Briefcase, DollarSign, Award as AwardIconLucideComp, ClipboardCheck, CalendarDays } from 'lucide-react';
+import { ArrowRight, CheckCircle, Star, Loader2, Sparkles, MapPin, BookOpen, University as UniversityIconLucide, Info as InfoIcon, Search, ExternalLink, Wand2, Briefcase, DollarSign, ClipboardCheck, CalendarDays } from 'lucide-react';
 import { testimonials, services, fieldsOfStudy, gpaScaleOptions, educationLevelOptions, AwardIconLucide as AwardIconFromData, UniversityIcon } from '@/lib/data';
 import type { Testimonial, Service } from '@/lib/data';
 import { useState, useEffect, useMemo } from 'react';
@@ -62,7 +62,7 @@ export default function HomePage() {
   const [resultsContainerAnimatedIn, setResultsContainerAnimatedIn] = useState(false);
 
   const [heroSectionRef, isHeroSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.05, initialVisible: true });
-  const [pathwaySearchSectionRef, isPathwaySearchSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.1, initialVisible: false });
+  const [pathwaySearchSectionRef, isPathwaySearchSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.02, initialVisible: false });
   const [whyChooseUsSectionRef, isWhyChooseUsSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.1 });
   const [servicesOverviewSectionRef, isServicesOverviewSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.1 });
   const [testimonialsSectionRef, isTestimonialsSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.1 });
@@ -372,7 +372,8 @@ export default function HomePage() {
                                                 <DollarSign className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0 mt-0.5" />
                                                 <span className="text-foreground/80">
                                                     Tuition: {uni.tuitionCategory || 'N/A'}
-                                                    {uni.tuitionFeeRange ? ` (${uni.tuitionFeeRange})` : ''}
+                                                    {uni.tuitionFeeRange && ` (${uni.tuitionFeeRange})`}
+                                                    {uni.tuitionFeeRange && <span className="text-xs text-muted-foreground italic"> (Estimates, may vary. Check official site.)</span>}
                                                 </span>
                                             </div>
                                             <div className="flex items-start" title="Next Intake Date">

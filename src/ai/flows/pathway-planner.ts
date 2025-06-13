@@ -34,8 +34,8 @@ const UniversitySuggestionSchema = z.object({
   type: z.enum(["Public", "Private", "Unknown"]).describe("The type of university (Public, Private, or Unknown)."),
   location: z.string().describe("The city and state/region of the university (e.g., 'Cambridge, MA', 'Sydney, NSW')."),
   tuitionCategory: z.enum(["Affordable", "Mid-Range", "Premium", "Varies", "Unknown"]).describe("A category for the estimated annual tuition. Affordable: typically <$15,000 USD/year or equivalent. Mid-Range: $15,000-$30,000 USD/year or equivalent. Premium: >$30,000 USD/year or equivalent. Use 'Varies' if it's highly variable or 'Unknown' if not determinable."),
-  tuitionFeeRange: z.string().optional().describe("CONCISE estimated annual tuition fee range if available, e.g., '$10,000 - $15,000 USD', '€8,000 - €12,000'. Provide this if commonly known for the university and program type. Keep this information brief and to the point."),
-  englishTestRequirements: z.string().optional().describe("CONCISE typical English proficiency test scores required (e.g., 'IELTS: 6.5+', 'TOEFL iBT: 90+'). Provide this if commonly known. Keep this information brief."),
+  tuitionFeeRange: z.string().optional().describe("ONLY the estimated annual tuition fee range if available, e.g., '$10,000 - $15,000 USD' OR '€8,000 - €12,000'. Do NOT include any additional sentences, explanations, or disclaimers. Strictly the fee range."),
+  englishTestRequirements: z.string().optional().describe("CONCISE typical English proficiency test scores required (e.g., 'IELTS: 6.5+', 'TOEFL iBT: 90+'). Keep this information brief, not a paragraph."),
   nextIntakeDate: z.string().optional().describe("CONCISE typical next intake period or application deadline information, e.g., 'Fall 2025 (Apply by Jan 2025)', 'Rolling Admissions', 'Intakes: Jan, May, Sep'. Be CONCISE. Provide this if commonly known or easily found. Aim for multiple intakes if applicable and brief."),
 });
 
@@ -76,7 +76,7 @@ const pathwayPlannerPrompt = ai.definePrompt({
       - "Premium": Typically more than $30,000 USD per year (or local equivalent).
       - "Varies": If tuition is highly variable across programs or student types.
       - "Unknown": If information is not readily available.
-  9.  'tuitionFeeRange': (Optional but highly encouraged if known) Provide a CONCISE estimated annual tuition fee range if available, e.g., '$10,000 - $15,000 USD', '€8,000 - €12,000'. This should be brief and to the point, not a paragraph.
+  9.  'tuitionFeeRange': (Optional but highly encouraged if known) Provide ONLY the estimated annual tuition fee range in a very concise format, e.g., '$10,000 - $15,000 USD' OR '€8,000 - €12,000'. Do NOT include any additional sentences, explanations, or disclaimers like 'Please check the website...' or 'Estimates based on...' within this specific field. It should be strictly the fee range itself.
   10. 'englishTestRequirements': (Optional but highly encouraged if known) Provide CONCISE typical English proficiency test scores required, e.g., "IELTS: 6.5+", "TOEFL iBT: 90+". This should be brief, not a paragraph.
   11. 'nextIntakeDate': (Optional but highly encouraged if known) Provide CONCISE typical next intake period or application deadline information, e.g., "Fall 2025 (Apply by Jan 2025)", "Rolling Admissions", "Intakes: Jan, May, Sep". This should be brief and factual. If multiple intakes, list them concisely.
 
