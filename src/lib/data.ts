@@ -1,5 +1,5 @@
 
-import { Award, Briefcase, Lightbulb, Users, MapPin, Landmark, TrendingUp, Globe, CalendarPlus, FileText, BookOpen, University as UniversityIcon, CheckCircle, Building, Heart, Handshake, Goal, MessageSquare, Search, Wand2, ExternalLink, Home, Info, Award as AwardIconLucide, GraduationCap, DollarSign, Clock, UserCheck, FileSpreadsheet } from 'lucide-react';
+import { Award, Briefcase, Lightbulb, Users, MapPin, Landmark, TrendingUp, Globe, CalendarPlus, FileText, BookOpen, University as UniversityIcon, CheckCircle, Building, Heart, Handshake, Goal, MessageSquare, Search, Wand2, ExternalLink, Home, Info, Award as AwardIconLucide, GraduationCap, DollarSign, Clock, UserCheck, FileSpreadsheet, BookMarked } from 'lucide-react';
 import type { ReactElement } from 'react';
 
 
@@ -36,35 +36,69 @@ export interface Service {
   icon: React.ElementType;
   imageUrl?: string;
   dataAiHint?: string;
+  keyFeatures?: string[];
 }
 
 export const services: Service[] = [
   {
-    id: '1',
+    id: 'documentation-assistance',
     title: 'Documentation Assistance',
     description: 'Comprehensive support for all your application paperwork.',
     longDescription: 'Navigating the complex documentation requirements for international university applications can be daunting. We provide meticulous assistance with preparing, organizing, and reviewing all necessary documents, including transcripts, recommendation letters, statements of purpose, and financial proofs. Our goal is to ensure your application is complete, accurate, and compelling.',
     icon: Briefcase,
     imageUrl: '/da.png',
     dataAiHint: 'documents application',
+    keyFeatures: [
+      "Application form completion strategy",
+      "Statement of Purpose (SOP/Essay) review & feedback",
+      "Financial document checklist & guidance",
+      "Letter of Recommendation (LOR) advice"
+    ]
   },
   {
-    id: '2',
+    id: 'personalized-guidance',
     title: 'Personalized Guidance',
     description: 'Tailored advice to match your academic goals and preferences.',
     longDescription: 'Every student is unique, with different aspirations and academic backgrounds. We offer personalized guidance sessions to understand your specific needs, help you choose the right courses and universities, and develop a strategic application plan. Our experienced counselors provide insights into various education systems and career pathways.',
     icon: Lightbulb,
     imageUrl: '/pg.jpg',
     dataAiHint: 'student guidance',
+    keyFeatures: [
+      "One-on-one counseling sessions",
+      "Course and university shortlisting based on profile",
+      "Career pathway mapping and advice",
+      "Scholarship & funding opportunity guidance"
+    ]
   },
   {
-    id: '3',
+    id: 'visa-support',
     title: 'Visa & Pre-Departure Support',
     description: 'Expert help with visa applications and pre-departure preparations.',
     longDescription: 'Securing a student visa and preparing for life in a new country are crucial steps. We offer expert assistance with visa applications, including mock interviews and document checklists. Additionally, we provide comprehensive pre-departure briefings covering accommodation, cultural adaptation, and essential travel tips to ensure a smooth transition.',
-    icon: Users,
+    icon: Users, // Consider changing if a more specific visa/travel icon exists e.g. Plane
     imageUrl: '/vsa.jpg',
     dataAiHint: 'travel preparation',
+    keyFeatures: [
+      "Student visa application assistance for various countries",
+      "Mock visa interview preparation",
+      "Pre-departure briefings and checklist",
+      "Guidance on accommodation and travel arrangements"
+    ]
+  },
+  {
+    id: 'english-prep',
+    title: 'Expert English Test Preparation',
+    description: 'Ace IELTS, TOEFL, PTE & Duolingo with our tailored coaching.',
+    longDescription: "Our comprehensive English test preparation programs are designed to equip you with the skills and strategies needed to achieve your target scores. We offer specialized coaching for IELTS, TOEFL iBT, PTE Academic, and the Duolingo English Test. Our experienced instructors provide personalized feedback, mock tests, and focused training on all test sections – Reading, Writing, Listening, and Speaking. Join us to build your confidence and master the exam.",
+    icon: BookMarked,
+    imageUrl: '/english-prep-class.jpg',
+    dataAiHint: "classroom students learning",
+    keyFeatures: [
+      "Tailored coaching for IELTS, TOEFL, PTE, Duolingo",
+      "Experienced instructors & personalized feedback",
+      "Comprehensive mock tests and practice materials",
+      "Small class sizes for focused attention"
+    ]
   },
 ];
 
@@ -165,14 +199,14 @@ export const countryData: CountryInfo[] = [
     description: 'Experience a high-quality education system in a vibrant, multicultural environment. Australian universities are known for their research and innovation.',
     imageUrl: 'https://placehold.co/1200x400.png',
     dataAiHint: 'australia landmark',
-    averageLivingCost: 'AUD $20,000 - $25,000 per year',
+    averageLivingCost: 'AUD $21,000 - $29,000 per year',
     workHoursStudent: 'Up to 48 hours per fortnight during academic sessions, unlimited during scheduled breaks.',
-    visaInfoSummary: 'Student visa (subclass 500). Requires CoE, GTE statement, financial proof, OSHC.',
-    postStudyWorkSummary: 'Temporary Graduate visa (subclass 485) allows eligible students to stay and work.',
+    visaInfoSummary: 'Student visa (subclass 500). Requires Confirmation of Enrolment (CoE), Genuine Temporary Entrant (GTE) statement, financial proof, Overseas Student Health Cover (OSHC).',
+    postStudyWorkSummary: 'Temporary Graduate visa (subclass 485) allows eligible students to stay and work for 2-4 years, depending on qualification.',
     facts: [
       { icon: Landmark, label: 'Major Cities', value: 'Sydney, Melbourne, Brisbane, Perth, Adelaide' },
       { icon: Globe, label: 'Language', value: 'English' },
-      { icon: TrendingUp, label: 'Known For', value: 'STEM, Business, Health Sciences' },
+      { icon: TrendingUp, label: 'Known For', value: 'STEM, Business, Health Sciences, Environmental Studies' },
     ],
     topUniversities: [
       { name: 'Australian National University', city: 'Canberra', countryFocus: 'Various', website: 'https://www.anu.edu.au' },
@@ -185,17 +219,17 @@ export const countryData: CountryInfo[] = [
     name: 'Canada',
     slug: 'canada',
     flagEmoji: '🇨🇦',
-    description: 'Canada offers a high standard of living, diverse culture, and excellent educational institutions. It is a popular choice for international students.',
+    description: 'Canada offers a high standard of living, diverse culture, and excellent educational institutions. It is a popular choice for international students due to its welcoming policies.',
     imageUrl: 'https://placehold.co/1200x400.png',
-    dataAiHint: 'canada landmark',
-    averageLivingCost: 'CAD $15,000 - $20,000 per year',
-    workHoursStudent: 'Up to 20 hours/week during regular academic sessions, full-time during scheduled breaks.',
-    visaInfoSummary: 'Study Permit required. Need an acceptance letter from a DLI, proof of financial support.',
-    postStudyWorkSummary: 'Post-Graduation Work Permit (PGWP) allows graduates to gain Canadian work experience.',
+    dataAiHint: 'canada landmark toronto',
+    averageLivingCost: 'CAD $15,000 - $25,000 per year (excluding tuition)',
+    workHoursStudent: 'Up to 20 hours/week during regular academic sessions, full-time during scheduled breaks (if eligible).',
+    visaInfoSummary: 'Study Permit required. Need an acceptance letter from a Designated Learning Institution (DLI), proof of financial support, and may require biometrics and medical exam.',
+    postStudyWorkSummary: 'Post-Graduation Work Permit (PGWP) allows graduates to gain Canadian work experience for up to 3 years, depending on program length.',
     facts: [
-      { icon: Landmark, label: 'Major Cities', value: 'Toronto, Montreal, Vancouver, Ottawa' },
+      { icon: Landmark, label: 'Major Cities', value: 'Toronto, Montreal, Vancouver, Calgary, Ottawa' },
       { icon: Globe, label: 'Languages', value: 'English, French' },
-      { icon: TrendingUp, label: 'Known For', value: 'Technology, Engineering, Business, Health Sciences' },
+      { icon: TrendingUp, label: 'Known For', value: 'Technology, Engineering, Business, Health Sciences, AI' },
     ],
     topUniversities: [
       { name: 'University of Toronto', city: 'Toronto', countryFocus: 'Various', website: 'https://www.utoronto.ca' },
@@ -208,17 +242,17 @@ export const countryData: CountryInfo[] = [
     name: 'USA',
     slug: 'usa',
     flagEmoji: '🇺🇸',
-    description: 'Home to many of the world\'s top universities, the USA offers unparalleled educational opportunities across all fields of study.',
+    description: 'Home to many of the world\'s top universities, the USA offers unparalleled educational opportunities across all fields of study and vibrant campus life.',
     imageUrl: 'https://placehold.co/1200x400.png',
-    dataAiHint: 'usa landmark',
-    averageLivingCost: '$1,000 - $2,500 per month (highly variable)',
-    workHoursStudent: 'Up to 20 hours/week on-campus during term; CPT/OPT for off-campus.',
-    visaInfoSummary: 'F-1 visa for academic studies. Requires I-20, SEVIS fee, proof of funds, interview.',
-    postStudyWorkSummary: 'OPT allows up to 12 months work (extendable for STEM). H-1B for long-term.',
+    dataAiHint: 'usa landmark new york',
+    averageLivingCost: 'USD $12,000 - $18,000 per year (highly variable by city and lifestyle)',
+    workHoursStudent: 'Up to 20 hours/week on-campus during term; Curricular Practical Training (CPT) or Optional Practical Training (OPT) for off-campus work.',
+    visaInfoSummary: 'F-1 visa for academic studies. Requires I-20 form from SEVP-certified school, SEVIS fee payment, proof of funds, and a visa interview.',
+    postStudyWorkSummary: 'Optional Practical Training (OPT) allows up to 12 months of work experience (extendable by 24 months for STEM fields). H-1B visa for long-term employment.',
     facts: [
-      { icon: Landmark, label: 'Key States', value: 'California, New York, Massachusetts, Texas' },
+      { icon: Landmark, label: 'Key States', value: 'California, New York, Massachusetts, Texas, Illinois' },
       { icon: Globe, label: 'Language', value: 'English' },
-      { icon: TrendingUp, label: 'Known For', value: 'Technology, Business, Research, Arts' },
+      { icon: TrendingUp, label: 'Known For', value: 'Technology, Business, Research, Arts, Engineering' },
     ],
     topUniversities: [
       { name: 'Massachusetts Institute of Technology (MIT)', city: 'Cambridge, MA', countryFocus: 'Technology & Engineering', website: 'https://web.mit.edu' },
@@ -231,17 +265,17 @@ export const countryData: CountryInfo[] = [
     name: 'UK',
     slug: 'uk',
     flagEmoji: '🇬🇧',
-    description: 'The United Kingdom boasts a rich academic heritage with world-renowned universities, offering a diverse range of courses and a vibrant student life.',
+    description: 'The United Kingdom boasts a rich academic heritage with world-renowned universities, offering a diverse range of courses and a vibrant student life in historic cities.',
     imageUrl: 'https://placehold.co/1200x400.png',
-    dataAiHint: 'uk landmark',
-    averageLivingCost: '£1,000 - £1,500 per month (London higher)',
-    workHoursStudent: 'Up to 20 hours/week during term-time for degree students.',
-    visaInfoSummary: 'Student visa. Requires CAS from a licensed sponsor, proof of funds, English proficiency.',
-    postStudyWorkSummary: 'Graduate Route allows 2 years stay (3 for PhD) after course completion.',
+    dataAiHint: 'uk landmark london',
+    averageLivingCost: 'GBP £12,000 - £15,000 per year (London significantly higher)',
+    workHoursStudent: 'Up to 20 hours/week during term-time for degree students at degree-awarding institutions.',
+    visaInfoSummary: 'Student visa. Requires Confirmation of Acceptance for Studies (CAS) from a licensed sponsor, proof of funds, English proficiency (e.g., IELTS UKVI).',
+    postStudyWorkSummary: 'Graduate Route allows eligible graduates to stay and work, or look for work, for 2 years (3 years for PhD graduates) after course completion.',
     facts: [
-      { icon: Landmark, label: 'Major Cities', value: 'London, Manchester, Birmingham, Edinburgh' },
+      { icon: Landmark, label: 'Major Cities', value: 'London, Manchester, Birmingham, Edinburgh, Glasgow' },
       { icon: Globe, label: 'Language', value: 'English' },
-      { icon: TrendingUp, label: 'Known For', value: 'Finance, Law, Arts & Humanities, Science' },
+      { icon: TrendingUp, label: 'Known For', value: 'Finance, Law, Arts & Humanities, Science, Engineering' },
     ],
     topUniversities: [
       { name: 'University of Oxford', city: 'Oxford', countryFocus: 'Various', website: 'https://www.ox.ac.uk' },
@@ -254,17 +288,17 @@ export const countryData: CountryInfo[] = [
     name: 'New Zealand',
     slug: 'new-zealand',
     flagEmoji: '🇳🇿',
-    description: 'Study in a safe, welcoming country with a world-class education system and stunning natural landscapes. Offers unique programs and research opportunities.',
+    description: 'Study in a safe, welcoming country with a world-class education system and stunning natural landscapes. Offers unique programs and excellent research opportunities.',
     imageUrl: 'https://placehold.co/1200x400.png',
-    dataAiHint: 'new zealand landscape',
-    averageLivingCost: 'NZD $15,000 - $20,000 per year',
-    workHoursStudent: 'Up to 20 hours/week during studies, full-time during holidays.',
-    visaInfoSummary: 'Student Visa. Requires Offer of Place, proof of funds, health & character checks.',
-    postStudyWorkSummary: 'Post-Study Work Visa for 1-3 years for eligible graduates.',
+    dataAiHint: 'new zealand landscape mountains',
+    averageLivingCost: 'NZD $20,000 - $25,000 per year',
+    workHoursStudent: 'Up to 20 hours/week during studies if your course meets requirements, full-time during scheduled holidays.',
+    visaInfoSummary: 'Student Visa (Fee Paying Student Visa). Requires Offer of Place from an approved education provider, proof of funds to cover tuition and living costs, health & character checks.',
+    postStudyWorkSummary: 'Post-Study Work Visa available for 1-3 years for eligible graduates, depending on qualification and where you studied.',
     facts: [
-      { icon: Landmark, label: 'Main Cities', value: 'Auckland, Wellington, Christchurch, Dunedin' },
+      { icon: Landmark, label: 'Main Cities', value: 'Auckland, Wellington, Christchurch, Dunedin, Hamilton' },
       { icon: Globe, label: 'Language', value: 'English, Māori' },
-      { icon: TrendingUp, label: 'Known For', value: 'Agriculture, Environmental Science, Film' },
+      { icon: TrendingUp, label: 'Known For', value: 'Agriculture, Environmental Science, Film, Adventure Tourism, Geothermal Research' },
     ],
     topUniversities: [
       { name: 'University of Auckland', city: 'Auckland', countryFocus: 'Various', website: 'https://www.auckland.ac.nz' },
@@ -445,6 +479,7 @@ export {
   CalendarPlus,
   FileText,
   BookOpen,
+  BookMarked,
   UniversityIcon,
   CheckCircle,
   Building,
@@ -471,3 +506,4 @@ export interface Testimonial {
     studyDestination: string;
     avatarUrl?: string;
   }
+

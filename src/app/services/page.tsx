@@ -1,13 +1,15 @@
 
 'use client';
 import Image from 'next/image';
+import Link from 'next/link';
 import SectionTitle from '@/components/ui/section-title';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { services } from '@/lib/data';
 import type { Service } from '@/lib/data';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, ArrowRight } from 'lucide-react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 export default function ServicesPage() {
   const [titleSectionRef, isTitleSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true });
@@ -69,12 +71,31 @@ export default function ServicesPage() {
                   <p className="text-lg text-foreground/80">
                     {service.longDescription || service.description}
                   </p>
-                  <ul className="space-y-2 text-foreground/70">
-                    {/* Example bullet points, customize per service */}
-                    <li className="flex items-center"><CheckCircle className="h-5 w-5 text-accent mr-2" /> Personalized consultation</li>
-                    <li className="flex items-center"><CheckCircle className="h-5 w-5 text-accent mr-2" /> Step-by-step guidance</li>
-                    <li className="flex items-center"><CheckCircle className="h-5 w-5 text-accent mr-2" /> Access to expert resources</li>
-                  </ul>
+                  {service.keyFeatures && service.keyFeatures.length > 0 && (
+                    <ul className="space-y-2 text-foreground/70">
+                      {service.keyFeatures.map((feature, idx) => (
+                        <li key={idx} className="flex items-start">
+                          <CheckCircle className="h-5 w-5 text-accent mr-2 mt-1 flex-shrink-0" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                   <div className="pt-4">
+                    {service.id === 'english-prep' ? (
+                      <Button asChild variant="solid" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                        <Link href="/book-appointment">
+                          View Test Guide <ArrowRight className="ml-2 h-4 w-4" />
+                        </Link>
+                      </Button>
+                    ) : (
+                      <Button asChild variant="link" className="text-accent p-0 hover:text-primary">
+                        <Link href={`/contact?service=${service.id}`}>
+                          Inquire About This Service <ArrowRight className="ml-1 h-4 w-4" />
+                        </Link>
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -95,13 +116,14 @@ export default function ServicesPage() {
           <p className="text-xl text-primary-foreground/90 mb-8 max-w-xl mx-auto">
             Let our experts help you navigate the path to your dream university.
           </p>
-          <a href="/contact">
-            <button className="bg-background text-primary font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-background/90 transition-colors duration-300 text-lg">
+          <Link href="/contact">
+            <Button size="lg" className="bg-background text-primary font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-background/90 transition-colors duration-300 text-lg">
               Get in Touch
-            </button>
-          </a>
+            </Button>
+          </Link>
         </div>
       </section>
     </div>
   );
 }
+
