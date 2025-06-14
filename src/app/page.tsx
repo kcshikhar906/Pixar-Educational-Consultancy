@@ -260,7 +260,7 @@ export default function HomePage() {
           </div>
           <h1
             className={cn(
-              "text-4xl md:text-5xl font-headline font-bold text-primary-foreground mb-6 min-h-[5rem] md:min-h-[6rem] flex items-center justify-center", 
+              "text-4xl md:text-5xl font-headline font-bold text-primary-foreground mb-6 h-[5rem] md:min-h-[6rem] flex items-center justify-center", // Changed min-h-[5rem] to h-[5rem]
               "transition-transform ease-out duration-700 delay-100",
               heroAnimated ? "translate-y-0" : "translate-y-10 opacity-0",
               "transition-opacity ease-in-out"
