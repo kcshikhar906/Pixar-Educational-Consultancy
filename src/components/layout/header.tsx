@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Home, Info, Briefcase, MapPin, GraduationCap, Mail, ChevronDown, Menu, Wand2, HelpCircle, Sparkles } from 'lucide-react';
+import { Home, Info, Briefcase, MapPin, GraduationCap, Mail, ChevronDown, Menu, Wand2, HelpCircle, Sparkles, Share2 } from 'lucide-react'; // Added Share2
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -27,6 +27,7 @@ const navItems = [
       { href: '/book-appointment', label: 'English Test Guide', icon: HelpCircle },
     ],
   },
+  { href: '/connect', label: 'Connect', icon: Share2 }, // New "Connect" item
   { href: '/contact', label: 'Contact Us', icon: Mail },
 ];
 
