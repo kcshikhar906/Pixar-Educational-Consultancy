@@ -260,14 +260,14 @@ export default function HomePage() {
           </div>
           <h1
             className={cn(
-              "text-4xl md:text-5xl font-headline font-bold text-primary-foreground mb-6",
+              "text-4xl md:text-5xl font-headline font-bold text-primary-foreground mb-6 min-h-[5rem] md:min-h-[6rem] flex items-center justify-center", // Added min-h classes and flex for vertical centering if text is short
               "transition-transform ease-out duration-700 delay-100",
               heroAnimated ? "translate-y-0" : "translate-y-10 opacity-0",
               "transition-opacity ease-in-out"
             )}
             style={{ transitionDuration: `${FADE_DURATION_MS}ms`, opacity: isTaglineVisible && heroAnimated ? 1 : 0 }}
           >
-            {currentTaglineText}
+            <span>{currentTaglineText}</span> {/* Wrapped text in a span for better flex control if needed */}
           </h1>
           <p
             className={`text-lg md:text-xl text-primary-foreground/90 max-w-3xl mx-auto mb-10 transition-all ease-out duration-700 delay-200 ${
