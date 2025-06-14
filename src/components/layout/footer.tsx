@@ -6,7 +6,7 @@ export default function Footer() {
   return (
     <footer className="bg-primary text-primary-foreground mt-12">
       <div className="container mx-auto px-4 py-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-sm">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-sm">
           {/* About Section */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2 mb-3">
@@ -25,7 +25,7 @@ export default function Footer() {
               <li><Link href="/about" className="hover:text-accent transition-colors">About Us</Link></li>
               <li><Link href="/services" className="hover:text-accent transition-colors">Services</Link></li>
               <li><Link href="/country-guides" className="hover:text-accent transition-colors">Country Guides</Link></li>
-              <li><Link href="/ai-assistants" className="hover:text-accent transition-colors">Smart Tools</Link></li>
+              <li><Link href="/ai-assistants" className="hover:text-accent transition-colors">Smart Tools</Link></li> {/* Updated from AI Assistants */}
               <li><Link href="/faq" className="hover:text-accent transition-colors">FAQ</Link></li>
             </ul>
           </div>
