@@ -25,7 +25,8 @@ export default function Footer() {
               <li><Link href="/about" className="hover:text-accent transition-colors">About Us</Link></li>
               <li><Link href="/services" className="hover:text-accent transition-colors">Services</Link></li>
               <li><Link href="/country-guides" className="hover:text-accent transition-colors">Country Guides</Link></li>
-              <li><Link href="/ai-assistants" className="hover:text-accent transition-colors">Smart Tools</Link></li> {/* Updated from AI Assistants */}
+              <li><Link href="/ai-assistants" className="hover:text-accent transition-colors">Student Hub</Link></li>
+              <li><Link href="/book-appointment" className="hover:text-accent transition-colors">English Test Guide</Link></li>
               <li><Link href="/faq" className="hover:text-accent transition-colors">FAQ</Link></li>
             </ul>
           </div>
