@@ -70,7 +70,7 @@ export default function CountryPage({ params }: { params: { country: string } })
         )}
       >
         <SectionTitle title={`Why ${countryInfo.name}?`} />
-        <p className="text-lg text-foreground/80 max-w-3xl mx-auto text-center mb-12">
+        <p className="text-lg text-foreground/80 max-w-3xl mx-auto text-left mb-12">
           {countryInfo.description}
         </p>
         <div className="grid md:grid-cols-3 gap-6">

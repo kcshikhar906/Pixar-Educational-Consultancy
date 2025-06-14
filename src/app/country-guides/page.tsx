@@ -87,7 +87,7 @@ export default function CountryGuidesPage() {
                 </div>
               </header>
 
-              <p className="text-lg text-foreground/80 max-w-3xl mx-auto text-center">
+              <p className="text-lg text-foreground/80 max-w-3xl mx-auto text-left">
                 {countryInfo.description}
               </p>
 
@@ -246,14 +246,14 @@ export default function CountryGuidesPage() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="p-4 space-y-3">
-                      <p className="text-sm text-foreground/70 italic h-20 overflow-y-auto">{country.description}</p>
+                      <p className="text-sm text-foreground/70 italic h-20 overflow-y-auto text-left">{country.description}</p>
                       <ComparisonDetailItem icon={DollarSign} label="Average Living Cost" value={country.averageLivingCost} />
                       <ComparisonDetailItem icon={Clock} label="Work Hours (Students)" value={country.workHoursStudent} />
                       <ComparisonDetailItem icon={FileSpreadsheet} label="Visa Info Summary" value={country.visaInfoSummary} />
                       <ComparisonDetailItem icon={UserCheck} label="Post-Study Work Options" value={country.postStudyWorkSummary} />
                        <div className="pt-2">
                         <h5 className="font-semibold text-sm text-primary mb-1">Key Facts:</h5>
-                        <ul className="list-disc list-inside pl-2 space-y-1">
+                        <ul className="list-disc list-inside pl-2 space-y-1 text-left">
                           {country.facts.slice(0, 3).map(fact => (
                              <li key={fact.label} className="text-xs text-foreground/80">
                                <span className="font-medium">{fact.label}:</span> {fact.value}
@@ -263,7 +263,7 @@ export default function CountryGuidesPage() {
                       </div>
                        <div className="pt-2">
                         <h5 className="font-semibold text-sm text-primary mb-1">Top Universities (Examples):</h5>
-                        <ul className="list-disc list-inside pl-2 space-y-1">
+                        <ul className="list-disc list-inside pl-2 space-y-1 text-left">
                           {country.topUniversities.slice(0, 2).map(uni => (
                             <li key={uni.name} className="text-xs text-foreground/80">{uni.name}</li>
                           ))}
