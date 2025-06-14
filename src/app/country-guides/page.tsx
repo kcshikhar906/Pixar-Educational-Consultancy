@@ -1,6 +1,7 @@
 
 'use client';
 
+import React from 'react'; // Added explicit React import
 import Image from 'next/image';
 import Link from 'next/link';
 import SectionTitle from '@/components/ui/section-title';
@@ -12,7 +13,7 @@ import { countryData } from '@/lib/data';
 import type { CountryInfo, University } from '@/lib/data';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { cn } from '@/lib/utils';
-import { ExternalLink, DollarSign, Clock, FileSpreadsheet, UserCheck, Briefcase, GitCompareArrows } from 'lucide-react'; // Added GitCompareArrows
+import { ExternalLink, DollarSign, Clock, FileSpreadsheet, UserCheck, Briefcase, GitCompareArrows } from 'lucide-react';
 import { useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -25,8 +26,8 @@ export default function CountryGuidesPage() {
   const [selectedCountry1Slug, setSelectedCountry1Slug] = useState<string | null>(null);
   const [selectedCountry2Slug, setSelectedCountry2Slug] = useState<string | null>(null);
 
-  const selectedCountry1Data = countryData.find(c => c.slug === selectedCountry1Slug);
-  const selectedCountry2Data = countryData.find(c => c.slug === selectedCountry2Slug);
+  const selectedCountry1Data = selectedCountry1Slug ? countryData.find(c => c.slug === selectedCountry1Slug) : null;
+  const selectedCountry2Data = selectedCountry2Slug ? countryData.find(c => c.slug === selectedCountry2Slug) : null;
 
   const ComparisonDetailItem = ({ icon: Icon, label, value }: { icon: React.ElementType, label: string, value: string | undefined }) => (
     <div className="flex items-start space-x-3 p-2 bg-background/50 rounded-md">
@@ -232,17 +233,13 @@ export default function CountryGuidesPage() {
                     </Select>
                   </div>
                 </div>
-
-                {selectedCountry1Slug && selectedCountry2Slug && selectedCountry1Slug === selectedCountry2Slug && (
-                  <p className="text-center text-destructive">Please select two different countries to compare.</p>
-                )}
               </CardContent>
             </Card>
 
             {selectedCountry1Data && selectedCountry2Data && selectedCountry1Slug !== selectedCountry2Slug ? (
               <div className="grid md:grid-cols-2 gap-6 items-start">
-                {[selectedCountry1Data, selectedCountry2Data].map((country, index) => (
-                  <Card key={index} className="shadow-md bg-secondary/30 h-full">
+                {[selectedCountry1Data, selectedCountry2Data].map((country) => (
+                  <Card key={country.slug} className="shadow-md bg-secondary/30 h-full">
                     <CardHeader className="bg-card rounded-t-lg">
                       <CardTitle className="font-headline text-2xl text-primary flex items-center">
                         <span className="text-3xl mr-3">{country.flagEmoji}</span> {country.name}
@@ -276,13 +273,13 @@ export default function CountryGuidesPage() {
                   </Card>
                 ))}
               </div>
+            ) : selectedCountry1Slug && selectedCountry2Slug && selectedCountry1Slug === selectedCountry2Slug ? (
+                 <p className="text-center text-destructive py-10">Please select two different countries to compare.</p>
             ) : (
-              ! (selectedCountry1Slug && selectedCountry2Slug && selectedCountry1Slug === selectedCountry2Slug) && (
                  <div className="text-center py-10 text-foreground/60">
                     <GitCompareArrows className="mx-auto h-12 w-12 mb-4" />
                     <p>Please select two countries from the dropdowns above to see their comparison.</p>
                 </div>
-              )
             )}
              <section className="text-center pt-6">
                 <h3 className="text-xl md:text-2xl font-headline font-semibold text-primary mb-4">Need More Details?</h3>
