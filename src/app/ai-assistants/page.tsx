@@ -22,7 +22,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
-import { englishTestAdvisor, type EnglishTestAdvisorInput, type EnglishTestAdvisorOutput } from '@/ai/flows/english-test-advisor';
+// Remove AI flow import: import { englishTestAdvisor, type EnglishTestAdvisorInput, type EnglishTestAdvisorOutput } from '@/ai/flows/english-test-advisor';
 import { generateDocumentChecklist, type DocumentChecklistInput, type DocumentChecklistOutput } from '@/ai/flows/document-checklist-flow';
 
 import { Loader2, Sparkles, Info, FileText, Download, AlertCircle, BookOpenText, ListChecks, MessageSquare, HelpCircle, CheckCircle as CheckCircleIcon, User } from 'lucide-react';
@@ -35,6 +35,13 @@ const englishTestFormSchema = z.object({
   purpose: z.string().min(1, "Please state the purpose for the test.").max(200, "Purpose too long"),
 });
 type EnglishTestAdvisorFormValues = z.infer<typeof englishTestFormSchema>;
+
+// Define a type for the rule-based output, similar to EnglishTestAdvisorOutput
+interface RuleBasedEnglishTestOutput {
+  testRecommendation: string;
+  reasoning: string;
+  badges?: string[];
+}
 
 // Schemas for Document Checklist
 const docChecklistFormSchema = z.object({
@@ -64,7 +71,7 @@ export default function AiAssistantsPage() {
   // State for English Test Advisor
   const [isEnglishTestLoading, setIsEnglishTestLoading] = useState(false);
   const [englishTestError, setEnglishTestError] = useState<string | null>(null);
-  const [englishTestResult, setEnglishTestResult] = useState<EnglishTestAdvisorOutput | null>(null);
+  const [englishTestResult, setEnglishTestResult] = useState<RuleBasedEnglishTestOutput | null>(null); // Updated type
   const [showEnglishTestResultsArea, setShowEnglishTestResultsArea] = useState(false);
   const [englishTestResultsAnimatedIn, setEnglishTestResultsAnimatedIn] = useState(false);
 
@@ -98,6 +105,55 @@ export default function AiAssistantsPage() {
     },
   });
 
+  function getRuleBasedEnglishTestRecommendation(values: EnglishTestAdvisorFormValues): RuleBasedEnglishTestOutput {
+    const { currentLevel, timeline, budget, purpose } = values;
+    let recommendation: RuleBasedEnglishTestOutput = {
+      testRecommendation: "IELTS Academic",
+      reasoning: "IELTS Academic is widely accepted for university admissions and immigration globally. It offers both paper and computer-based formats. For dedicated preparation, Pixar Educational Consultancy provides excellent classes. For more detailed guidance, please contact an advisor.",
+      badges: ["Widely Accepted", "Versatile"]
+    };
+
+    const purposeLower = purpose.toLowerCase();
+
+    if (budget === "< NPR 15000" || timeline === "1 month") {
+      recommendation = {
+        testRecommendation: "Duolingo English Test",
+        reasoning: "The Duolingo English Test is affordable and offers quick results, making it suitable for tighter budgets and timelines. It's increasingly accepted by many universities. Pixar Educational Consultancy has resources to help you prepare. Contact us for more personalized advice!",
+        badges: ["Affordable", "Quick Results", "Online Convenience"]
+      };
+    } else if (purposeLower.includes("usa") && (currentLevel === "advanced" || currentLevel === "intermediate")) {
+      recommendation = {
+        testRecommendation: "TOEFL iBT",
+        reasoning: "TOEFL iBT is highly favored by US universities due to its academic focus. It's ideal if you're aiming for institutions in the USA. Pixar Educational Consultancy offers excellent TOEFL preparation classes. Speak to an advisor for tailored support.",
+        badges: ["Good for USA", "Academic Focus"]
+      };
+    } else if (purposeLower.includes("australia") || purposeLower.includes("nz") || purposeLower.includes("uk") && timeline !== "1 month") {
+       recommendation = {
+        testRecommendation: "PTE Academic",
+        reasoning: "PTE Academic is a computer-based test known for fast results and is widely accepted in Australia, NZ, and the UK. Its AI scoring can be beneficial. Pixar Educational Consultancy provides comprehensive PTE coaching. Get in touch for expert guidance.",
+        badges: ["Fast Results", "Computer Scored", "Good for Aus/NZ/UK"]
+      };
+    } else if (currentLevel === "beginner" && budget !== "> NPR 45000") {
+       recommendation = {
+        testRecommendation: "Duolingo English Test / PTE Academic",
+        reasoning: "For beginners, Duolingo offers a more accessible entry point due to its adaptive nature and lower cost. PTE Academic can also be considered as you progress. Pixar Educational Consultancy can help you build your foundational skills and prepare effectively. Contact us to discuss your learning plan.",
+        badges: ["Good for Beginners", "Adaptive (Duolingo)"]
+      };
+    } else {
+      // Default or general recommendation if specific rules don't match
+      recommendation = {
+        testRecommendation: "IELTS Academic",
+        reasoning: `IELTS Academic is broadly accepted for studies worldwide, including in ${values.purpose.includes("USA") ? "the USA, " : ""} ${values.purpose.includes("Canada") ? "Canada, " : ""} ${values.purpose.includes("UK") ? "the UK, " : ""} and ${values.purpose.includes("Australia") ? "Australia" : "many other countries"}. It suits various proficiency levels. Pixar Educational Consultancy has excellent IELTS preparation programs. Talk to an advisor for more details!`,
+        badges: ["Globally Recognized", "Versatile Format Options"]
+      };
+    }
+    
+    // Add a general plug for Pixar's services
+    recommendation.reasoning += "\n\nFor dedicated preparation for any English test, Pixar Educational Consultancy offers excellent classes. You can get more personalized advice by contacting one of our advisors.";
+
+    return recommendation;
+  }
+
   async function onEnglishTestSubmit(values: EnglishTestAdvisorFormValues) {
     setEnglishTestResult(null);
     setEnglishTestError(null);
@@ -109,10 +165,16 @@ export default function AiAssistantsPage() {
       });
     }
     setIsEnglishTestLoading(true);
+
+    // Simulate a short delay, as if an API call was made
+    await new Promise(resolve => setTimeout(resolve, 500));
+
     try {
-      const aiResult = await englishTestAdvisor(values);
-      setEnglishTestResult(aiResult);
+      const ruleBasedResult = getRuleBasedEnglishTestRecommendation(values);
+      setEnglishTestResult(ruleBasedResult);
     } catch (e) {
+      // This catch block might not be strictly necessary for synchronous rule-based logic
+      // but kept for consistency if any future async operations are added.
       setEnglishTestError(e instanceof Error ? e.message : 'An unexpected error occurred.');
     } finally {
       setIsEnglishTestLoading(false);
@@ -272,8 +334,8 @@ export default function AiAssistantsPage() {
     <div className="space-y-12">
       <div ref={titleSectionRef} className={cn("transition-all duration-700 ease-out", isTitleSectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")}>
         <SectionTitle
-          title="AI-Powered Assistants"
-          subtitle="Get personalized advice and checklists for your study abroad journey."
+          title="AI-Powered & Rule-Based Assistants"
+          subtitle="Get personalized advice and checklists for your study abroad journey. Some features use AI, others use optimized logic."
         />
       </div>
 
@@ -284,7 +346,7 @@ export default function AiAssistantsPage() {
               <BookOpenText className="mr-2 h-5 w-5" /> English Test Advisor
             </TabsTrigger>
             <TabsTrigger value="document-checklist" className="py-2.5">
-              <ListChecks className="mr-2 h-5 w-5" /> Document Checklist
+              <ListChecks className="mr-2 h-5 w-5" /> Document Checklist (AI)
             </TabsTrigger>
           </TabsList>
 
@@ -299,7 +361,7 @@ export default function AiAssistantsPage() {
               )}>
                 <CardHeader>
                   <CardTitle className="font-headline text-primary flex items-center"><BookOpenText className="mr-2 h-6 w-6" />Find Your Ideal English Test</CardTitle>
-                  <CardDescription>Fill in your details below for a tailored recommendation (IELTS, PTE, TOEFL, Duolingo, etc.).</CardDescription>
+                  <CardDescription>Fill in your details below for a tailored recommendation (IELTS, PTE, TOEFL, Duolingo, etc.). This feature uses rule-based logic for cost efficiency.</CardDescription>
                 </CardHeader>
                 <Form {...englishTestForm}>
                   <form onSubmit={englishTestForm.handleSubmit(onEnglishTestSubmit)}>
@@ -366,7 +428,7 @@ export default function AiAssistantsPage() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Purpose of the Test</FormLabel>
-                            <FormControl><Textarea placeholder="e.g., University application, immigration, job requirement" {...field} /></FormControl>
+                            <FormControl><Textarea placeholder="e.g., University application for USA, Immigration to Australia" {...field} /></FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -491,8 +553,8 @@ export default function AiAssistantsPage() {
                   showDocChecklistResultsArea ? "md:col-span-1" : "max-w-2xl"
               )}>
                 <CardHeader>
-                  <CardTitle className="font-headline text-primary flex items-center"><ListChecks className="mr-2 h-6 w-6" />Generate Your Document Checklist</CardTitle>
-                  <CardDescription>Provide your details to receive a tailored document list.</CardDescription>
+                  <CardTitle className="font-headline text-primary flex items-center"><ListChecks className="mr-2 h-6 w-6" />Generate Your Document Checklist (AI-Powered)</CardTitle>
+                  <CardDescription>Provide your details to receive a tailored document list. This feature uses AI.</CardDescription>
                 </CardHeader>
                 <Form {...docChecklistForm}>
                   <form onSubmit={docChecklistForm.handleSubmit(onDocChecklistSubmit)}>
@@ -649,3 +711,5 @@ export default function AiAssistantsPage() {
     </div>
   );
 }
+
+    
