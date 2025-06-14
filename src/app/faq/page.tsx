@@ -11,11 +11,13 @@ import {
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { cn } from '@/lib/utils';
 import { ChevronRight } from 'lucide-react';
+import Link from 'next/link';
+import type { ReactNode } from 'react';
 
 interface FAQItem {
   id: string;
   question: string;
-  answer: string;
+  answer: ReactNode;
 }
 
 interface FAQCategory {
@@ -36,26 +38,58 @@ const faqData: FAQCategory[] = [
       {
         id: 'gen_q2',
         question: 'What services does Pixar Educational Consultancy offer?',
-        answer:
-          'We offer a wide range of services, including personalized academic counseling, university and course selection, application assistance (SOP/LOR guidance), visa application support (including mock interviews), pre-departure briefings, and expert English test preparation for IELTS, TOEFL, PTE, and Duolingo.',
+        answer: (
+          <>
+            We offer a wide range of services, including personalized academic counseling, university and course selection, application assistance (SOP/LOR guidance), visa application support (including mock interviews), pre-departure briefings, and expert English test preparation for IELTS, TOEFL, PTE, and Duolingo. You can learn more on our{' '}
+            <Link href="/services" className="text-accent hover:underline">
+              Services page
+            </Link>
+            .
+          </>
+        ),
       },
       {
         id: 'gen_q3',
         question: 'Which countries do you specialize in for study abroad?',
-        answer:
-          'We specialize in guiding students for studies in the USA, UK, Australia, Canada, and New Zealand. Our team has in-depth knowledge of the education systems and visa processes for these countries.',
+        answer: (
+          <>
+            We specialize in guiding students for studies in the USA, UK, Australia, Canada, and New Zealand. Our team has in-depth knowledge of the education systems and visa processes for these countries. Check out our{' '}
+            <Link href="/country-guides" className="text-accent hover:underline">
+              Country Guides
+            </Link>{' '}
+            for more details.
+          </>
+        ),
       },
       {
         id: 'gen_q4',
         question: 'Why should I choose Pixar Educational Consultancy?',
-        answer:
-          'Pixar Educational Consultancy stands out due to our student-centric approach, experienced counselors, high success rates, ethical practices, and end-to-end support. We are particularly known for our unlimited visa interview preparation for U.S. aspirants.',
+        answer: (
+          <>
+            Pixar Educational Consultancy stands out due to our student-centric approach, experienced counselors, high success rates, ethical practices, and end-to-end support. We are particularly known for our unlimited visa interview preparation for U.S. aspirants. Learn more about us on the{' '}
+            <Link href="/about" className="text-accent hover:underline">
+              About Us page
+            </Link>
+            .
+          </>
+        ),
       },
       {
         id: 'gen_q5',
         question: 'How do I start the consultation process?',
-        answer:
-          'You can start by contacting us via phone, email, or by visiting our office in New Baneshwor, Kathmandu. You can also fill out the contact form on our website. We typically begin with an initial counseling session to understand your needs.',
+        answer: (
+          <>
+            You can start by{' '}
+            <Link href="/contact" className="text-accent hover:underline">
+              contacting us
+            </Link>{' '}
+            via phone, email, or by visiting our office in New Baneshwor, Kathmandu. You can also fill out the{' '}
+            <Link href="/contact" className="text-accent hover:underline">
+              contact form on our website
+            </Link>
+            . We typically begin with an initial counseling session to understand your needs.
+          </>
+        ),
       },
       {
         id: 'gen_q6',
@@ -77,8 +111,15 @@ const faqData: FAQCategory[] = [
       {
         id: 'app_q2',
         question: "What if I'm unsure about my field of study?",
-        answer:
-          "That's perfectly normal! Our counselors are experienced in helping students explore their interests and aptitudes. We can discuss various career pathways and related fields of study to help you make an informed decision.",
+        answer: (
+          <>
+            That&apos;s perfectly normal! Our counselors are experienced in helping students explore their interests and aptitudes. We can discuss various career pathways and related fields of study to help you make an informed decision. Our{' '}
+            <Link href="/ai-assistants" className="text-accent hover:underline">
+              Pathway Planner tool on the Smart Tools page
+            </Link>{' '}
+            might also be helpful.
+          </>
+        ),
       },
       {
         id: 'app_q3',
@@ -89,14 +130,21 @@ const faqData: FAQCategory[] = [
       {
         id: 'app_q4',
         question: 'What documents are typically required for university applications?',
-        answer:
-          'Common documents include academic transcripts and certificates, English proficiency test scores (IELTS, TOEFL, etc.), SOP, LORs, passport copy, and sometimes a CV/resume or portfolio, depending on the course. Our Document Checklist tool can provide a more personalized list.',
+        answer: (
+          <>
+            Common documents include academic transcripts and certificates, English proficiency test scores (IELTS, TOEFL, etc.), SOP, LORs, passport copy, and sometimes a CV/resume or portfolio, depending on the course. Our{' '}
+            <Link href="/ai-assistants" className="text-accent hover:underline">
+              Document Checklist tool on the Smart Tools page
+            </Link>{' '}
+            can provide a more personalized list.
+          </>
+        ),
       },
       {
         id: 'app_q5',
         question: 'Do you help with scholarship applications?',
         answer:
-          'Yes, we guide students in identifying potential scholarship opportunities offered by universities and provide advice on the application process. However, securing a scholarship depends on the student\'s profile and the university\'s criteria.',
+          "Yes, we guide students in identifying potential scholarship opportunities offered by universities and provide advice on the application process. However, securing a scholarship depends on the student's profile and the university's criteria.",
       },
       {
         id: 'app_q6',
@@ -137,7 +185,7 @@ const faqData: FAQCategory[] = [
         id: 'visa_q5',
         question: 'When should I apply for my student visa?',
         answer:
-          'You should apply for your student visa as soon as you receive your acceptance letter (e.g., I-20 for the USA, CAS for the UK, CoE for Australia) and have all your documents in order. Visa processing times can vary, so applying early is advisable.',
+          "You should apply for your student visa as soon as you receive your acceptance letter (e.g., I-20 for the USA, CAS for the UK, CoE for Australia) and have all your documents in order. Visa processing times can vary, so applying early is advisable.",
       },
     ],
   },
@@ -147,26 +195,58 @@ const faqData: FAQCategory[] = [
       {
         id: 'eng_q1',
         question: 'Which English proficiency test should I take?',
-        answer:
-          'The choice of test (IELTS, TOEFL, PTE, Duolingo) depends on the requirements of your target universities and country. Our English Test Advisor tool on the "Smart Tools" page can give an initial recommendation, and our counselors provide specific advice.',
+        answer: (
+          <>
+            The choice of test (IELTS, TOEFL, PTE, Duolingo) depends on the requirements of your target universities and country. Our English Test Advisor tool on the{' '}
+            <Link href="/ai-assistants" className="text-accent hover:underline">
+              Smart Tools page
+            </Link>{' '}
+            can give an initial recommendation, and our counselors provide specific advice. You can also learn more from our{' '}
+            <Link href="/book-appointment" className="text-accent hover:underline">
+             English Test Guide
+            </Link>
+            .
+          </>
+        ),
       },
       {
         id: 'eng_q2',
         question: 'What scores are generally required for these tests?',
-        answer:
-          'Minimum scores vary widely. For example, for IELTS, many universities ask for an overall band of 6.0 to 7.0. For TOEFL iBT, scores might range from 79 to 100+. Always check the specific requirements of your chosen institutions.',
+        answer: (
+          <>
+            Minimum scores vary widely. For example, for IELTS, many universities ask for an overall band of 6.0 to 7.0. For TOEFL iBT, scores might range from 79 to 100+. Always check the specific requirements of your chosen institutions. Our{' '}
+            <Link href="/book-appointment" className="text-accent hover:underline">
+              English Test Guide
+            </Link>{' '}
+            provides more general information.
+          </>
+        ),
       },
       {
         id: 'eng_q3',
         question: 'Do you offer preparation classes for these English tests?',
-        answer:
-          'Yes, we offer expert preparation classes for IELTS (Academic & General Training), TOEFL iBT, PTE Academic, and the Duolingo English Test. Our classes are designed to help you achieve your desired scores.',
+        answer: (
+          <>
+            Yes, we offer expert preparation classes for IELTS (Academic & General Training), TOEFL iBT, PTE Academic, and the Duolingo English Test. Our classes are designed to help you achieve your desired scores. You can inquire about classes via our{' '}
+            <Link href="/contact" className="text-accent hover:underline">
+              Contact page
+            </Link>
+            .
+          </>
+        ),
       },
       {
         id: 'eng_q4',
         question: 'How long are your test preparation courses?',
-        answer:
-          'Course durations vary based on the test and the student\'s current proficiency. We offer flexible options, including intensive courses and longer-term programs. Please contact us for specific batch details.',
+        answer: (
+          <>
+            Course durations vary based on the test and the student&apos;s current proficiency. We offer flexible options, including intensive courses and longer-term programs. Please{' '}
+            <Link href="/contact" className="text-accent hover:underline">
+              contact us
+            </Link>{' '}
+            for specific batch details.
+          </>
+        ),
       },
       {
         id: 'eng_q5',
@@ -182,8 +262,15 @@ const faqData: FAQCategory[] = [
       {
         id: 'fee_q1',
         question: 'What are your service charges or consultancy fees?',
-        answer:
-          'Our service charges vary depending on the range of services you opt for (e.g., full package vs. specific service like visa guidance only). We believe in transparency; please contact us for a detailed breakdown relevant to your needs.',
+        answer: (
+          <>
+            Our service charges vary depending on the range of services you opt for (e.g., full package vs. specific service like visa guidance only). We believe in transparency; please{' '}
+            <Link href="/contact" className="text-accent hover:underline">
+              contact us
+            </Link>{' '}
+            for a detailed breakdown relevant to your needs.
+          </>
+        ),
       },
       {
         id: 'fee_q2',
@@ -218,13 +305,20 @@ const faqData: FAQCategory[] = [
         id: 'post_q2',
         question: 'Can you help with accommodation arrangements?',
         answer:
-          'While we don\'t directly book accommodation, we provide guidance on finding suitable options, including university dormitories, private rentals, and homestays. We can also connect you with resources and alumni for advice.',
+          "While we don't directly book accommodation, we provide guidance on finding suitable options, including university dormitories, private rentals, and homestays. We can also connect you with resources and alumni for advice.",
       },
       {
         id: 'post_q3',
         question: 'What kind of support do you offer after I arrive in the new country?',
-        answer:
-          'Our primary support focuses on getting you to your destination. However, we often stay in touch with our students and can provide guidance or connect you with resources if you face challenges. We also have a network of alumni in various countries.',
+        answer: (
+          <>
+            Our primary support focuses on getting you to your destination. However, we often stay in touch with our students and can provide guidance or connect you with resources if you face challenges. We also have a network of alumni in various countries. You can also{' '}
+            <Link href="/connect" className="text-accent hover:underline">
+              connect with us
+            </Link>{' '}
+            on social media.
+          </>
+        ),
       },
     ],
   },
@@ -275,3 +369,5 @@ export default function FAQPage() {
     </div>
   );
 }
+
+        
