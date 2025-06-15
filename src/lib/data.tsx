@@ -464,6 +464,27 @@ export const fieldsOfStudy: string[] = [
   "Zoology",
 ];
 
+export const sopCountries = [
+  { name: 'USA', value: 'USA' },
+  { name: 'Australia', value: 'Australia' },
+  { name: 'UK', value: 'UK' },
+  { name: 'Canada', value: 'Canada' },
+  { name: 'New Zealand', value: 'New Zealand' },
+  { name: 'Germany', value: 'Germany' },
+  { name: 'France', value: 'France' },
+  { name: 'Ireland', value: 'Ireland' },
+  { name: 'Netherlands', value: 'Netherlands' },
+];
+
+export const allEducationLevels = [
+  { name: "High School Diploma or Equivalent (e.g., +2, A-Levels)", value: "High School Diploma or Equivalent" },
+  { name: "Associate Degree", value: "Associate Degree" },
+  { name: "Bachelor's Degree", value: "Bachelor's Degree" },
+  { name: "Master's Degree", value: "Master's Degree" },
+  { name: "Doctorate (PhD)", value: "Doctorate (PhD)" },
+];
+
+
 // Data for Appointment Booking
 export const appointmentServices = [
   { value: 'ielts_class_inquiry', label: 'IELTS Class Inquiry' },
