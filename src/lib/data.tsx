@@ -154,9 +154,9 @@ export const teamMembers: TeamMember[] = [
     id: '1',
     name: 'Pradeep Khadka',
     role: 'Founder & CEO',
-    bio: 'With over 15 years of experience in international education, Dr. Carter is passionate about helping students achieve their academic dreams.',
+    bio: 'With over 15 years of experience in international education, Pradeep is passionate about helping students achieve their academic dreams.',
     imageUrl: '/co.jpg',
-    dataAiHint: 'professional woman',
+    dataAiHint: 'professional man ceo',
   },
   {
     id: '2',
@@ -449,6 +449,7 @@ export const fieldsOfStudy: string[] = [
   "Psychology",
   "Public Health",
   "Robotics",
+  "Social Services",
   "Social Work",
   "Sociology",
   "Software Engineering",
@@ -476,14 +477,21 @@ export const sopCountries = [
   { name: 'Netherlands', value: 'Netherlands' },
 ];
 
-export const allEducationLevels = [
+export const allEducationLevels = [ // For SOP Generator form & Document Checklist
   { name: "High School Diploma or Equivalent (e.g., +2, A-Levels)", value: "High School Diploma or Equivalent" },
   { name: "Diploma", value: "Diploma" },
+  { name: "Postgraduate Diploma", value: "Postgraduate Diploma" },
   { name: "Associate Degree", value: "Associate Degree" },
   { name: "Bachelor's Degree", value: "Bachelor's Degree" },
-  { name: "Postgraduate Diploma", value: "Postgraduate Diploma" },
   { name: "Master's Degree", value: "Master's Degree" },
   { name: "Doctorate (PhD)", value: "Doctorate (PhD)" },
+];
+
+export const educationLevelOptions = [ // For Homepage Pathway Planner (simpler list)
+  { value: "Associate Degree", label: "Seeking Associate Degree" },
+  { value: "Bachelor's Degree", label: "Seeking Bachelor's Degree" },
+  { value: "Postgraduate Diploma", label: "Seeking Postgraduate Diploma" },
+  { value: "Master's Degree", label: "Seeking Master's Degree" },
 ];
 
 
@@ -536,11 +544,4 @@ export const gpaScaleOptions = [
   { value: "2.5-2.9", label: "2.5 - 2.9 (or equivalent)" },
   { value: "Below 2.5", label: "Below 2.5 (or equivalent)" },
   { value: "N/A", label: "Not Applicable / Varies" },
-];
-
-export const educationLevelOptions = [ // Used for homepage pathway planner
-  { value: "Associate Degree", label: "Seeking Associate Degree" },
-  { value: "Bachelor's Degree", label: "Seeking Bachelor's Degree" },
-  { value: "Postgraduate Diploma", label: "Seeking Postgraduate Diploma" },
-  { value: "Master's Degree", label: "Seeking Master's Degree" },
 ];
