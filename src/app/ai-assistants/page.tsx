@@ -24,7 +24,8 @@ import { cn } from '@/lib/utils';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { allEducationLevels, sopCountries } from '@/lib/data.tsx'; 
 
-import { generateSop, type SopGeneratorInput, type SopGeneratorOutput, SopGeneratorInputSchema } from '@/ai/flows/sop-generator-flow';
+import { generateSop, type SopGeneratorInput, type SopGeneratorOutput } from '@/ai/flows/sop-generator-flow';
+import { SopGeneratorInputSchema } from '@/ai/schemas/sop-schemas'; // Updated import
 
 import { Loader2, Sparkles, Info, FileText, Download, AlertCircle, ListChecks, User, FilePenLine, Copy as CopyIcon } from 'lucide-react';
 
