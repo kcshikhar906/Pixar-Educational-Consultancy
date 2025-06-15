@@ -14,22 +14,18 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import SectionTitle from '@/components/ui/section-title';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-import { allEducationLevels, sopCountries, fieldsOfStudy as allFieldsOfStudy } from '@/lib/data.tsx'; 
+import { allEducationLevels } from '@/lib/data.tsx'; 
 
-import { generateSopFromTemplate } from '@/lib/sop-templates'; 
-
-import { Loader2, Sparkles, Info, FileText, Download, AlertCircle, ListChecks, User, FilePenLine, Copy as CopyIcon, CalendarIcon, School, UserSquare, DollarSign as DollarSignIcon } from 'lucide-react';
+import { Loader2, Sparkles, Info, FileText, Download, AlertCircle, ListChecks, User, FilePenLine, Construction } from 'lucide-react';
 
 
-// Schemas for Document Checklist (Remains unchanged)
+// Schemas for Document Checklist
 const docChecklistFormSchema = z.object({
   userName: z.string().min(2, "Please enter your full name.").max(100, "Name is too long."),
   educationLevel: z.string().min(1, "Please select your education level."),
@@ -109,84 +105,8 @@ const selectableCountries = [
 ];
 
 
-export const SopGeneratorInputSchema = z.object({
-  fullName: z.string().min(2, "Full name must be at least 2 characters.").max(100).describe("The student's full name."),
-  permanentAddress: z.string().min(5, "Permanent address is required.").max(200).optional().describe("Student's permanent address."),
-  passportNumber: z.string().min(5, "Passport number is required.").max(20).optional().describe("Student's passport number."),
-  
-  targetCountry: z.string().min(1, "Please select a target country.").describe("The country where the student wishes to study."),
-  targetEducationLevel: z.string().min(1, "Please select the target education level.").describe("The level of education student is applying for."),
-  fieldOfStudy: z.string().min(2, "Field of study must be at least 2 characters.").max(100).describe("The student's desired field of study."),
-  institutionName: z.string().min(2, "Institution name is required.").max(150).optional().describe("Name of the target institution."),
-
-  seeSchoolName: z.string().min(2, "SEE School name is required.").max(100).optional().describe("School name for SEE."),
-  seeGpa: z.string().min(1, "SEE GPA is required.").max(10).optional().describe("GPA for SEE."),
-  seeYear: z.string().min(4, "SEE year is required.").max(4).optional().describe("Year of SEE completion."),
-  
-  plusTwoSchoolName: z.string().min(2, "+2 School name is required.").max(100).optional().describe("School/College name for +2."),
-  plusTwoGpa: z.string().min(1, "+2 GPA is required.").max(10).optional().describe("GPA for +2."),
-  plusTwoYear: z.string().min(4, "+2 year is required.").max(4).optional().describe("Year of +2 completion."),
-
-  academicBackground: z.string().min(50, "Academic background must be at least 50 characters.").max(2000).describe("Details of past education, relevant subjects, grades/GPA, key projects, and academic achievements."),
-  extracurricularsWorkExperience: z.string().min(20, "Please provide some details, min 20 chars.").max(2000).optional().describe("Relevant work experience, internships, volunteer work, leadership roles, and significant extracurricular activities."),
-
-  pteTestDate: z.string().optional().describe("PTE Test Date (e.g., YYYY-MM-DD)."),
-  pteOverallScore: z.string().optional().describe("PTE Overall Score."),
-  pteListeningScore: z.string().optional().describe("PTE Listening Score."),
-  pteReadingScore: z.string().optional().describe("PTE Reading Score."),
-  pteWritingScore: z.string().optional().describe("PTE Writing Score."),
-  pteSpeakingScore: z.string().optional().describe("PTE Speaking Score."),
-  // Add fields for IELTS/TOEFL/Duolingo if needed for other templates
-
-  fatherName: z.string().optional().describe("Father's Name."),
-  fatherIncomeDetails: z.string().optional().describe("Father's income source details."),
-  fatherAnnualIncomeNpr: z.string().optional().describe("Father's annual income in NPR."),
-  motherName: z.string().optional().describe("Mother's Name."),
-  motherIncomeDetails: z.string().optional().describe("Mother's income source details."),
-  motherAnnualIncomeNpr: z.string().optional().describe("Mother's annual income in NPR."),
-  brotherName: z.string().optional().describe("Brother's Name (if applicable)."),
-  brotherIncomeDetails: z.string().optional().describe("Brother's income source details."),
-  brotherAnnualIncomeNpr: z.string().optional().describe("Brother's annual income in NPR."),
-  uncleName: z.string().optional().describe("Uncle's Name (if applicable)."),
-  uncleIncomeDetails: z.string().optional().describe("Uncle's income source details."),
-  uncleAnnualIncomeNpr: z.string().optional().describe("Uncle's annual income in NPR."),
-  totalAnnualIncomeNpr: z.string().optional().describe("Total combined annual income of sponsors in NPR."),
-  totalAnnualIncomeForeignEquivalent: z.string().optional().describe("Total income in foreign currency equivalent (e.g., CAD 12345)."),
-  
-  educationLoanBank: z.string().optional().describe("Name of the bank providing education loan."),
-  educationLoanBankDescription: z.string().optional().describe("Brief description of the bank (e.g., A Grade Commercial Bank)."),
-  educationLoanAmountNpr: z.string().optional().describe("Education loan amount in NPR."),
-  educationLoanForeignEquivalent: z.string().optional().describe("Loan amount in foreign currency equivalent."),
-  
-  whyThisProgram: z.string().min(50, "Reasons for choosing this program must be at least 50 characters.").max(1500).describe("Reasons for choosing this specific program and university."),
-  whyThisCountry: z.string().min(50, "Reasons for choosing this country must be at least 50 characters.").max(1500).describe("Reasons for choosing this particular country for studies."),
-  whyNotHomeCountry: z.string().min(50, "Reasons for not studying in home country must be at least 50 characters.").max(1500).optional().describe("Reasons for not choosing to study in home country."),
-  whyThisInstitution: z.string().min(50, "Reasons for choosing this institution must be at least 50 characters.").max(1500).optional().describe("Reasons for choosing this specific institution."),
-  
-  futureGoals: z.string().min(50, "Future goals must be at least 50 characters.").max(1500).describe("Short-term and long-term career aspirations and how this program/country will help achieve them."),
-  expectedInitialSalaryNpr: z.string().optional().describe("Expected initial salary in Nepal (e.g., NPR 80,000 - 90,000)."),
-  incentivesToReturnHome: z.string().min(50, "Incentives to return home must be at least 50 characters.").max(1500).optional().describe("Reasons and incentives for returning to home country after studies."),
-  
-  additionalPoints: z.string().max(1000).optional().describe("Any other specific information or points student wants to include."),
-  tone: z.enum(["Formal", "Slightly Informal", "Enthusiastic", "Objective"]).default("Formal").describe("The desired tone of the SOP (template may or may not use this)."),
-});
-
-export type SopGeneratorInput = z.infer<typeof SopGeneratorInputSchema>; 
-
-interface SopGeneratorOutput {
-  sopText: string;
-}
-
-
 export default function SmartToolsPage() {
   const { toast } = useToast();
-
-  const [isSopLoading, setIsSopLoading] = useState(false); 
-  const [sopError, setSopError] = useState<string | null>(null);
-  const [sopResult, setSopResult] = useState<SopGeneratorOutput | null>(null);
-  const [showSopResultsArea, setShowSopResultsArea] = useState(false);
-  const [sopResultsAnimatedIn, setSopResultsAnimatedIn] = useState(false);
-  const sopOutputRef = useRef<HTMLTextAreaElement>(null);
 
   const [isDocChecklistLoading, setIsDocChecklistLoading] = useState(false);
   const [docChecklistError, setDocChecklistError] = useState<string | null>(null);
@@ -197,59 +117,6 @@ export default function SmartToolsPage() {
   const [titleSectionRef, isTitleSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true });
   const [tabsRef, isTabsVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.05 });
 
-  const sopForm = useForm<SopGeneratorInput>({ 
-    resolver: zodResolver(SopGeneratorInputSchema),
-    defaultValues: {
-      fullName: '',
-      permanentAddress: '',
-      passportNumber: '',
-      targetCountry: '',
-      targetEducationLevel: '',
-      fieldOfStudy: '',
-      institutionName: '',
-      seeSchoolName: '',
-      seeGpa: '',
-      seeYear: '',
-      plusTwoSchoolName: '',
-      plusTwoGpa: '',
-      plusTwoYear: '',
-      academicBackground: '',
-      extracurricularsWorkExperience: '',
-      pteTestDate: '',
-      pteOverallScore: '',
-      pteListeningScore: '',
-      pteReadingScore: '',
-      pteWritingScore: '',
-      pteSpeakingScore: '',
-      fatherName: '',
-      fatherIncomeDetails: '',
-      fatherAnnualIncomeNpr: '',
-      motherName: '',
-      motherIncomeDetails: '',
-      motherAnnualIncomeNpr: '',
-      brotherName: '',
-      brotherIncomeDetails: '',
-      brotherAnnualIncomeNpr: '',
-      uncleName: '',
-      uncleIncomeDetails: '',
-      uncleAnnualIncomeNpr: '',
-      totalAnnualIncomeNpr: '',
-      totalAnnualIncomeForeignEquivalent: '',
-      educationLoanBank: '',
-      educationLoanBankDescription: '',
-      educationLoanAmountNpr: '',
-      educationLoanForeignEquivalent: '',
-      whyThisProgram: '',
-      whyThisCountry: '',
-      whyNotHomeCountry: '',
-      whyThisInstitution: '',
-      futureGoals: '',
-      expectedInitialSalaryNpr: '',
-      incentivesToReturnHome: '',
-      additionalPoints: '',
-      tone: 'Formal',
-    },
-  });
 
   const docChecklistForm = useForm<DocumentChecklistFormValues>({ 
     resolver: zodResolver(docChecklistFormSchema),
@@ -259,43 +126,7 @@ export default function SmartToolsPage() {
       desiredCountry: '',
     },
   });
-
-  async function onSopSubmit(values: SopGeneratorInput) {
-    setSopResult(null);
-    setSopError(null);
-
-    if (!showSopResultsArea) {
-      setShowSopResultsArea(true);
-      requestAnimationFrame(() => {
-          setSopResultsAnimatedIn(true);
-      });
-    }
-    setIsSopLoading(true); 
-
-    try {
-      const generatedText = generateSopFromTemplate(values);
-      setSopResult({ sopText: generatedText });
-    } catch (e) {
-      setSopError(e instanceof Error ? e.message : 'An unexpected error occurred while generating the SOP.');
-      console.error("SOP Template Generation Error:", e);
-    } finally {
-      setIsSopLoading(false);
-    }
-  }
   
-  const handleCopySop = () => {
-    if (sopResult?.sopText) {
-      navigator.clipboard.writeText(sopResult.sopText)
-        .then(() => {
-          toast({ title: "SOP Copied!", description: "The Statement of Purpose has been copied to your clipboard.", variant: "default" });
-        })
-        .catch(err => {
-          console.error('Failed to copy SOP: ', err);
-          toast({ title: "Copy Failed", description: "Could not copy the SOP. Please try selecting and copying manually.", variant: "destructive" });
-        });
-    }
-  };
-
 
   async function onDocChecklistSubmit(values: DocumentChecklistFormValues) { 
     setDocChecklistResult(null);
@@ -466,269 +297,25 @@ export default function SmartToolsPage() {
           </TabsList>
 
           <TabsContent value="sop-generator">
-            <div className={cn(
-                "w-full",
-                showSopResultsArea ? "grid grid-cols-1 md:grid-cols-2 gap-8 items-start" : "flex flex-col items-center"
-            )}>
-              <Card className={cn(
-                  "shadow-xl bg-card w-full",
-                  showSopResultsArea ? "md:col-span-1" : "max-w-3xl" 
-              )}>
+            <Card className="shadow-xl bg-card w-full max-w-2xl mx-auto">
                 <CardHeader>
-                  <CardTitle className="font-headline text-primary flex items-center"><FilePenLine className="mr-2 h-6 w-6" />Craft Your Statement of Purpose</CardTitle>
-                  <CardDescription>Fill in your details, and our tool will help draft an SOP based on common templates for your university application.</CardDescription>
+                  <CardTitle className="font-headline text-primary flex items-center"><FilePenLine className="mr-2 h-6 w-6" />SOP Generator</CardTitle>
+                  <CardDescription>This feature is currently under development.</CardDescription>
                 </CardHeader>
-                <Form {...sopForm}>
-                  <form onSubmit={sopForm.handleSubmit(onSopSubmit)}>
-                    <CardContent className="space-y-6">
-                      {/* Personal Information Section */}
-                      <div className="space-y-2 p-4 border rounded-md bg-secondary/30">
-                        <h3 className="font-semibold text-primary text-lg">Personal Information</h3>
-                        <FormField control={sopForm.control} name="fullName" render={({ field }) => (
-                            <FormItem><FormLabel>Full Name</FormLabel><FormControl><Input placeholder="e.g., Jane Doe" {...field} /></FormControl><FormMessage /></FormItem>
-                        )}/>
-                        <FormField control={sopForm.control} name="permanentAddress" render={({ field }) => (
-                            <FormItem><FormLabel>Permanent Address</FormLabel><FormControl><Input placeholder="e.g., Jiri Municipality Ward No. 3, Dolakha, Nepal" {...field} /></FormControl><FormMessage /></FormItem>
-                        )}/>
-                        <FormField control={sopForm.control} name="passportNumber" render={({ field }) => (
-                            <FormItem><FormLabel>Passport Number</FormLabel><FormControl><Input placeholder="e.g., AB1234567" {...field} /></FormControl><FormMessage /></FormItem>
-                        )}/>
-                      </div>
-                      
-                      {/* Target Study Information Section */}
-                      <div className="space-y-2 p-4 border rounded-md bg-secondary/30">
-                        <h3 className="font-semibold text-primary text-lg">Target Study Information</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6">
-                          <FormField control={sopForm.control} name="targetCountry" render={({ field }) => (
-                              <FormItem><FormLabel>Target Country</FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
-                                  <FormControl><SelectTrigger><SelectValue placeholder="Select country" /></SelectTrigger></FormControl>
-                                  <SelectContent>{sopCountries.map(c => <SelectItem key={c.value} value={c.value}>{c.name}</SelectItem>)}</SelectContent>
-                                </Select><FormMessage />
-                              </FormItem>
-                          )}/>
-                          <FormField control={sopForm.control} name="targetEducationLevel" render={({ field }) => (
-                              <FormItem><FormLabel>Target Education Level</FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
-                                  <FormControl><SelectTrigger><SelectValue placeholder="Select level" /></SelectTrigger></FormControl>
-                                  <SelectContent>{allEducationLevels.map(level => <SelectItem key={level.value} value={level.value}>{level.name}</SelectItem>)}</SelectContent>
-                                </Select><FormMessage />
-                              </FormItem>
-                          )}/>
-                        </div>
-                         <FormField control={sopForm.control} name="fieldOfStudy" render={({ field }) => (
-                          <FormItem><FormLabel>Desired Field of Study</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
-                                <FormControl><SelectTrigger><SelectValue placeholder="Select field of study" /></SelectTrigger></FormControl>
-                                <SelectContent>{allFieldsOfStudy.map(fos => <SelectItem key={fos} value={fos}>{fos}</SelectItem>)}</SelectContent>
-                            </Select>
-                          <FormMessage /></FormItem>
-                        )}/>
-                        <FormField control={sopForm.control} name="institutionName" render={({ field }) => (
-                            <FormItem><FormLabel>Target Institution Name (Optional)</FormLabel><FormControl><Input placeholder="e.g., Northern Lights College" {...field} /></FormControl><FormMessage /></FormItem>
-                        )}/>
-                      </div>
-
-                      {/* Academic Background Section */}
-                      <div className="space-y-2 p-4 border rounded-md bg-secondary/30">
-                          <h3 className="font-semibold text-primary text-lg">Academic History</h3>
-                          <FormField control={sopForm.control} name="academicBackground" render={({ field }) => (
-                              <FormItem><FormLabel>Overall Academic Background Narrative</FormLabel><FormControl><Textarea placeholder="Detail your past education, relevant subjects, grades/GPA, key projects, research, and academic achievements..." rows={4} {...field} /></FormControl><FormMessage /></FormItem>
-                          )}/>
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-4 gap-y-4">
-                              <FormField control={sopForm.control} name="seeSchoolName" render={({ field }) => (
-                                  <FormItem><FormLabel>SEE School</FormLabel><FormControl><Input placeholder="School Name" {...field} /></FormControl><FormMessage /></FormItem>
-                              )}/>
-                              <FormField control={sopForm.control} name="seeGpa" render={({ field }) => (
-                                  <FormItem><FormLabel>SEE GPA</FormLabel><FormControl><Input placeholder="e.g., 2.75" {...field} /></FormControl><FormMessage /></FormItem>
-                              )}/>
-                              <FormField control={sopForm.control} name="seeYear" render={({ field }) => (
-                                  <FormItem><FormLabel>SEE Year</FormLabel><FormControl><Input placeholder="e.g., 2019" {...field} /></FormControl><FormMessage /></FormItem>
-                              )}/>
-                          </div>
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-4 gap-y-4 pt-2">
-                              <FormField control={sopForm.control} name="plusTwoSchoolName" render={({ field }) => (
-                                  <FormItem><FormLabel>+2 School/College</FormLabel><FormControl><Input placeholder="School/College Name" {...field} /></FormControl><FormMessage /></FormItem>
-                              )}/>
-                              <FormField control={sopForm.control} name="plusTwoGpa" render={({ field }) => (
-                                  <FormItem><FormLabel>+2 GPA</FormLabel><FormControl><Input placeholder="e.g., 2.75" {...field} /></FormControl><FormMessage /></FormItem>
-                              )}/>
-                              <FormField control={sopForm.control} name="plusTwoYear" render={({ field }) => (
-                                  <FormItem><FormLabel>+2 Year</FormLabel><FormControl><Input placeholder="e.g., 2023" {...field} /></FormControl><FormMessage /></FormItem>
-                              )}/>
-                          </div>
-                      </div>
-                      
-                      {/* English Proficiency Section (PTE Example) */}
-                      <div className="space-y-2 p-4 border rounded-md bg-secondary/30">
-                          <h3 className="font-semibold text-primary text-lg">English Proficiency (PTE Example)</h3>
-                          <FormField control={sopForm.control} name="pteTestDate" render={({ field }) => (
-                              <FormItem><FormLabel>PTE Test Date</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>
-                          )}/>
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-4">
-                            <FormField control={sopForm.control} name="pteOverallScore" render={({ field }) => (<FormItem><FormLabel>Overall</FormLabel><FormControl><Input placeholder="e.g., 60" {...field} /></FormControl><FormMessage /></FormItem>)}/>
-                            <FormField control={sopForm.control} name="pteListeningScore" render={({ field }) => (<FormItem><FormLabel>Listening</FormLabel><FormControl><Input placeholder="e.g., 59" {...field} /></FormControl><FormMessage /></FormItem>)}/>
-                            <FormField control={sopForm.control} name="pteReadingScore" render={({ field }) => (<FormItem><FormLabel>Reading</FormLabel><FormControl><Input placeholder="e.g., 65" {...field} /></FormControl><FormMessage /></FormItem>)}/>
-                            <FormField control={sopForm.control} name="pteWritingScore" render={({ field }) => (<FormItem><FormLabel>Writing</FormLabel><FormControl><Input placeholder="e.g., 63" {...field} /></FormControl><FormMessage /></FormItem>)}/>
-                            <FormField control={sopForm.control} name="pteSpeakingScore" render={({ field }) => (<FormItem><FormLabel>Speaking</FormLabel><FormControl><Input placeholder="e.g., 67" {...field} /></FormControl><FormMessage /></FormItem>)}/>
-                          </div>
-                      </div>
-
-                      {/* Sponsor Details Section */}
-                        <div className="space-y-4 p-4 border rounded-md bg-secondary/30">
-                            <h3 className="font-semibold text-primary text-lg">Sponsor Details</h3>
-                            {/* Father */}
-                            <div className="border-t pt-2 space-y-2">
-                                <FormField control={sopForm.control} name="fatherName" render={({ field }) => (<FormItem><FormLabel>Father's Name</FormLabel><FormControl><Input placeholder="Mr. Sarki Sherpa" {...field} /></FormControl><FormMessage /></FormItem>)}/>
-                                <FormField control={sopForm.control} name="fatherIncomeDetails" render={({ field }) => (<FormItem><FormLabel>Father's Income Sources</FormLabel><FormControl><Textarea placeholder="e.g., Salary from Royalty School, land lease..." {...field} rows={2}/></FormControl><FormMessage /></FormItem>)}/>
-                                <FormField control={sopForm.control} name="fatherAnnualIncomeNpr" render={({ field }) => (<FormItem><FormLabel>Father's Annual Income (NPR)</FormLabel><FormControl><Input placeholder="e.g., 1824000" {...field} /></FormControl><FormMessage /></FormItem>)}/>
-                            </div>
-                            {/* Mother */}
-                             <div className="border-t pt-2 space-y-2">
-                                <FormField control={sopForm.control} name="motherName" render={({ field }) => (<FormItem><FormLabel>Mother's Name</FormLabel><FormControl><Input placeholder="Mrs. Furleki Sherpa" {...field} /></FormControl><FormMessage /></FormItem>)}/>
-                                <FormField control={sopForm.control} name="motherIncomeDetails" render={({ field }) => (<FormItem><FormLabel>Mother's Income Sources</FormLabel><FormControl><Textarea placeholder="e.g., Salary from Co-operative" {...field} rows={2}/></FormControl><FormMessage /></FormItem>)}/>
-                                <FormField control={sopForm.control} name="motherAnnualIncomeNpr" render={({ field }) => (<FormItem><FormLabel>Mother's Annual Income (NPR)</FormLabel><FormControl><Input placeholder="e.g., 540000" {...field} /></FormControl><FormMessage /></FormItem>)}/>
-                            </div>
-                             {/* Brother - Make these fields optional or guide user if not applicable */}
-                            <div className="border-t pt-2 space-y-2">
-                                <FormField control={sopForm.control} name="brotherName" render={({ field }) => (<FormItem><FormLabel>Brother's Name (Optional)</FormLabel><FormControl><Input placeholder="Mr. Ang Pasang Sherpa" {...field} /></FormControl><FormMessage /></FormItem>)}/>
-                                <FormField control={sopForm.control} name="brotherIncomeDetails" render={({ field }) => (<FormItem><FormLabel>Brother's Income Sources</FormLabel><FormControl><Textarea placeholder="e.g., Salary from Co-operative" {...field} rows={2}/></FormControl><FormMessage /></FormItem>)}/>
-                                <FormField control={sopForm.control} name="brotherAnnualIncomeNpr" render={({ field }) => (<FormItem><FormLabel>Brother's Annual Income (NPR)</FormLabel><FormControl><Input placeholder="e.g., 420000" {...field} /></FormControl><FormMessage /></FormItem>)}/>
-                            </div>
-                            {/* Uncle - Make these fields optional or guide user if not applicable */}
-                            <div className="border-t pt-2 space-y-2">
-                                <FormField control={sopForm.control} name="uncleName" render={({ field }) => (<FormItem><FormLabel>Uncle's Name (Optional)</FormLabel><FormControl><Input placeholder="Mr. Lakpa Sherpa" {...field} /></FormControl><FormMessage /></FormItem>)}/>
-                                <FormField control={sopForm.control} name="uncleIncomeDetails" render={({ field }) => (<FormItem><FormLabel>Uncle's Income Sources</FormLabel><FormControl><Textarea placeholder="e.g., Salary from Qatar Catering" {...field} rows={2}/></FormControl><FormMessage /></FormItem>)}/>
-                                <FormField control={sopForm.control} name="uncleAnnualIncomeNpr" render={({ field }) => (<FormItem><FormLabel>Uncle's Annual Income (NPR)</FormLabel><FormControl><Input placeholder="e.g., 1985358.60" {...field} /></FormControl><FormMessage /></FormItem>)}/>
-                            </div>
-                            {/* Total Income & Loan */}
-                             <div className="border-t pt-2 space-y-2">
-                                <FormField control={sopForm.control} name="totalAnnualIncomeNpr" render={({ field }) => (<FormItem><FormLabel>Total Annual Income (NPR)</FormLabel><FormControl><Input placeholder="e.g., 4769358.60" {...field} /></FormControl><FormMessage /></FormItem>)}/>
-                                <FormField control={sopForm.control} name="totalAnnualIncomeForeignEquivalent" render={({ field }) => (<FormItem><FormLabel>Total Income (Foreign Currency Equivalent)</FormLabel><FormControl><Input placeholder="e.g., CAD 48494.00 or A$ 48494.00" {...field} /></FormControl><FormMessage /></FormItem>)}/>
-                                <FormField control={sopForm.control} name="educationLoanBank" render={({ field }) => (<FormItem><FormLabel>Education Loan Bank (Optional)</FormLabel><FormControl><Input placeholder="e.g., Kumari Bank Limited" {...field} /></FormControl><FormMessage /></FormItem>)}/>
-                                <FormField control={sopForm.control} name="educationLoanBankDescription" render={({ field }) => (<FormItem><FormLabel>Loan Bank Description (Optional)</FormLabel><FormControl><Input placeholder="e.g., A Grade Commercial Bank" {...field} /></FormControl><FormMessage /></FormItem>)}/>
-                                <FormField control={sopForm.control} name="educationLoanAmountNpr" render={({ field }) => (<FormItem><FormLabel>Loan Amount (NPR)</FormLabel><FormControl><Input placeholder="e.g., 6100000" {...field} /></FormControl><FormMessage /></FormItem>)}/>
-                                <FormField control={sopForm.control} name="educationLoanForeignEquivalent" render={({ field }) => (<FormItem><FormLabel>Loan Amount (Foreign Currency Equivalent)</FormLabel><FormControl><Input placeholder="e.g., CAD 62263.95 or A$ 62263.95" {...field} /></FormControl><FormMessage /></FormItem>)}/>
-                            </div>
-                        </div>
-
-                      {/* SOP Content Sections */}
-                      <div className="space-y-2 p-4 border rounded-md bg-secondary/30">
-                        <h3 className="font-semibold text-primary text-lg">SOP Content Details</h3>
-                        <FormField control={sopForm.control} name="extracurricularsWorkExperience" render={({ field }) => (
-                          <FormItem><FormLabel>Extracurriculars & Work Experience (Narrative)</FormLabel><FormControl><Textarea placeholder="Describe relevant work experience, internships, volunteer work, leadership roles, or significant extracurricular activities..." rows={4} {...field} /></FormControl><FormMessage /></FormItem>
-                        )}/>
-                        <FormField control={sopForm.control} name="whyThisProgram" render={({ field }) => (
-                          <FormItem><FormLabel>Why This Program?</FormLabel><FormControl><Textarea placeholder="Explain your reasons for choosing this specific program..." rows={4} {...field} /></FormControl><FormMessage /></FormItem>
-                        )}/>
-                         <FormField control={sopForm.control} name="whyThisInstitution" render={({ field }) => (
-                          <FormItem><FormLabel>Why This Institution? (If different from general program reasons)</FormLabel><FormControl><Textarea placeholder="Explain your reasons for choosing this specific institution..." rows={3} {...field} /></FormControl><FormMessage /></FormItem>
-                        )}/>
-                        <FormField control={sopForm.control} name="whyThisCountry" render={({ field }) => (
-                          <FormItem><FormLabel>Why This Country?</FormLabel><FormControl><Textarea placeholder="Explain your reasons for choosing this particular country..." rows={3} {...field} /></FormControl><FormMessage /></FormItem>
-                        )}/>
-                         <FormField control={sopForm.control} name="whyNotHomeCountry" render={({ field }) => (
-                          <FormItem><FormLabel>Reasons for Not Studying in Home Country (Optional)</FormLabel><FormControl><Textarea placeholder="Explain why you are choosing to study abroad instead of in your home country..." rows={3} {...field} /></FormControl><FormMessage /></FormItem>
-                        )}/>
-                        <FormField control={sopForm.control} name="futureGoals" render={({ field }) => (
-                          <FormItem><FormLabel>Future Goals & Career Aspirations (Narrative)</FormLabel><FormControl><Textarea placeholder="Describe your short-term and long-term career goals and how this program and study in this country will help you achieve them..." rows={4} {...field} /></FormControl><FormMessage /></FormItem>
-                        )}/>
-                        <FormField control={sopForm.control} name="expectedInitialSalaryNpr" render={({ field }) => (
-                            <FormItem><FormLabel>Expected Initial Salary in Nepal (NPR, Optional)</FormLabel><FormControl><Input placeholder="e.g., 80,000 - 90,000" {...field} /></FormControl><FormMessage /></FormItem>
-                        )}/>
-                         <FormField control={sopForm.control} name="incentivesToReturnHome" render={({ field }) => (
-                          <FormItem><FormLabel>Incentives to Return to Home Country (Narrative)</FormLabel><FormControl><Textarea placeholder="Detail your ties to your home country and reasons for returning..." rows={3} {...field} /></FormControl><FormMessage /></FormItem>
-                        )}/>
-                        <FormField control={sopForm.control} name="additionalPoints" render={({ field }) => (
-                          <FormItem><FormLabel>Other Specific Points to Include (Optional)</FormLabel><FormControl><Textarea placeholder="Any other specific information or points you want the tool to consider for your SOP..." rows={3} {...field} /></FormControl><FormMessage /></FormItem>
-                        )}/>
-                         <FormField control={sopForm.control} name="tone" render={({ field }) => (
-                              <FormItem><FormLabel>Desired Tone (informational)</FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
-                                  <FormControl><SelectTrigger><SelectValue placeholder="Select tone" /></SelectTrigger></FormControl>
-                                  <SelectContent>
-                                      <SelectItem value="Formal">Formal</SelectItem>
-                                      <SelectItem value="Slightly Informal">Slightly Informal</SelectItem>
-                                      <SelectItem value="Enthusiastic">Enthusiastic</SelectItem>
-                                      <SelectItem value="Objective">Objective</SelectItem>
-                                  </SelectContent>
-                                </Select><FormMessage />
-                              </FormItem>
-                          )}/>
-                      </div>
-                    </CardContent>
-                    <CardFooter>
-                      <Button type="submit" disabled={isSopLoading} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-                        {isSopLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                        Generate SOP Draft
-                      </Button>
-                    </CardFooter>
-                  </form>
-                </Form>
-              </Card>
-
-              {showSopResultsArea && (
-                <div className={cn(
-                    "w-full md:col-span-1 space-y-6", 
-                    "transition-all duration-700 ease-out",
-                    sopResultsAnimatedIn ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"
-                )}>
-                  {isSopLoading && ( 
-                    <Card className="shadow-xl bg-card">
-                      <CardContent className="p-10 text-center">
-                        <Loader2 className="h-12 w-12 text-primary animate-spin mx-auto mb-4" />
-                        <p className="text-muted-foreground">Generating your SOP draft...</p>
-                      </CardContent>
-                    </Card>
-                  )}
-                  {sopError && !isSopLoading && (
-                    <Alert variant="destructive">
-                      <Info className="h-4 w-4" />
-                      <AlertTitle>Error Generating SOP</AlertTitle>
-                      <AlertDescription>{sopError}</AlertDescription>
-                    </Alert>
-                  )}
-                  {sopResult && !isSopLoading && (
-                    <Card className="shadow-xl bg-gradient-to-br from-accent/10 to-background">
-                      <CardHeader className="flex flex-row justify-between items-center">
-                        <div>
-                          <CardTitle className="font-headline text-accent flex items-center"><Sparkles className="mr-2 h-6 w-6" /> Your Template-Based SOP Draft</CardTitle>
-                           <CardDescription>Review, edit, and extensively personalize this draft. This is a starting point based on common structures.</CardDescription>
-                        </div>
-                        <Button onClick={handleCopySop} variant="outline" size="sm">
-                          <CopyIcon className="mr-2 h-4 w-4" /> Copy SOP
-                        </Button>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <Textarea
-                          ref={sopOutputRef}
-                          value={sopResult.sopText}
-                          readOnly
-                          className="w-full h-96 text-sm bg-background/70 resize-none" 
-                        />
-                        <Alert>
-                            <Info className="h-4 w-4" />
-                            <AlertTitle className="font-semibold">Important Note</AlertTitle>
-                            <AlertDescription>
-                                This SOP is generated from a template based on your inputs. It is crucial to thoroughly review, personalize, and edit it to ensure it accurately reflects your unique voice, experiences, and aspirations. Do not submit it without significant personalization. Consult our advisors for expert review.
-                            </AlertDescription>
-                        </Alert>
-                         <div className="pt-4 text-center">
-                              <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
-                                  <Link href="/contact?service=sop_review">
-                                      Get Expert SOP Review & Guidance
-                                  </Link>
-                              </Button>
-                          </div>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-              )}
-            </div>
+                <CardContent className="text-center py-12">
+                    <Construction className="h-16 w-16 text-accent mx-auto mb-4" />
+                    <p className="text-xl font-semibold text-foreground/90 mb-2">Coming Soon!</p>
+                    <p className="text-foreground/70">
+                        We're working hard to bring you an amazing SOP Generator. Please check back later!
+                    </p>
+                     <Button asChild variant="link" className="mt-4">
+                        <Link href="/contact">Contact us for SOP assistance</Link>
+                    </Button>
+                </CardContent>
+            </Card>
           </TabsContent>
 
-          {/* Document Checklist Tab Content (Remains Unchanged) */}
+          {/* Document Checklist Tab Content */}
           <TabsContent value="document-checklist">
             <div className={cn(
                 "w-full",

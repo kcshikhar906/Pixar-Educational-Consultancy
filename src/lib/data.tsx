@@ -465,19 +465,8 @@ export const fieldsOfStudy: string[] = [
   "Zoology",
 ];
 
-export const sopCountries = [
-  { name: 'USA', value: 'USA' },
-  { name: 'Australia', value: 'Australia' },
-  { name: 'UK', value: 'UK' },
-  { name: 'Canada', value: 'Canada' },
-  { name: 'New Zealand', value: 'New Zealand' },
-  { name: 'Germany', value: 'Germany' },
-  { name: 'France', value: 'France' },
-  { name: 'Ireland', value: 'Ireland' },
-  { name: 'Netherlands', value: 'Netherlands' },
-];
 
-export const allEducationLevels = [ // For SOP Generator form & Document Checklist
+export const allEducationLevels = [ 
   { name: "High School Diploma or Equivalent (e.g., +2, A-Levels)", value: "High School Diploma or Equivalent" },
   { name: "Diploma", value: "Diploma" },
   { name: "Postgraduate Diploma", value: "Postgraduate Diploma" },
@@ -487,7 +476,7 @@ export const allEducationLevels = [ // For SOP Generator form & Document Checkli
   { name: "Doctorate (PhD)", value: "Doctorate (PhD)" },
 ];
 
-export const educationLevelOptions = [ // For Homepage Pathway Planner (simpler list)
+export const educationLevelOptions = [ 
   { value: "Associate Degree", label: "Seeking Associate Degree" },
   { value: "Bachelor's Degree", label: "Seeking Bachelor's Degree" },
   { value: "Postgraduate Diploma", label: "Seeking Postgraduate Diploma" },
