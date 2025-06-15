@@ -478,8 +478,10 @@ export const sopCountries = [
 
 export const allEducationLevels = [
   { name: "High School Diploma or Equivalent (e.g., +2, A-Levels)", value: "High School Diploma or Equivalent" },
+  { name: "Diploma", value: "Diploma" },
   { name: "Associate Degree", value: "Associate Degree" },
   { name: "Bachelor's Degree", value: "Bachelor's Degree" },
+  { name: "Postgraduate Diploma", value: "Postgraduate Diploma" },
   { name: "Master's Degree", value: "Master's Degree" },
   { name: "Doctorate (PhD)", value: "Doctorate (PhD)" },
 ];
@@ -536,7 +538,7 @@ export const gpaScaleOptions = [
   { value: "N/A", label: "Not Applicable / Varies" },
 ];
 
-export const educationLevelOptions = [
+export const educationLevelOptions = [ // Used for homepage pathway planner
   { value: "Associate Degree", label: "Seeking Associate Degree" },
   { value: "Bachelor's Degree", label: "Seeking Bachelor's Degree" },
   { value: "Postgraduate Diploma", label: "Seeking Postgraduate Diploma" },

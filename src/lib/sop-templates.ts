@@ -65,7 +65,7 @@ In conclusion, I am a highly motivated and dedicated individual with a clear vis
     criteria: { country: 'USA', educationLevel: "Master's Degree" },
     sections: {
       introduction: (input) => `
-With great enthusiasm, I, ${input.fullName}, submit my application for the Master's Degree program in ${input.fieldOfStudy} at a distinguished university in the United States. My ambition to specialize in ${input.fieldOfStudy} stems from a deep-seated interest and a desire to contribute to innovative advancements in this domain.
+With great enthusiasm, I, **${input.fullName}**, submit my application for the Master's Degree program in **${input.fieldOfStudy}** at a distinguished university in the United States. My ambition to specialize in **${input.fieldOfStudy}** stems from a deep-seated interest and a desire to contribute to innovative advancements in this domain.
       `.trim(),
       academicBackground: (input) => `
 My undergraduate studies have provided a robust foundation in [mention core subjects from input.academicBackground]. ${input.academicBackground}. This background has equipped me with the analytical and research skills necessary to excel in a demanding graduate program in the USA.
@@ -74,16 +74,45 @@ My undergraduate studies have provided a robust foundation in [mention core subj
 In addition to my academic pursuits, my involvement in ${input.extracurricularsWorkExperience.substring(0,70)}... has been crucial in developing a well-rounded perspective. ${input.extracurricularsWorkExperience}
       `.trim() : "",
       whyThisProgram: (input) => `
-The specific Master's program in ${input.fieldOfStudy} in the USA appeals to me due to ${input.whyThisProgram}. The American approach to graduate education, emphasizing research and practical application, is something I highly value.
+The specific Master's program in **${input.fieldOfStudy}** in the USA appeals to me due to ${input.whyThisProgram}. The **American approach to graduate education**, emphasizing research and practical application, is something I highly value.
       `.trim(),
       whyThisCountry: (input) => `
-The United States is globally recognized as a leader in ${input.fieldOfStudy}. ${input.whyThisCountry}. The opportunity to learn from and collaborate with leading experts in a dynamic and diverse academic environment is a primary reason for choosing the USA.
+The United States is globally recognized as a leader in **${input.fieldOfStudy}**. ${input.whyThisCountry}. The opportunity to learn from and collaborate with leading experts in a **dynamic and diverse academic environment** is a primary reason for choosing the USA.
       `.trim(),
       futureGoals: (input) => `
-My long-term career aspirations involve ${input.futureGoals}. A Master's degree from an American institution will provide the specialized knowledge and global network essential for achieving these goals and making a significant impact.
+My long-term career aspirations involve ${input.futureGoals}. A Master's degree from an American institution will provide the **specialized knowledge and global network** essential for achieving these goals and making a significant impact.
       `.trim(),
       conclusion: (input) => `
-I am confident that I possess the dedication, aptitude, and vision to succeed in this program and contribute positively to the university community. I eagerly anticipate the opportunity to further my education in ${input.fieldOfStudy} in the United States.
+I am confident that I possess the dedication, aptitude, and vision to succeed in this program and contribute positively to the university community. I eagerly anticipate the opportunity to further my education in **${input.fieldOfStudy}** in the United States.
+      `.trim(),
+    },
+  },
+  {
+    id: 'canada-diploma',
+    criteria: { country: 'Canada', educationLevel: "Diploma" }, // Match "Diploma" value from allEducationLevels
+    sections: {
+      introduction: (input) => `
+**Statement of Purpose: Diploma in ${input.fieldOfStudy} - Canada**
+
+My name is **${input.fullName}**, and I am writing to express my profound interest in pursuing the Diploma in **${input.fieldOfStudy}** in Canada. My aspiration to undertake this program stems from a strong desire to acquire **practical, industry-relevant skills** and to build a successful career in this field. I am particularly keen on studying in Canada due to its **globally recognized vocational education system** and its welcoming environment for international students.
+      `.trim(),
+      academicBackground: (input) => `
+My previous educational experiences, detailed as: **${input.academicBackground}**, have laid a foundational understanding that I am eager to build upon with the specialized, hands-on training offered by this diploma program. I believe my [mention a key strength or relevant subject from background] has prepared me for the practical nature of this course.
+      `.trim(),
+      extracurriculars: (input) => input.extracurricularsWorkExperience ? `
+Beyond my formal education, I have engaged in activities such as: **${input.extracurricularsWorkExperience}**. These experiences, whether volunteer work, part-time jobs, or personal projects, have helped me develop [mention 1-2 skills like problem-solving, teamwork, communication], which I am confident will be beneficial during my studies and future career.
+      `.trim() : "I am focused on dedicating my energies to this intensive diploma program to maximize my learning.",
+      whyThisProgram: (input) => `
+I have chosen the Diploma in **${input.fieldOfStudy}** specifically because **${input.whyThisProgram}**. I am particularly attracted to [mention 1-2 aspects like 'the program's focus on real-world projects', 'specific modules like X and Y', or 'the reputation of Canadian institutions for this diploma area']. This program's emphasis on **practical application over theoretical learning** is exactly what I seek to kickstart my career.
+      `.trim(),
+      whyThisCountry: (input) => `
+Canada is my preferred destination for this diploma program for several compelling reasons. **${input.whyThisCountry}**. The country's commitment to **high-quality vocational training**, its **strong industry links that facilitate co-op opportunities or internships**, and the **safe, multicultural society** make it an ideal place for me to learn and grow. Furthermore, the potential for **post-graduation work permits** offers a valuable chance to gain Canadian work experience.
+      `.trim(),
+      futureGoals: (input) => `
+Upon successful completion of this diploma, my immediate career goal is to **${input.futureGoals}**. I aim to apply the skills and knowledge gained in a practical setting, ideally within [mention type of company or industry in Canada or back home]. In the long term, I envision myself [mention long-term aspiration, e.g., becoming a specialist, starting my own venture, contributing to a specific sector in my home country]. This diploma is a **critical stepping stone** towards these aspirations.
+      `.trim(),
+      conclusion: (input) => `
+In conclusion, I am a highly motivated and practical-minded individual, eager to benefit from the focused and skill-oriented Diploma in **${input.fieldOfStudy}** in Canada. ${input.additionalPoints ? `**Additional Considerations:** ${input.additionalPoints}.` : ''} I am confident that this program will equip me with the necessary competencies for a thriving career and I am prepared to dedicate myself fully to this educational pursuit. Thank you for considering my application.
       `.trim(),
     },
   },
@@ -92,24 +121,26 @@ I am confident that I possess the dedication, aptitude, and vision to succeed in
 ];
 
 export function generateSopFromTemplate(input: SopGeneratorInput): string {
-  // Simple matching logic: find a specific template or fall back to generic
+  // Try to find the most specific template first
   let selectedTemplate = sopTemplates.find(
     (t) =>
       t.criteria.country === input.targetCountry &&
       t.criteria.educationLevel === input.targetEducationLevel
   );
 
+  // Fallback to country-specific if level-specific not found
   if (!selectedTemplate) {
-    selectedTemplate = sopTemplates.find(t => t.criteria.country === input.targetCountry);
+    selectedTemplate = sopTemplates.find(t => t.criteria.country === input.targetCountry && !t.criteria.educationLevel);
   }
   
+  // Fallback to generic if no specific template is found
   if (!selectedTemplate) {
     selectedTemplate = sopTemplates.find(t => t.id === 'generic');
   }
 
   if (!selectedTemplate) {
     // Should not happen if 'generic' template exists
-    return "Error: Could not find a suitable SOP template.";
+    return "Error: Could not find a suitable SOP template. Please ensure a 'generic' template is defined.";
   }
 
   const sections = selectedTemplate.sections;
@@ -118,16 +149,17 @@ export function generateSopFromTemplate(input: SopGeneratorInput): string {
   // Assemble SOP from sections
   fullSop += sections.introduction(input) + "\n\n";
   fullSop += sections.academicBackground(input) + "\n\n";
-  if (sections.extracurriculars && input.extracurricularsWorkExperience) {
-    fullSop += sections.extracurriculars(input) + "\n\n";
+  if (sections.extracurriculars && (input.extracurricularsWorkExperience || sections.id === 'canada-diploma')) { // ensure canada-diploma can render its default extracurricular text
+    const extracurricularText = sections.extracurriculars(input);
+    if (extracurricularText.trim()) {
+      fullSop += extracurricularText + "\n\n";
+    }
   }
   fullSop += sections.whyThisProgram(input) + "\n\n";
   fullSop += sections.whyThisCountry(input) + "\n\n";
   fullSop += sections.futureGoals(input) + "\n\n";
   fullSop += sections.conclusion(input);
   
-  // Basic placeholder replacement for any remaining {{PLACEHOLDERS}} in structured text
-  // This is a fallback if section functions don't cover all dynamic parts.
-  // Ideally, section functions should handle all specific replacements.
   return replacePlaceholders(fullSop, input);
 }
+
