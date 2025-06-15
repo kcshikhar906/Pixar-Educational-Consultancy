@@ -91,3 +91,18 @@ body {
     @apply border-input-border;
   }
 }
+
+/* Added for testimonial carousel */
+@layer utilities {
+  .animate-marquee {
+    animation: marquee 60s linear infinite; /* Adjust duration based on content length */
+  }
+  .pause-on-hover:hover {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); } /* Scrolls one full set of duplicated items */
+}

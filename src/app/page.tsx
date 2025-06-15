@@ -508,29 +508,37 @@ export default function HomePage() {
         )}
       >
         <SectionTitle title="Success Stories" subtitle="Hear from students who achieved their dreams with us." />
-        <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-8">
-          {testimonials.map((testimonial: Testimonial, index: number) => {
-            const [cardRef, isCardVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
-            return (
-            <div key={testimonial.id} ref={cardRef} className={cn("transition-all duration-700 ease-out", isCardVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")} style={{transitionDelay: `${index * 100}ms`}}>
-              <Card className="bg-card shadow-lg h-full">
-                <CardHeader className="flex flex-row items-center space-x-4 pb-2">
-                  {testimonial.avatarUrl && <Image src={testimonial.avatarUrl} alt={testimonial.name} width={60} height={60} className="rounded-full" data-ai-hint="person student" />}
-                  <div>
-                    <CardTitle className="font-headline text-primary">{testimonial.name}</CardTitle>
-                    <p className="text-sm text-accent">{testimonial.studyDestination}</p>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex mb-2">
-                    {[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 text-yellow-400 fill-yellow-400" />)}
-                  </div>
-                  <p className="text-foreground/80 italic">&quot;{testimonial.text}&quot;</p>
-                </CardContent>
-              </Card>
-            </div>
-            );
-          })}
+        <div className="relative w-full overflow-hidden group">
+          <div className="flex flex-nowrap animate-marquee pause-on-hover">
+            {[...testimonials, ...testimonials].map((testimonial: Testimonial, index: number) => (
+              <div key={`${testimonial.id}-${index}`} className="flex-shrink-0 w-[320px] sm:w-[360px] md:w-[400px] p-3">
+                <Card className="bg-card shadow-lg h-full flex flex-col">
+                  <CardHeader className="flex flex-row items-center space-x-4 pb-2">
+                    {testimonial.avatarUrl && (
+                      <Image 
+                        src={testimonial.avatarUrl} 
+                        alt={testimonial.name} 
+                        width={60} 
+                        height={60} 
+                        className="rounded-full" 
+                        data-ai-hint={testimonial.dataAiHint || "student person"}
+                      />
+                    )}
+                    <div>
+                      <CardTitle className="font-headline text-lg text-primary">{testimonial.name}</CardTitle>
+                      <p className="text-xs text-accent">{testimonial.studyDestination}</p>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="flex-grow">
+                    <div className="flex mb-2">
+                      {[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 text-yellow-400 fill-yellow-400" />)}
+                    </div>
+                    <p className="text-foreground/80 italic text-sm">&quot;{testimonial.text}&quot;</p>
+                  </CardContent>
+                </Card>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     </div>

@@ -40,29 +40,57 @@ export interface Testimonial {
   text: string;
   studyDestination: string;
   avatarUrl?: string;
+  dataAiHint?: string;
 }
 
 export const testimonials: Testimonial[] = [
   {
-    id: '1',
-    name: 'Sarah L.',
-    text: "Pixar Edu made my dream of studying in Australia a reality. Their guidance was invaluable!",
-    studyDestination: 'University of Melbourne, Australia',
+    id: 'testimonial-1',
+    name: 'Bhawana Paneru',
+    studyDestination: 'University of Central Arkansas, USA',
+    text: "Pixar Edu provided excellent support throughout my application process to the USA. Highly recommended for their professionalism!",
     avatarUrl: 'https://placehold.co/100x100.png',
+    dataAiHint: 'student portrait',
   },
   {
-    id: '2',
-    name: 'John B.',
-    text: "The team at Pixar Edu is extremely knowledgeable and supportive. They helped me navigate the complex US visa process seamlessly.",
-    studyDestination: 'Stanford University, USA',
+    id: 'testimonial-2',
+    name: 'Pratik B K',
+    studyDestination: 'Georgian College, Canada',
+    text: "My journey to Canada was made much smoother thanks to the Pixar Edu team. Their guidance on visa and college selection was top-notch.",
     avatarUrl: 'https://placehold.co/100x100.png',
+    dataAiHint: 'student smiling',
   },
   {
-    id: '3',
-    name: 'Priya K.',
-    text: "I highly recommend Pixar Edu for anyone looking to study in Europe. Their country guides and university suggestions were spot on.",
-    studyDestination: 'ETH Zurich, Switzerland',
+    id: 'testimonial-3',
+    name: 'Prashana Thapa Magar',
+    studyDestination: 'Cardiff Metropolitan University, UK',
+    text: "The counselors at Pixar Edu were incredibly helpful in securing my admission and visa for the UK. A truly professional service!",
     avatarUrl: 'https://placehold.co/100x100.png',
+    dataAiHint: 'happy student',
+  },
+  {
+    id: 'testimonial-4',
+    name: 'Arju Pokhrel',
+    studyDestination: 'University of New Castle, Australia',
+    text: "I'm grateful to Pixar Edu for their expert advice on studying in Australia. They made a complex process seem easy.",
+    avatarUrl: 'https://placehold.co/100x100.png',
+    dataAiHint: 'graduate student',
+  },
+  {
+    id: 'testimonial-5',
+    name: 'Srijana Rana',
+    studyDestination: 'Eastern Institute of Technology, New Zealand',
+    text: "Choosing Pixar Edu was the best decision for my New Zealand study plans. Their support was exceptional from start to finish.",
+    avatarUrl: 'https://placehold.co/100x100.png',
+    dataAiHint: 'student excited',
+  },
+  {
+    id: 'testimonial-6',
+    name: 'Bivusha Gautam',
+    studyDestination: 'Arkansas State University, USA',
+    text: "Thanks to Pixar Edu, I am now pursuing my dream course in the USA. Their visa guidance was particularly helpful.",
+    avatarUrl: 'https://placehold.co/100x100.png',
+    dataAiHint: 'focused student',
   },
 ];
 
@@ -395,6 +423,7 @@ export const fieldsOfStudy: string[] = [
   "Data Science",
   "Dentistry",
   "Design (Graphic, Industrial, etc.)",
+  "Diploma",
   "Drama and Theatre Arts",
   "Earth Sciences",
   "Economics",
@@ -446,6 +475,7 @@ export const fieldsOfStudy: string[] = [
   "Physics",
   "Physiology",
   "Political Science",
+  "Postgraduate Diploma",
   "Psychology",
   "Public Health",
   "Robotics",
