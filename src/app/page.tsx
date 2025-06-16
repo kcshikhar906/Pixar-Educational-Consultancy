@@ -9,7 +9,7 @@ import SectionTitle from '@/components/ui/section-title';
 import { ArrowRight, CheckCircle, Star, Loader2, Sparkles, MapPin, BookOpen, University as UniversityIconLucide, Info as InfoIcon, Search, ExternalLink, Wand2, Briefcase, DollarSign, ClipboardCheck, CalendarDays, Award as AwardIconFromData } from 'lucide-react';
 import { testimonials, services, fieldsOfStudy, gpaScaleOptions, educationLevelOptions } from '@/lib/data.tsx';
 import type { Testimonial, Service } from '@/lib/data.tsx';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react'; // Added useRef
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -511,7 +511,7 @@ export default function HomePage() {
         <div className="relative w-full overflow-hidden group">
           <div className="flex flex-nowrap animate-marquee pause-on-hover">
             {[...testimonials, ...testimonials].map((testimonial: Testimonial, index: number) => (
-              <div key={`${testimonial.id}-${index}`} className="flex-shrink-0 w-[320px] sm:w-[360px] md:w-[400px] p-3">
+              <div key={`${testimonial.id}-${index}`} className="flex-shrink-0 w-[280px] sm:w-[320px] md:w-[360px] lg:w-[400px] p-3">
                 <Card className="bg-card shadow-lg h-full flex flex-col">
                   <CardHeader className="flex flex-row items-center space-x-4 pb-2">
                     {testimonial.avatarUrl && (
