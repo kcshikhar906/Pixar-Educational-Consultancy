@@ -503,9 +503,9 @@ export default function HomePage() {
           <div
             ref={scrollContainerRef}
             className={cn(
-              "py-2",
-              "flex flex-nowrap overflow-x-auto space-x-4 snap-x snap-mandatory scroll-smooth", // Horizontal scroll for smaller screens
-              "lg:grid lg:grid-cols-5 lg:gap-4 lg:space-x-0 lg:overflow-visible lg:snap-none" // Grid for large screens
+              "py-2 no-scrollbar", // Added no-scrollbar class here
+              "flex flex-nowrap overflow-x-auto space-x-4 snap-x snap-mandatory scroll-smooth", 
+              "lg:grid lg:grid-cols-5 lg:gap-4 lg:space-x-0 lg:overflow-visible lg:snap-none" 
             )}
           >
             {upcomingIntakeData.map((intake: IntakeInfo, index: number) => {
@@ -518,8 +518,8 @@ export default function HomePage() {
                   ref={intakeCardRef}
                   className={cn(
                     "transition-all duration-500 ease-out snap-center",
-                    "flex-shrink-0 w-[250px] xs:w-[270px] sm:w-[290px]", // Widths for scrollable view
-                    "lg:w-full lg:flex-shrink-1", // Reset width for grid view
+                    "flex-shrink-0 w-[250px] xs:w-[270px] sm:w-[290px]", 
+                    "lg:w-full lg:flex-shrink-1", 
                     isIntakeCardVisibleInner ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
                   )}
                   style={{transitionDelay: `${index * 100}ms`}}
@@ -542,7 +542,7 @@ export default function HomePage() {
                     </CardContent>
                     <CardFooter className="pt-2">
                       <Button asChild variant="link" className="text-accent p-0 text-sm hover:text-primary">
-                        <Link href={`/country-guides#${intake.countrySlug}`}>
+                         <Link href={`/country-guides#${intake.countrySlug}`}>
                           Learn more <ArrowRight className="ml-1 h-4 w-4" />
                         </Link>
                       </Button>
@@ -557,7 +557,7 @@ export default function HomePage() {
             variant="outline"
             size="icon"
             className="absolute -left-2 sm:-left-4 top-1/2 -translate-y-1/2 z-10 bg-card hover:bg-card/80 opacity-80 hover:opacity-100 shadow-md rounded-full p-2 h-10 w-10 lg:hidden"
-            onClick={() => handleScroll(-280)} // Scroll amount
+            onClick={() => handleScroll(-280)} 
             aria-label="Scroll left"
           >
             <ChevronLeft className="h-6 w-6" />
@@ -566,7 +566,7 @@ export default function HomePage() {
             variant="outline"
             size="icon"
             className="absolute -right-2 sm:-right-4 top-1/2 -translate-y-1/2 z-10 bg-card hover:bg-card/80 opacity-80 hover:opacity-100 shadow-md rounded-full p-2 h-10 w-10 lg:hidden"
-            onClick={() => handleScroll(280)} // Scroll amount
+            onClick={() => handleScroll(280)} 
             aria-label="Scroll right"
           >
             <ChevronRight className="h-6 w-6" />
@@ -693,4 +693,3 @@ export default function HomePage() {
     </div>
   );
 }
-
