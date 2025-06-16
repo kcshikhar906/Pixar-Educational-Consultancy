@@ -35,14 +35,14 @@ const generalContactFormSchema = z.object({
 type GeneralContactFormValues = z.infer<typeof generalContactFormSchema>;
 
 // Constants for GENERAL CONTACT FORM submission
-const GENERAL_CONTACT_GOOGLE_FORM_ACTION_URL = 'REPLACE_WITH_YOUR_GENERAL_CONTACT_FORM_ACTION_URL'; // User needs to set this
-const GENERAL_CONTACT_NAME_ENTRY_ID = 'REPLACE_WITH_GENERAL_CONTACT_NAME_FIELD_ENTRY_ID';
-const GENERAL_CONTACT_EMAIL_ENTRY_ID = 'REPLACE_WITH_GENERAL_CONTACT_EMAIL_FIELD_ENTRY_ID';
-const GENERAL_CONTACT_PHONE_NUMBER_ENTRY_ID = 'REPLACE_WITH_GENERAL_CONTACT_PHONE_FIELD_ENTRY_ID';
-const GENERAL_CONTACT_EDUCATION_ENTRY_ID = 'REPLACE_WITH_GENERAL_CONTACT_EDUCATION_FIELD_ENTRY_ID';
-const GENERAL_CONTACT_ENGLISH_TEST_ENTRY_ID = 'REPLACE_WITH_GENERAL_CONTACT_ENGLISH_TEST_FIELD_ENTRY_ID';
-const GENERAL_CONTACT_DESTINATION_ENTRY_ID = 'REPLACE_WITH_GENERAL_CONTACT_DESTINATION_FIELD_ENTRY_ID';
-const GENERAL_CONTACT_ADDITIONAL_NOTES_ENTRY_ID = 'REPLACE_WITH_GENERAL_CONTACT_ADDITIONAL_NOTES_FIELD_ENTRY_ID';
+const GENERAL_CONTACT_GOOGLE_FORM_ACTION_URL = 'https://docs.google.com/forms/d/e/1FAIpQLScmMqPLB4NX_BZSSS4C3_2_9wNga-GBmbznGc9nNCs231IeaA/formResponse';
+const GENERAL_CONTACT_NAME_ENTRY_ID = 'entry.381136677';
+const GENERAL_CONTACT_EMAIL_ENTRY_ID = 'entry.897898403';
+const GENERAL_CONTACT_PHONE_NUMBER_ENTRY_ID = 'entry.1344864969';
+const GENERAL_CONTACT_EDUCATION_ENTRY_ID = 'entry.2085503739';
+const GENERAL_CONTACT_ENGLISH_TEST_ENTRY_ID = 'entry.1325410288';
+const GENERAL_CONTACT_DESTINATION_ENTRY_ID = 'entry.22741016';
+const GENERAL_CONTACT_ADDITIONAL_NOTES_ENTRY_ID = 'entry.1419649728';
 
 
 async function submitToGeneralContactGoogleSheet(data: GeneralContactFormValues): Promise<{ success: boolean; message: string }> {
@@ -52,14 +52,13 @@ async function submitToGeneralContactGoogleSheet(data: GeneralContactFormValues)
   }
 
   const formData = new FormData();
-  // Map form fields to Google Form entry IDs
   formData.append(GENERAL_CONTACT_NAME_ENTRY_ID, data.name);
   formData.append(GENERAL_CONTACT_EMAIL_ENTRY_ID, data.email);
   formData.append(GENERAL_CONTACT_PHONE_NUMBER_ENTRY_ID, data.phoneNumber);
   formData.append(GENERAL_CONTACT_EDUCATION_ENTRY_ID, data.lastCompletedEducation);
   formData.append(GENERAL_CONTACT_ENGLISH_TEST_ENTRY_ID, data.englishProficiencyTest);
   formData.append(GENERAL_CONTACT_DESTINATION_ENTRY_ID, data.preferredStudyDestination);
-  if (data.additionalNotes) {
+  if (data.additionalNotes && GENERAL_CONTACT_ADDITIONAL_NOTES_ENTRY_ID !== 'REPLACE_WITH_YOUR_ADDITIONAL_NOTES_FIELD_ENTRY_ID_FOR_GENERAL') {
     formData.append(GENERAL_CONTACT_ADDITIONAL_NOTES_ENTRY_ID, data.additionalNotes);
   }
 
@@ -107,7 +106,7 @@ async function submitToPrepClassGoogleSheet(data: PreparationClassFormValues): P
   if (data.preferredStartDate) {
     formData.append(PREP_CLASS_PREFERRED_START_DATE_ENTRY_ID, format(data.preferredStartDate, "yyyy-MM-dd"));
   }
-  if (data.additionalNotes) {
+  if (data.additionalNotes && PREP_CLASS_ADDITIONAL_NOTES_ENTRY_ID !== 'REPLACE_WITH_YOUR_ADDITIONAL_NOTES_FIELD_ENTRY_ID_FOR_PREP') {
     formData.append(PREP_CLASS_ADDITIONAL_NOTES_ENTRY_ID, data.additionalNotes);
   }
 
