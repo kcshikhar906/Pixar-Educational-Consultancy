@@ -1,3 +1,3 @@
-// This file is no longer needed as the SOP generator feature
-// using templates has been removed and replaced with a "Coming Soon" message.
-// Delete this file.
+// This file is being deleted as the SOP template generator feature
+// was removed (currently "Coming Soon" on ai-assistants page)
+// and these templates are no longer used.

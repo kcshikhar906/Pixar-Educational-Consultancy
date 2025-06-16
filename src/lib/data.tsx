@@ -438,13 +438,14 @@ export const englishTestOptions = [
 ];
 
 export const testPreparationOptions = [
-  { value: "IELTS", label: "IELTS Prep" },
-  { value: "PTE", label: "PTE Prep" },
-  { value: "TOEFL", label: "TOEFL Prep" },
-  { value: "DUOLINGO", label: "Duolingo Prep" },
-  { value: "USA_VISA_PREP", label: "Unlimited USA Visa Prep" },
+  { value: "IELTS Prep", label: "IELTS Prep" },
+  { value: "PTE Prep", label: "PTE Prep" },
+  { value: "TOEFL Prep", label: "TOEFL Prep" },
+  { value: "Duolingo Prep", label: "Duolingo Prep" },
+  { value: "USA Visa Prep", label: "USA Visa Prep (Unlimited)" },
   { value: "General English", label: "General English" },
 ];
+
 
 const getFlagEmoji = (countryCode: string): string => {
   if (!countryCode || countryCode.length !== 2) return '🏳️'; // Default flag
@@ -456,39 +457,11 @@ const getFlagEmoji = (countryCode: string): string => {
 };
 
 export const studyDestinationOptions = [
-  { value: "USA", label: `${getFlagEmoji('US')} USA` },
-  { value: "New Zealand", label: `${getFlagEmoji('NZ')} New Zealand` },
-  { value: "Australia", label: `${getFlagEmoji('AU')} Australia` },
-  { value: "Canada", label: `${getFlagEmoji('CA')} Canada` },
-  { value: "UK", label: `${getFlagEmoji('GB')} UK` },
-];
-
-export const appointmentServices = [
-  { value: 'ielts_class_inquiry', label: 'IELTS Class Inquiry' },
-  { value: 'pte_class_inquiry', label: 'PTE Class Inquiry' },
-  { value: 'general_consultation', label: 'General Education Consultation' },
-  { value: 'university_application_assistance', label: 'University Application Assistance' },
-  { value: 'visa_counseling_usa', label: 'Visa Counseling (USA)' },
-  { value: 'visa_counseling_australia', label: 'Visa Counseling (Australia)' },
-  { value: 'visa_counseling_uk', label: 'Visa Counseling (UK)' },
-  { value: 'visa_counseling_europe', label: 'Visa Counseling (Europe)' },
-  { value: 'visa_counseling_new_zealand', label: 'Visa Counseling (New Zealand)' },
-  { value: 'pre_departure_briefing', label: 'Pre-Departure Briefing' },
-  { value: 'career_counseling', label: 'Career Counseling' },
-  { value: 'other', label: 'Other (Please specify in notes)' },
-];
-
-export const appointmentStaff = [
-  { value: 'pradeep_khadka', label: 'Pradeep Khadka (CEO)' },
-  { value: 'pawan_acharye', label: 'Pawan Acharye' },
-  { value: 'any_available', label: 'Any Available Advisor' },
-];
-
-export const appointmentTimeSlots = [
-  '09:00 AM - 09:30 AM', '09:30 AM - 10:00 AM', '10:00 AM - 10:30 AM', '10:30 AM - 11:00 AM',
-  '11:00 AM - 11:30 AM', '11:30 AM - 12:00 PM', '12:00 PM - 12:30 PM', '12:30 PM - 01:00 PM',
-  '01:00 PM - 01:30 PM', '01:30 PM - 02:00 PM', '02:00 PM - 02:30 PM', '02:30 PM - 03:00 PM',
-  '03:00 PM - 03:30 PM', '03:30 PM - 04:00 PM', '04:00 PM - 04:30 PM', '04:30 PM - 05:00 PM',
+  { value: "USA", label: `${getFlagEmoji("US")} USA` },
+  { value: "New Zealand", label: `${getFlagEmoji("NZ")} New Zealand` },
+  { value: "Australia", label: `${getFlagEmoji("AU")} Australia` },
+  { value: "Canada", label: `${getFlagEmoji("CA")} Canada` },
+  { value: "UK", label: `${getFlagEmoji("GB")} UK` },
 ];
 
 export const gpaScaleOptions = [

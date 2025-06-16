@@ -1,3 +1,3 @@
-// This file is no longer needed as the SOP input schema is now defined
-// directly in the ai-assistants/page.tsx component.
-// Delete this file.
+// This file is being deleted as it was related to the
+// obsolete AI-based SOP generator flow (sop-generator-flow.ts)
+// which has been removed.
