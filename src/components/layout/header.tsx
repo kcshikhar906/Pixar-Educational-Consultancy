@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Home, Info, Briefcase, MapPin, GraduationCap, Mail, ChevronDown, Menu, Wand2, HelpCircle, Sparkles, Share2, CheckSquare, MessageCircleQuestion } from 'lucide-react'; // Added MessageCircleQuestion
+import { Home, Info, Briefcase, MapPin, GraduationCap, Mail, ChevronDown, Menu, Wand2, HelpCircle, Sparkles, Share2, CheckSquare, MessageCircleQuestion } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -24,17 +24,30 @@ const navItems = [
     icon: Sparkles,
     subItems: [
       { href: '/ai-assistants', label: 'Smart Tools', icon: Wand2 },
-      { href: '/book-appointment', label: 'English Test Guide', icon: HelpCircle }, // This was English Test Guide
+      { href: '/book-appointment', label: 'English Test Guide', icon: HelpCircle },
       { href: '/pre-departure-toolkit', label: 'Pre-Departure Toolkit', icon: CheckSquare },
-      { href: '/interview-qa', label: 'Interview Q&A', icon: MessageCircleQuestion }, // New Interview Q&A link
+      { href: '/interview-qa', label: 'Interview Q&A', icon: MessageCircleQuestion },
     ],
   },
   { href: '/connect', label: 'Connect', icon: Share2 },
   { href: '/contact', label: 'Contact Us', icon: Mail },
 ];
 
+const MD_BREAKPOINT = 768; // Tailwind's 'md' breakpoint
+
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Effect to close mobile menu if window is resized to desktop width
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= MD_BREAKPOINT && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isMobileMenuOpen]);
 
   const NavLink = ({ href, children, icon: Icon }: { href: string; children: React.ReactNode; icon: React.ElementType }) => (
     <Link href={href} passHref>
@@ -161,6 +174,4 @@ export default function Header() {
     </header>
   );
 }
-    
-
     
