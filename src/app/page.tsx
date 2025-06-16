@@ -493,7 +493,7 @@ export default function HomePage() {
         )}
       >
         <SectionTitle title="Upcoming Intakes & Deadlines" subtitle="Plan ahead for key application windows in popular countries." />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {upcomingIntakeData.map((intake: IntakeInfo, index: number) => {
             const [intakeCardRef, isIntakeCardVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
             const timeRemainingText = intakeTimes[intake.countrySlug]?.displayText || 'Calculating...';
@@ -501,28 +501,25 @@ export default function HomePage() {
             return (
               <div key={intake.countrySlug} ref={intakeCardRef} className={cn("transition-all duration-500 ease-out", isIntakeCardVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")} style={{transitionDelay: `${index * 100}ms`}}>
                 <Card className="bg-card shadow-lg hover:shadow-xl transition-shadow h-full flex flex-col">
-                  <CardHeader>
-                    <CardTitle className="font-headline text-xl text-primary flex items-center">
-                      <span className="text-2xl mr-2">{intake.flagEmoji}</span>{intake.countryName}
+                  <CardHeader className="pb-3">
+                    <CardTitle className="font-headline text-lg text-primary flex items-center">
+                      <span className="text-xl mr-2">{intake.flagEmoji}</span>{intake.countryName}
                     </CardTitle>
-                    <CardDescription className="text-xs text-muted-foreground">{intake.intakeNote}</CardDescription>
                   </CardHeader>
-                  <CardContent className="flex-grow space-y-2">
-                    <div className="flex items-center text-sm">
-                      <intake.icon className="h-5 w-5 text-accent mr-2" />
-                      <span className="font-medium">Next Intake:</span>&nbsp;
-                      {intake.nextIntakeDate ? format(new Date(intake.nextIntakeDate), "MMMM d, yyyy") : 'Contact for details'}
+                  <CardContent className="flex-grow space-y-1.5 text-sm pt-0">
+                    <div className="flex items-center" title={`Specific intake period: ${intake.intakeNote}. Actual start: ${intake.nextIntakeDate ? format(new Date(intake.nextIntakeDate), "MMMM d, yyyy") : 'N/A'}`}>
+                      <CalendarDays className="h-4 w-4 text-accent mr-2 flex-shrink-0" />
+                      <span className="text-foreground/90 font-medium">{intake.intakeNote}</span>
                     </div>
-                    <div className="flex items-center text-sm">
-                      <Clock className="h-5 w-5 text-accent mr-2" />
-                      <span className="font-medium">Time Remaining:</span>&nbsp;
+                    <div className="flex items-center">
+                      <Clock className="h-4 w-4 text-accent mr-2 flex-shrink-0" />
                       <span className="text-foreground/80">{timeRemainingText}</span>
                     </div>
                   </CardContent>
-                  <CardFooter>
-                    <Button asChild variant="link" className="text-accent p-0 text-sm">
+                  <CardFooter className="pt-2">
+                    <Button asChild variant="link" className="text-accent p-0 text-sm hover:text-primary">
                       <Link href={`/country-guides#${intake.countrySlug}`}>
-                        Learn More <ArrowRight className="ml-1 h-4 w-4" />
+                        Country Guide <ArrowRight className="ml-1 h-4 w-4" />
                       </Link>
                     </Button>
                   </CardFooter>
