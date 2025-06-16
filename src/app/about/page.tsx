@@ -146,13 +146,13 @@ export default function AboutPage() {
       <section ref={s5Ref} className={cn("bg-secondary/50 py-16 rounded-lg shadow-inner transition-all duration-700 ease-out", s5Visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")}>
         <div className="container mx-auto px-4">
           <SectionTitle title="Meet Our Expert Team" subtitle="Dedicated professionals passionate about your educational journey." />
-          <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
             {teamMembers.map((member: TeamMember, index: number) => {
-               const [cardRef, cardVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.2 });
+               const [cardRef, cardVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
               return (
                 <div key={member.id} ref={cardRef} className={cn("transition-all duration-500 ease-out", cardVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")} style={{transitionDelay: `${index * 100}ms`}}>
                   <Card className="text-center overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-card h-full">
-                    <div className="relative h-56 w-full">
+                    <div className="relative h-40 w-full">
                       <Image 
                         src={member.imageUrl} 
                         alt={member.name} 
@@ -161,12 +161,12 @@ export default function AboutPage() {
                         data-ai-hint={member.dataAiHint || 'professional portrait'}
                       />
                     </div>
-                    <CardHeader className="pt-6">
-                      <CardTitle className="font-headline text-xl text-primary">{member.name}</CardTitle>
-                      <p className="text-sm text-accent font-medium">{member.role}</p>
+                    <CardHeader className="pt-4 pb-2">
+                      <CardTitle className="font-headline text-lg text-primary">{member.name}</CardTitle>
+                      <p className="text-xs text-accent font-medium">{member.role}</p>
                     </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-foreground/70">{member.bio}</p>
+                    <CardContent className="px-4 pb-4">
+                      <p className="text-xs text-foreground/70">{member.bio}</p>
                     </CardContent>
                   </Card>
                 </div>
@@ -204,5 +204,3 @@ export default function AboutPage() {
     </div>
   );
 }
-
-    

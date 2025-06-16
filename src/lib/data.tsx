@@ -180,20 +180,44 @@ export interface TeamMember {
 
 export const teamMembers: TeamMember[] = [
   {
-    id: 'team-1',
-    name: 'Saubhana Bhandari',
-    role: 'Front Desk Officer',
-    bio: 'Manages front office operations and assists students with initial inquiries, ensuring a welcoming experience.',
-    imageUrl: 'https://placehold.co/300x300.png',
-    dataAiHint: 'professional woman',
+    id: 'team-13',
+    name: 'Pradeep Khadka',
+    role: 'Founder & CEO',
+    bio: 'With over 15 years of experience in international education, Pradeep is passionate about helping students achieve their academic dreams.',
+    imageUrl: '/co.jpg', 
+    dataAiHint: 'ceo man',
   },
   {
-    id: 'team-2',
-    name: 'Shyam Babu Ojha',
-    role: 'New Zealand Counselor',
-    bio: 'Specializes in New Zealand university admissions and visa processes, providing expert guidance.',
+    id: 'team-8',
+    name: 'Pawan Acharya',
+    role: 'Managing Director',
+    bio: 'Oversees the operational and strategic direction of Pixar Educational Consultancy, ensuring service excellence.',
     imageUrl: 'https://placehold.co/300x300.png',
-    dataAiHint: 'counselor man',
+    dataAiHint: 'director man',
+  },
+  {
+    id: 'team-10',
+    name: 'Anisha Thapa',
+    role: 'Prep Class Head',
+    bio: 'Leads our English language test preparation programs (IELTS, PTE, TOEFL, Duolingo), ensuring high-quality coaching.',
+    imageUrl: 'https://placehold.co/300x300.png',
+    dataAiHint: 'teacher woman',
+  },
+  {
+    id: 'team-12',
+    name: 'Shikhar KC',
+    role: 'IT Head',
+    bio: 'Manages our IT infrastructure and digital platforms, ensuring smooth technological operations.',
+    imageUrl: 'https://placehold.co/300x300.png',
+    dataAiHint: 'tech professional',
+  },
+  {
+    id: 'team-9',
+    name: 'Sabina Thapa',
+    role: 'Australia Counselor',
+    bio: 'Provides specialized counseling for students aspiring to study in Australia, focusing on admissions and visas.',
+    imageUrl: 'https://placehold.co/300x300.png',
+    dataAiHint: 'counselor woman',
   },
   {
     id: 'team-3',
@@ -202,6 +226,14 @@ export const teamMembers: TeamMember[] = [
     bio: 'Expert in U.S. university applications, scholarships, and F-1 visa procedures.',
     imageUrl: 'https://placehold.co/300x300.png',
     dataAiHint: 'advisor man',
+  },
+  {
+    id: 'team-2',
+    name: 'Shyam Babu Ojha',
+    role: 'New Zealand Counselor',
+    bio: 'Specializes in New Zealand university admissions and visa processes, providing expert guidance.',
+    imageUrl: 'https://placehold.co/300x300.png',
+    dataAiHint: 'counselor man',
   },
   {
     id: 'team-4',
@@ -228,36 +260,12 @@ export const teamMembers: TeamMember[] = [
     dataAiHint: 'woman team',
   },
   {
-    id: 'team-7',
-    name: 'Sunita Khadka',
-    role: 'Office Caretaker',
-    bio: 'Ensures a clean, organized, and welcoming office environment for students and staff.',
+    id: 'team-1',
+    name: 'Saubhana Bhandari',
+    role: 'Front Desk Officer',
+    bio: 'Manages front office operations and assists students with initial inquiries, ensuring a welcoming experience.',
     imageUrl: 'https://placehold.co/300x300.png',
-    dataAiHint: 'office staff',
-  },
-  {
-    id: 'team-8',
-    name: 'Pawan Acharya',
-    role: 'Managing Director',
-    bio: 'Oversees the operational and strategic direction of Pixar Educational Consultancy, ensuring service excellence.',
-    imageUrl: 'https://placehold.co/300x300.png',
-    dataAiHint: 'director man',
-  },
-  {
-    id: 'team-9',
-    name: 'Sabina Thapa',
-    role: 'Australia Counselor',
-    bio: 'Provides specialized counseling for students aspiring to study in Australia, focusing on admissions and visas.',
-    imageUrl: 'https://placehold.co/300x300.png',
-    dataAiHint: 'counselor woman',
-  },
-  {
-    id: 'team-10',
-    name: 'Anisha Thapa',
-    role: 'Prep Class Head',
-    bio: 'Leads our English language test preparation programs (IELTS, PTE, TOEFL, Duolingo), ensuring high-quality coaching.',
-    imageUrl: 'https://placehold.co/300x300.png',
-    dataAiHint: 'teacher woman',
+    dataAiHint: 'professional woman',
   },
   {
     id: 'team-11',
@@ -268,20 +276,12 @@ export const teamMembers: TeamMember[] = [
     dataAiHint: 'creative man',
   },
   {
-    id: 'team-12',
-    name: 'Shikhar KC',
-    role: 'IT Head',
-    bio: 'Manages our IT infrastructure and digital platforms, ensuring smooth technological operations.',
+    id: 'team-7',
+    name: 'Sunita Khadka',
+    role: 'Office Caretaker',
+    bio: 'Ensures a clean, organized, and welcoming office environment for students and staff.',
     imageUrl: 'https://placehold.co/300x300.png',
-    dataAiHint: 'tech professional',
-  },
-  {
-    id: 'team-13', // Previously '1'
-    name: 'Pradeep Khadka',
-    role: 'Founder & CEO',
-    bio: 'With over 15 years of experience in international education, Pradeep is passionate about helping students achieve their academic dreams.',
-    imageUrl: '/co.jpg', // Kept existing local image
-    dataAiHint: 'ceo man',
+    dataAiHint: 'office staff',
   },
 ];
 
@@ -520,17 +520,17 @@ export const englishTestOptions = [
 ];
 
 export const testPreparationOptions = [
-  { value: "IELTS Prep", label: "IELTS Prep" },
-  { value: "PTE Prep", label: "PTE Prep" },
-  { value: "TOEFL Prep", label: "TOEFL Prep" },
-  { value: "Duolingo Prep", label: "Duolingo Prep" },
-  { value: "USA Visa Prep", label: "USA Visa Prep (Unlimited)" },
+  { value: "IELTS Prep", label: "IELTS" },
+  { value: "PTE Prep", label: "PTE" },
+  { value: "TOEFL Prep", label: "TOEFL" },
+  { value: "Duolingo Prep", label: "Duolingo" },
+  { value: "USA Visa Prep", label: "Unlimited USA Visa Prep" },
   { value: "General English", label: "General English" },
 ];
 
 
 const getFlagEmoji = (countryCode: string): string => {
-  if (!countryCode || countryCode.length !== 2) return '🏳️'; // Default flag
+  if (!countryCode || countryCode.length !== 2) return '🏳️'; 
   const codePoints = countryCode
     .toUpperCase()
     .split('')
@@ -561,8 +561,8 @@ export interface IntakeInfo {
   countrySlug: string;
   countryName: string;
   flagEmoji: string;
-  nextIntakeDate: string; // YYYY-MM-DD format
-  intakeNote: string; // E.g., "Fall 2025 Intake", "Major Intake: February"
+  nextIntakeDate: string; 
+  intakeNote: string; 
   icon: ElementType;
 }
 
@@ -608,5 +608,3 @@ export const upcomingIntakeData: IntakeInfo[] = [
     icon: CalendarDays,
   },
 ];
-
-    
