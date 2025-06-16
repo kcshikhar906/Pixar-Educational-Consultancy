@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import SectionTitle from '@/components/ui/section-title';
-import { Mail, MapPin, Phone, MessageSquare, Send, Loader2, BookUser, StickyNote, Target, Languages, GraduationCap } from 'lucide-react';
+import { Mail, MapPin, Phone, Send, Loader2, BookUser, StickyNote, Target, Languages, GraduationCap, MessageSquare } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { useState } from 'react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
@@ -25,25 +25,26 @@ const contactFormSchema = z.object({
   lastCompletedEducation: z.string().min(1, "Please select your education level."),
   englishProficiencyTest: z.string().min(1, "Please select an option for English proficiency test."),
   preferredStudyDestination: z.string().min(1, "Please select your preferred study destination."),
-  message: z.string().min(10, "Your inquiry must be at least 10 characters.").max(1000, "Inquiry is too long."),
   additionalNotes: z.string().max(500, "Additional notes are too long.").optional(),
 });
 
 type ContactFormValues = z.infer<typeof contactFormSchema>;
 
+// Entry IDs from your pre-filled link:
 const GOOGLE_FORM_ACTION_URL = 'https://docs.google.com/forms/d/e/1FAIpQLScmMqPLB4NX_BZSSS4C3_2_9wNga-GBmbznGc9nNCs231IeaA/formResponse';
-const NAME_ENTRY_ID = 'entry.381136677';
 const EMAIL_ENTRY_ID = 'entry.897898403';
+const NAME_ENTRY_ID = 'entry.381136677';
 const PHONE_NUMBER_ENTRY_ID = 'entry.1344864969';
 const EDUCATION_ENTRY_ID = 'entry.2085503739';
 const ENGLISH_TEST_ENTRY_ID = 'entry.1325410288';
 const DESTINATION_ENTRY_ID = 'entry.22741016';
-const MESSAGE_ENTRY_ID = 'REPLACE_WITH_MESSAGE_FIELD_ENTRY_ID'; // Get this from your form's pre-filled link with message field
-const ADDITIONAL_NOTES_ENTRY_ID = 'REPLACE_WITH_ADDITIONAL_NOTES_FIELD_ENTRY_ID'; // Get this from your form's pre-filled link with additional notes field
+// **IMPORTANT**: You still need to get the Entry ID for your "Additional Notes" field from Google Form's pre-filled link if you have one.
+const ADDITIONAL_NOTES_ENTRY_ID = 'REPLACE_WITH_ADDITIONAL_NOTES_FIELD_ENTRY_ID_IF_APPLICABLE';
+
 
 async function submitToGoogleSheet(data: ContactFormValues): Promise<{ success: boolean; message: string }> {
-  if (GOOGLE_FORM_ACTION_URL.startsWith('REPLACE_WITH_') || !NAME_ENTRY_ID.startsWith('entry.')) {
-    console.error("Google Form URL or critical Entry IDs are not configured. Please update them in src/app/contact/page.tsx");
+  if (GOOGLE_FORM_ACTION_URL.startsWith('REPLACE_WITH_')) {
+    console.error("Google Form URL is not configured. Please update it in src/app/contact/page.tsx");
     return { success: false, message: "Form submission is not configured correctly. Please contact support." };
   }
 
@@ -55,18 +56,11 @@ async function submitToGoogleSheet(data: ContactFormValues): Promise<{ success: 
   formData.append(ENGLISH_TEST_ENTRY_ID, data.englishProficiencyTest);
   formData.append(DESTINATION_ENTRY_ID, data.preferredStudyDestination);
   
-  if (MESSAGE_ENTRY_ID !== 'REPLACE_WITH_MESSAGE_FIELD_ENTRY_ID') {
-    formData.append(MESSAGE_ENTRY_ID, data.message);
-  } else {
-    console.warn("MESSAGE_ENTRY_ID is not configured. 'Message' field will not be submitted to Google Sheet.");
-  }
-
-  if (data.additionalNotes && ADDITIONAL_NOTES_ENTRY_ID !== 'REPLACE_WITH_ADDITIONAL_NOTES_FIELD_ENTRY_ID') {
+  if (data.additionalNotes && ADDITIONAL_NOTES_ENTRY_ID !== 'REPLACE_WITH_ADDITIONAL_NOTES_FIELD_ENTRY_ID_IF_APPLICABLE') {
     formData.append(ADDITIONAL_NOTES_ENTRY_ID, data.additionalNotes);
   } else if (data.additionalNotes) {
-     console.warn("ADDITIONAL_NOTES_ENTRY_ID is not configured. 'Additional Notes' field will not be submitted to Google Sheet.");
+     console.warn("ADDITIONAL_NOTES_ENTRY_ID is not configured or is a placeholder. 'Additional Notes' field will not be submitted to Google Sheet unless the ID is correctly provided.");
   }
-
 
   try {
     await fetch(GOOGLE_FORM_ACTION_URL, {
@@ -74,10 +68,14 @@ async function submitToGoogleSheet(data: ContactFormValues): Promise<{ success: 
       body: formData,
       mode: 'no-cors', 
     });
+    // Note: 'no-cors' mode means we don't get a real success/failure response from Google.
+    // We assume success if the fetch doesn't throw an error.
     return { success: true, message: "Your message has been sent successfully! We'll get back to you soon." };
   } catch (error) {
     console.error('Error submitting to Google Sheet:', error);
-    return { success: false, message: 'An error occurred while sending your message. Please try again.' };
+    // This catch block might not be very effective with 'no-cors' for typical Google Form errors.
+    // The primary way to debug is to check the Google Sheet itself.
+    return { success: false, message: 'An error occurred while sending your message. Please check your internet connection and try again. If the problem persists, ensure the form configuration is correct.' };
   }
 }
 
@@ -98,7 +96,6 @@ export default function ContactPage() {
       lastCompletedEducation: '',
       englishProficiencyTest: '',
       preferredStudyDestination: '',
-      message: '',
       additionalNotes: '',
     },
   });
@@ -117,7 +114,7 @@ export default function ContactPage() {
         form.reset();
       } else {
         toast({
-          title: "Error",
+          title: "Submission Error",
           description: result.message,
           variant: "destructive",
         });
@@ -247,22 +244,11 @@ export default function ContactPage() {
                   />
                   <FormField
                     control={form.control}
-                    name="message"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center"><MessageSquare className="mr-2 h-4 w-4 text-accent" />Your Inquiry / Specific Questions</FormLabel>
-                        <FormControl><Textarea placeholder="Tell us more about your needs or specific questions..." rows={5} {...field} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
                     name="additionalNotes"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center"><StickyNote className="mr-2 h-4 w-4 text-accent" />Additional Notes (Optional)</FormLabel>
-                        <FormControl><Input placeholder="Any other details..." {...field} /></FormControl>
+                        <FormControl><Textarea placeholder="Any other details or specific questions..." rows={4} {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -330,3 +316,5 @@ export default function ContactPage() {
     </div>
   );
 }
+
+    
