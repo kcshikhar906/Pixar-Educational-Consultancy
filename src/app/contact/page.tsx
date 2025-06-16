@@ -25,12 +25,38 @@ const contactFormSchema = z.object({
 
 type ContactFormValues = z.infer<typeof contactFormSchema>;
 
-async function submitContactForm(data: ContactFormValues): Promise<{ success: boolean; message: string }> {
-  console.log("Form data submitted:", data);
-  await new Promise(resolve => setTimeout(resolve, 1500));
-  return { success: true, message: "Your message has been sent successfully! We'll get back to you soon." };
-}
+// IMPORTANT: Replace these placeholders with your actual Google Form Action URL and Entry IDs
+const GOOGLE_FORM_ACTION_URL = 'REPLACE_WITH_YOUR_GOOGLE_FORM_ACTION_URL'; // e.g., https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse
+const NAME_ENTRY_ID = 'REPLACE_WITH_NAME_FIELD_ENTRY_ID'; // e.g., entry.123456789
+const EMAIL_ENTRY_ID = 'REPLACE_WITH_EMAIL_FIELD_ENTRY_ID'; // e.g., entry.987654321
+const SUBJECT_ENTRY_ID = 'REPLACE_WITH_SUBJECT_FIELD_ENTRY_ID'; // e.g., entry.112233445
+const MESSAGE_ENTRY_ID = 'REPLACE_WITH_MESSAGE_FIELD_ENTRY_ID'; // e.g., entry.556677889
 
+async function submitToGoogleSheet(data: ContactFormValues): Promise<{ success: boolean; message: string }> {
+  if (GOOGLE_FORM_ACTION_URL === 'REPLACE_WITH_YOUR_GOOGLE_FORM_ACTION_URL' || !NAME_ENTRY_ID.startsWith('entry.')) {
+    console.error("Google Form URL or Entry IDs are not configured. Please update them in src/app/contact/page.tsx");
+    return { success: false, message: "Form submission is not configured correctly. Please contact support." };
+  }
+
+  const formData = new FormData();
+  formData.append(NAME_ENTRY_ID, data.name);
+  formData.append(EMAIL_ENTRY_ID, data.email);
+  formData.append(SUBJECT_ENTRY_ID, data.subject);
+  formData.append(MESSAGE_ENTRY_ID, data.message);
+
+  try {
+    await fetch(GOOGLE_FORM_ACTION_URL, {
+      method: 'POST',
+      body: formData,
+      mode: 'no-cors', // Important for submitting to Google Forms to prevent CORS errors
+    });
+    // 'no-cors' mode means we don't get a real response, so we assume success if no error is thrown
+    return { success: true, message: "Your message has been sent successfully! We'll get back to you soon." };
+  } catch (error) {
+    console.error('Error submitting to Google Sheet:', error);
+    return { success: false, message: 'An error occurred while sending your message. Please try again.' };
+  }
+}
 
 export default function ContactPage() {
   const { toast } = useToast();
@@ -39,7 +65,6 @@ export default function ContactPage() {
   const [titleSectionRef, isTitleSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true });
   const [formCardRef, isFormCardVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
   const [infoSectionRef, isInfoSectionVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
-
 
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
@@ -54,7 +79,7 @@ export default function ContactPage() {
   async function onSubmit(values: ContactFormValues) {
     setIsSubmitting(true);
     try {
-      const result = await submitContactForm(values);
+      const result = await submitToGoogleSheet(values);
 
       if (result.success) {
         toast({
@@ -71,6 +96,7 @@ export default function ContactPage() {
         });
       }
     } catch (error) {
+      console.error('Error in onSubmit:', error);
       toast({
         title: "Error",
         description: "An unexpected error occurred. Please try again.",
@@ -202,7 +228,6 @@ export default function ContactPage() {
             <CardContent>
               {/* Placeholder for Google Map */}
               <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3197.165484604168!2d85.3327993749223!3d27.686924426392938!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb19a84379c423%3A0xef4effecef07815d!2sPIXAR%20EDUCATIONAL%20CONSULTANCY!5e1!3m2!1sen!2sau!4v1749691561992!5m2!1sen!2sau" width="100%" height="300" style={{border:0}} allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
-              {/* <p className="text-xs text-muted-foreground mt-2">Note: Google Maps requires an API key for full functionality. This is a placeholder.</p> */}
             </CardContent>
           </Card>
         </div>
