@@ -294,14 +294,14 @@ export interface Accreditation {
 }
 
 export const accreditations: Accreditation[] = [
-  { id: 'acc-1', name: 'Accreditation Name 1', issuingBody: 'Issuing Body 1', logoUrl: '/accreditations/placeholder1.jpg', dataAiHint: 'logo badge' },
-  { id: 'acc-2', name: 'Accreditation Name 2', issuingBody: 'Issuing Body 2', logoUrl: '/accreditations/placeholder2.jpg', dataAiHint: 'logo certificate' },
-  { id: 'acc-3', name: 'Accreditation Name 3', issuingBody: 'Issuing Body 3', logoUrl: '/accreditations/placeholder3.jpg', dataAiHint: 'award seal' },
-  { id: 'acc-4', name: 'Accreditation Name 4', issuingBody: 'Issuing Body 4', logoUrl: '/accreditations/placeholder4.jpg', dataAiHint: 'official logo' },
-  { id: 'acc-5', name: 'Accreditation Name 5', issuingBody: 'Issuing Body 5', logoUrl: '/accreditations/placeholder5.jpg', dataAiHint: 'recognition badge' },
-  { id: 'acc-6', name: 'Accreditation Name 6', issuingBody: 'Issuing Body 6', logoUrl: '/accreditations/placeholder6.jpg', dataAiHint: 'certification mark' },
-  { id: 'acc-7', name: 'Accreditation Name 7', issuingBody: 'Issuing Body 7', logoUrl: '/accreditations/placeholder7.jpg', dataAiHint: 'partner logo' },
-  { id: 'acc-8', name: 'Accreditation Name 8', issuingBody: 'Issuing Body 8', logoUrl: '/accreditations/placeholder8.jpg', dataAiHint: 'approval logo' },
+  { id: 'acc-1', name: 'ICEF Trained Agent Counsellor', issuingBody: 'The ICEF', logoUrl: '/accreditations/ICEF.jpg', dataAiHint: 'logo badge' },
+  { id: 'acc-2', name: 'National Code Online Tutorial - ESOS', issuingBody: 'ISANA', logoUrl: '/accreditations/isana.jpg', dataAiHint: 'logo certificate' },
+  { id: 'acc-3', name: 'License', issuingBody: 'Ministry of Education, Science & Technology', logoUrl: '/accreditations/license.jpg', dataAiHint: 'award seal' },
+  { id: 'acc-4', name: 'Educational Counselor Training', issuingBody: 'Training Institue for Technical Instruction (TITI)', logoUrl: '/accreditations/pktiti.jpg', dataAiHint: 'official logo' },
+  { id: 'acc-5', name: 'Record of Achievement', issuingBody: 'ThinkNew', logoUrl: '/accreditations/recordofachievment.jpg', dataAiHint: 'recognition badge' },
+  { id: 'acc-6', name: 'Qualified Education Agent Counsellor', issuingBody: 'PIER', logoUrl: '/accreditations/Pradeep_M670.jpg', dataAiHint: 'certification mark' },
+  { id: 'acc-7', name: 'Study UK: Guide for Education Agents & Counsellors', issuingBody: 'British Council', logoUrl: '/accreditations/studyuk.jpg', dataAiHint: 'partner logo' },
+  { id: 'acc-8', name: 'Educational Counsellor Training', issuingBody: 'Training Institute for Technical Instruction (TITI)', logoUrl: '/accreditations/titi.jpg', dataAiHint: 'approval logo' },
 ];
 
 

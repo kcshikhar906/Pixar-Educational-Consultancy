@@ -4,8 +4,8 @@ import Image from 'next/image';
 import SectionTitle from '@/components/ui/section-title';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Target, Users, Award, CheckCircle, Building, Heart, Handshake, Goal, Lightbulb, UsersRound } from 'lucide-react';
-import { teamMembers, accreditations } from '@/lib/data.tsx'; // Updated import
-import type { TeamMember, Accreditation } from '@/lib/data.tsx'; // Updated import
+import { teamMembers, accreditations } from '@/lib/data.tsx'; 
+import type { TeamMember, Accreditation } from '@/lib/data.tsx'; 
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -229,17 +229,18 @@ export default function AboutPage() {
                 const [itemRef, itemVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
                 return (
                   <div key={accred.id} ref={itemRef} className={cn("transition-all duration-500 ease-out", itemVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")} style={{transitionDelay: `${index * 70}ms`}}>
-                    <div className="text-center p-4 rounded-lg bg-card shadow-md hover:shadow-lg transition-shadow h-full flex flex-col items-center justify-start"> {/* Changed justify-center to justify-start */}
-                      <div className="relative w-full h-32 mb-4"> {/* Image container with fixed height */}
+                    <div className="text-center p-4 rounded-lg bg-card shadow-md hover:shadow-lg transition-shadow h-full flex flex-col items-center justify-start group"> 
+                      <div className="relative w-full h-32 mb-4"> 
                         <Image
-                          src={accred.logoUrl} // You will replace this path
+                          src={accred.logoUrl} 
                           alt={accred.name}
                           layout="fill"
-                          objectFit="contain" // Key for mixed orientations
+                          objectFit="contain" 
                           data-ai-hint={accred.dataAiHint || 'accreditation logo'}
+                          className="transition-transform duration-300 ease-out group-hover:scale-105"
                         />
                       </div>
-                      <div className="mt-auto w-full"> {/* Ensures text is at the bottom and takes full width for text-center */}
+                      <div className="mt-auto w-full"> 
                         <h4 className="font-semibold text-primary text-sm">{accred.name}</h4>
                         <p className="text-xs text-foreground/70">{accred.issuingBody}</p>
                       </div>
@@ -256,3 +257,4 @@ export default function AboutPage() {
     </div>
   );
 }
+
