@@ -180,30 +180,111 @@ export interface TeamMember {
 
 export const teamMembers: TeamMember[] = [
   {
-    id: '1',
+    id: 'team-1',
+    name: 'Saubhana Bhandari',
+    role: 'Front Desk Officer',
+    bio: 'Manages front office operations and assists students with initial inquiries, ensuring a welcoming experience.',
+    imageUrl: 'https://placehold.co/300x300.png',
+    dataAiHint: 'professional woman',
+  },
+  {
+    id: 'team-2',
+    name: 'Shyam Babu Ojha',
+    role: 'New Zealand Counselor',
+    bio: 'Specializes in New Zealand university admissions and visa processes, providing expert guidance.',
+    imageUrl: 'https://placehold.co/300x300.png',
+    dataAiHint: 'counselor man',
+  },
+  {
+    id: 'team-3',
+    name: 'Mujal Amatya',
+    role: 'USA Counselor',
+    bio: 'Expert in U.S. university applications, scholarships, and F-1 visa procedures.',
+    imageUrl: 'https://placehold.co/300x300.png',
+    dataAiHint: 'advisor man',
+  },
+  {
+    id: 'team-4',
+    name: 'Sonima Rijal',
+    role: 'Application Officer',
+    bio: 'Assists students with the university application process, ensuring all documents are perfectly prepared.',
+    imageUrl: 'https://placehold.co/300x300.png',
+    dataAiHint: 'officer woman',
+  },
+  {
+    id: 'team-5',
+    name: 'Sujata Nepal',
+    role: 'Application Officer',
+    bio: 'Dedicated to helping students meticulously complete their applications for various universities.',
+    imageUrl: 'https://placehold.co/300x300.png',
+    dataAiHint: 'professional portrait',
+  },
+  {
+    id: 'team-6',
+    name: 'Mamata Chapagain',
+    role: 'Documents Officer',
+    bio: 'Expert in managing and verifying student documentation for smooth application submissions.',
+    imageUrl: 'https://placehold.co/300x300.png',
+    dataAiHint: 'woman team',
+  },
+  {
+    id: 'team-7',
+    name: 'Sunita Khadka',
+    role: 'Office Caretaker',
+    bio: 'Ensures a clean, organized, and welcoming office environment for students and staff.',
+    imageUrl: 'https://placehold.co/300x300.png',
+    dataAiHint: 'office staff',
+  },
+  {
+    id: 'team-8',
+    name: 'Pawan Acharya',
+    role: 'Managing Director',
+    bio: 'Oversees the operational and strategic direction of Pixar Educational Consultancy, ensuring service excellence.',
+    imageUrl: 'https://placehold.co/300x300.png',
+    dataAiHint: 'director man',
+  },
+  {
+    id: 'team-9',
+    name: 'Sabina Thapa',
+    role: 'Australia Counselor',
+    bio: 'Provides specialized counseling for students aspiring to study in Australia, focusing on admissions and visas.',
+    imageUrl: 'https://placehold.co/300x300.png',
+    dataAiHint: 'counselor woman',
+  },
+  {
+    id: 'team-10',
+    name: 'Anisha Thapa',
+    role: 'Prep Class Head',
+    bio: 'Leads our English language test preparation programs (IELTS, PTE, TOEFL, Duolingo), ensuring high-quality coaching.',
+    imageUrl: 'https://placehold.co/300x300.png',
+    dataAiHint: 'teacher woman',
+  },
+  {
+    id: 'team-11',
+    name: 'Ram Babu Ojha',
+    role: 'Video Editor',
+    bio: 'Creates engaging video content for our promotional and informational materials.',
+    imageUrl: 'https://placehold.co/300x300.png',
+    dataAiHint: 'creative man',
+  },
+  {
+    id: 'team-12',
+    name: 'Shikhar KC',
+    role: 'IT Head',
+    bio: 'Manages our IT infrastructure and digital platforms, ensuring smooth technological operations.',
+    imageUrl: 'https://placehold.co/300x300.png',
+    dataAiHint: 'tech professional',
+  },
+  {
+    id: 'team-13', // Previously '1'
     name: 'Pradeep Khadka',
     role: 'Founder & CEO',
     bio: 'With over 15 years of experience in international education, Pradeep is passionate about helping students achieve their academic dreams.',
-    imageUrl: '/co.jpg',
-    dataAiHint: 'professional man ceo',
-  },
-  {
-    id: '2',
-    name: 'Michael Chen',
-    role: 'Senior Advisor - North America',
-    bio: 'Michael specializes in US and Canadian university admissions, holding a Master\'s in Education Counseling.',
-    imageUrl: 'https://placehold.co/300x300.png',
-    dataAiHint: 'professional man',
-  },
-  {
-    id: '3',
-    name: 'Sophia Rossi',
-    role: 'Lead Consultant - Europe & Australia',
-    bio: 'Sophia has extensive knowledge of European and Australian education systems, guiding students with expertise.',
-    imageUrl: 'https://placehold.co/300x300.png',
-    dataAiHint: 'consultant advisor',
+    imageUrl: '/co.jpg', // Kept existing local image
+    dataAiHint: 'ceo man',
   },
 ];
+
 
 export interface Certification {
   id: string;
@@ -485,13 +566,12 @@ export interface IntakeInfo {
   icon: ElementType;
 }
 
-// Ensure intake dates are in the future relative to a common reference point (e.g., mid-2024 for planning)
 export const upcomingIntakeData: IntakeInfo[] = [
   {
     countrySlug: 'usa',
     countryName: 'USA',
     flagEmoji: getFlagEmoji("US"),
-    nextIntakeDate: '2025-09-01', // Fall 2025
+    nextIntakeDate: '2025-09-01', 
     intakeNote: 'Fall 2025 Intake',
     icon: CalendarDays,
   },
@@ -499,15 +579,15 @@ export const upcomingIntakeData: IntakeInfo[] = [
     countrySlug: 'australia',
     countryName: 'Australia',
     flagEmoji: getFlagEmoji("AU"),
-    nextIntakeDate: '2025-02-15', // Feb 2025
-    intakeNote: 'Major Intake: February 2025',
+    nextIntakeDate: '2025-02-15',
+    intakeNote: 'Major Intake: Feb 2025',
     icon: CalendarDays,
   },
   {
     countrySlug: 'canada',
     countryName: 'Canada',
     flagEmoji: getFlagEmoji("CA"),
-    nextIntakeDate: '2025-01-10', // Jan 2025
+    nextIntakeDate: '2025-01-10',
     intakeNote: 'Winter 2025 Intake',
     icon: CalendarDays,
   },
@@ -515,7 +595,7 @@ export const upcomingIntakeData: IntakeInfo[] = [
     countrySlug: 'uk',
     countryName: 'UK',
     flagEmoji: getFlagEmoji("GB"),
-    nextIntakeDate: '2025-01-20', // Jan 2025
+    nextIntakeDate: '2025-01-20',
     intakeNote: 'Spring 2025 Intake',
     icon: CalendarDays,
   },
@@ -523,8 +603,10 @@ export const upcomingIntakeData: IntakeInfo[] = [
     countrySlug: 'new-zealand',
     countryName: 'New Zealand',
     flagEmoji: getFlagEmoji("NZ"),
-    nextIntakeDate: '2025-02-20', // Feb 2025
+    nextIntakeDate: '2025-02-20',
     intakeNote: 'Semester 1, 2025 Intake',
     icon: CalendarDays,
   },
 ];
+
+    
