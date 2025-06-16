@@ -11,12 +11,12 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import SectionTitle from '@/components/ui/section-title';
-import { Mail, MapPin, Phone, MessageSquare, Send, Loader2, BookUser, StickyNote, Target, Languages, GraduationCap, CalendarIcon, Users, BookCopy, NotebookPen } from 'lucide-react';
+import { Mail, MapPin, Phone, MessageSquare, Send, Loader2, BookUser, StickyNote, Target, Languages, GraduationCap, CalendarIcon as CalendarIconLucide, Users, BookCopy, NotebookPen } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { useState } from 'react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { cn } from '@/lib/utils';
-import { allEducationLevels, englishTestOptions, studyDestinationOptions, testPreparationOptions } from '@/lib/data';
+import { allEducationLevels, englishTestOptions, studyDestinationOptions, testPreparationOptions } from '@/lib/data.tsx';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
@@ -34,60 +34,37 @@ const generalContactFormSchema = z.object({
 });
 type GeneralContactFormValues = z.infer<typeof generalContactFormSchema>;
 
-// Constants for Google Form submission (SHARED FOR BOTH FORMS if submitting to the same sheet)
-const GOOGLE_FORM_ACTION_URL = 'https://docs.google.com/forms/d/e/1FAIpQLScOw8ztRBTL_iN0yRmszjlIUBPPDebd8fKIl4RcUZThZs9CSA/formResponse';
-const NAME_ENTRY_ID = 'entry.44402001';
-const EMAIL_ENTRY_ID = 'entry.1939269637';
-const PHONE_NUMBER_ENTRY_ID = 'entry.1784825660';
-const ADDITIONAL_NOTES_ENTRY_ID = 'entry.1135205593';
-
-// Entry IDs for fields specific to the General Inquiry form OR new columns in the shared sheet
-// IMPORTANT: Update these if these fields exist in your Google Form and you want to capture them.
-// Get these from a pre-filled link of YOUR Google Form where you've filled ALL fields.
-const LAST_COMPLETED_EDUCATION_ENTRY_ID = 'REPLACE_WITH_YOUR_EDUCATION_FIELD_ENTRY_ID'; // e.g., 'entry.xxxxxxxxxx'
-const ENGLISH_PROFICIENCY_TEST_ENTRY_ID = 'REPLACE_WITH_YOUR_ENGLISH_TEST_FIELD_ENTRY_ID'; // e.g., 'entry.yyyyyyyyyy'
-const PREFERRED_STUDY_DESTINATION_ENTRY_ID = 'REPLACE_WITH_YOUR_DESTINATION_FIELD_ENTRY_ID'; // e.g., 'entry.zzzzzzzzzz'
+// Constants for GENERAL CONTACT FORM submission
+const GENERAL_CONTACT_GOOGLE_FORM_ACTION_URL = 'REPLACE_WITH_YOUR_GENERAL_CONTACT_FORM_ACTION_URL'; // User needs to set this
+const GENERAL_CONTACT_NAME_ENTRY_ID = 'REPLACE_WITH_GENERAL_CONTACT_NAME_FIELD_ENTRY_ID';
+const GENERAL_CONTACT_EMAIL_ENTRY_ID = 'REPLACE_WITH_GENERAL_CONTACT_EMAIL_FIELD_ENTRY_ID';
+const GENERAL_CONTACT_PHONE_NUMBER_ENTRY_ID = 'REPLACE_WITH_GENERAL_CONTACT_PHONE_FIELD_ENTRY_ID';
+const GENERAL_CONTACT_EDUCATION_ENTRY_ID = 'REPLACE_WITH_GENERAL_CONTACT_EDUCATION_FIELD_ENTRY_ID';
+const GENERAL_CONTACT_ENGLISH_TEST_ENTRY_ID = 'REPLACE_WITH_GENERAL_CONTACT_ENGLISH_TEST_FIELD_ENTRY_ID';
+const GENERAL_CONTACT_DESTINATION_ENTRY_ID = 'REPLACE_WITH_GENERAL_CONTACT_DESTINATION_FIELD_ENTRY_ID';
+const GENERAL_CONTACT_ADDITIONAL_NOTES_ENTRY_ID = 'REPLACE_WITH_GENERAL_CONTACT_ADDITIONAL_NOTES_FIELD_ENTRY_ID';
 
 
 async function submitToGeneralContactGoogleSheet(data: GeneralContactFormValues): Promise<{ success: boolean; message: string }> {
-  if (GOOGLE_FORM_ACTION_URL.startsWith('REPLACE_WITH_')) {
-    console.error("Google Form URL is not configured.");
-    return { success: false, message: "Form submission is not configured correctly. Please contact support." };
+  if (GENERAL_CONTACT_GOOGLE_FORM_ACTION_URL.startsWith('REPLACE_WITH_')) {
+    console.error("General Contact Google Form URL is not configured.");
+    return { success: false, message: "General inquiry service is temporarily unavailable. Please contact us directly." };
   }
 
   const formData = new FormData();
-  formData.append(NAME_ENTRY_ID, data.name);
-  formData.append(EMAIL_ENTRY_ID, data.email);
-  formData.append(PHONE_NUMBER_ENTRY_ID, data.phoneNumber);
-
-  // General Inquiry Specific Fields - only append if entry ID is configured
-  if (LAST_COMPLETED_EDUCATION_ENTRY_ID !== 'REPLACE_WITH_YOUR_EDUCATION_FIELD_ENTRY_ID') {
-    formData.append(LAST_COMPLETED_EDUCATION_ENTRY_ID, data.lastCompletedEducation);
-  } else {
-    console.warn("LAST_COMPLETED_EDUCATION_ENTRY_ID is a placeholder. This field will not be submitted.");
+  // Map form fields to Google Form entry IDs
+  formData.append(GENERAL_CONTACT_NAME_ENTRY_ID, data.name);
+  formData.append(GENERAL_CONTACT_EMAIL_ENTRY_ID, data.email);
+  formData.append(GENERAL_CONTACT_PHONE_NUMBER_ENTRY_ID, data.phoneNumber);
+  formData.append(GENERAL_CONTACT_EDUCATION_ENTRY_ID, data.lastCompletedEducation);
+  formData.append(GENERAL_CONTACT_ENGLISH_TEST_ENTRY_ID, data.englishProficiencyTest);
+  formData.append(GENERAL_CONTACT_DESTINATION_ENTRY_ID, data.preferredStudyDestination);
+  if (data.additionalNotes) {
+    formData.append(GENERAL_CONTACT_ADDITIONAL_NOTES_ENTRY_ID, data.additionalNotes);
   }
-  if (ENGLISH_PROFICIENCY_TEST_ENTRY_ID !== 'REPLACE_WITH_YOUR_ENGLISH_TEST_FIELD_ENTRY_ID') {
-    formData.append(ENGLISH_PROFICIENCY_TEST_ENTRY_ID, data.englishProficiencyTest);
-  } else {
-    console.warn("ENGLISH_PROFICIENCY_TEST_ENTRY_ID is a placeholder. This field will not be submitted.");
-  }
-  if (PREFERRED_STUDY_DESTINATION_ENTRY_ID !== 'REPLACE_WITH_YOUR_DESTINATION_FIELD_ENTRY_ID') {
-    formData.append(PREFERRED_STUDY_DESTINATION_ENTRY_ID, data.preferredStudyDestination);
-  } else {
-    console.warn("PREFERRED_STUDY_DESTINATION_ENTRY_ID is a placeholder. This field will not be submitted.");
-  }
-  
-  if (data.additionalNotes && ADDITIONAL_NOTES_ENTRY_ID !== 'REPLACE_WITH_YOUR_ADDITIONAL_NOTES_FIELD_ENTRY_ID' && ADDITIONAL_NOTES_ENTRY_ID !== 'entry.1135205593' /* Check ensures it's not the placeholder if actually set to the new one */ ) {
-      formData.append(ADDITIONAL_NOTES_ENTRY_ID, data.additionalNotes);
-  } else if (data.additionalNotes && ADDITIONAL_NOTES_ENTRY_ID === 'entry.1135205593') {
-    formData.append(ADDITIONAL_NOTES_ENTRY_ID, data.additionalNotes);
-  } else if (data.additionalNotes) {
-     console.warn("ADDITIONAL_NOTES_ENTRY_ID is a placeholder or not configured for general contact. 'Additional Notes' field might not be submitted correctly for general inquiries unless the ID is explicitly set to a non-placeholder value.");
-  }
-
 
   try {
-    await fetch(GOOGLE_FORM_ACTION_URL, { method: 'POST', body: formData, mode: 'no-cors' });
+    await fetch(GENERAL_CONTACT_GOOGLE_FORM_ACTION_URL, { method: 'POST', body: formData, mode: 'no-cors' });
     return { success: true, message: "Your message has been sent successfully! We'll get back to you soon." };
   } catch (error) {
     console.error('Error submitting to General Contact Google Sheet:', error);
@@ -106,44 +83,36 @@ const preparationClassFormSchema = z.object({
 });
 type PreparationClassFormValues = z.infer<typeof preparationClassFormSchema>;
 
-// Entry IDs specific to the Preparation Class Booking form (map to new columns in the SAME Google Form)
-const PREFERRED_TEST_ENTRY_ID = 'entry.418517897'; // From your new link
-const PREFERRED_START_DATE_ENTRY_ID = 'entry.894006407'; // From your new link
+// Constants for PREPARATION CLASS BOOKING FORM submission
+const PREP_CLASS_GOOGLE_FORM_ACTION_URL = 'https://docs.google.com/forms/d/e/1FAIpQLScOw8ztRBTL_iN0yRmszjlIUBPPDebd8fKIl4RcUZThZs9CSA/formResponse';
+const PREP_CLASS_NAME_ENTRY_ID = 'entry.44402001';
+const PREP_CLASS_EMAIL_ENTRY_ID = 'entry.1939269637';
+const PREP_CLASS_PHONE_NUMBER_ENTRY_ID = 'entry.1784825660';
+const PREP_CLASS_PREFERRED_TEST_ENTRY_ID = 'entry.418517897';
+const PREP_CLASS_PREFERRED_START_DATE_ENTRY_ID = 'entry.894006407';
+const PREP_CLASS_ADDITIONAL_NOTES_ENTRY_ID = 'entry.1135205593';
 
 
 async function submitToPrepClassGoogleSheet(data: PreparationClassFormValues): Promise<{ success: boolean; message: string }> {
-  if (GOOGLE_FORM_ACTION_URL.startsWith('REPLACE_WITH_')) {
+  if (PREP_CLASS_GOOGLE_FORM_ACTION_URL.startsWith('REPLACE_WITH_')) {
     console.error("Preparation Class Booking Google Form URL is not configured.");
     return { success: false, message: "Class booking service is temporarily unavailable. Please contact us directly." };
   }
 
   const formData = new FormData();
-  // Use the same entry IDs for common fields, already defined above
-  formData.append(NAME_ENTRY_ID, data.name);
-  formData.append(EMAIL_ENTRY_ID, data.email);
-  formData.append(PHONE_NUMBER_ENTRY_ID, data.phoneNumber);
-
-  // Use specific entry IDs for fields unique to this form or mapped to new columns
-  if (PREFERRED_TEST_ENTRY_ID !== 'REPLACE_WITH_YOUR_PREFERRED_TEST_FIELD_ENTRY_ID') {
-    formData.append(PREFERRED_TEST_ENTRY_ID, data.preferredTest);
-  } else {
-    console.warn("PREFERRED_TEST_ENTRY_ID is not configured. 'Preferred Test' will not be submitted.");
+  formData.append(PREP_CLASS_NAME_ENTRY_ID, data.name);
+  formData.append(PREP_CLASS_EMAIL_ENTRY_ID, data.email);
+  formData.append(PREP_CLASS_PHONE_NUMBER_ENTRY_ID, data.phoneNumber);
+  formData.append(PREP_CLASS_PREFERRED_TEST_ENTRY_ID, data.preferredTest);
+  if (data.preferredStartDate) {
+    formData.append(PREP_CLASS_PREFERRED_START_DATE_ENTRY_ID, format(data.preferredStartDate, "yyyy-MM-dd"));
   }
-  
-  if (data.preferredStartDate && PREFERRED_START_DATE_ENTRY_ID !== 'REPLACE_WITH_YOUR_PREFERRED_START_DATE_FIELD_ENTRY_ID') {
-    formData.append(PREFERRED_START_DATE_ENTRY_ID, format(data.preferredStartDate, "yyyy-MM-dd"));
-  } else if (data.preferredStartDate) {
-    console.warn("PREFERRED_START_DATE_ENTRY_ID is not configured. 'Preferred Start Date' will not be submitted.");
-  }
-
-  if (data.additionalNotes && ADDITIONAL_NOTES_ENTRY_ID !== 'REPLACE_WITH_YOUR_ADDITIONAL_NOTES_FIELD_ENTRY_ID') {
-    formData.append(ADDITIONAL_NOTES_ENTRY_ID, data.additionalNotes);
-  } else if (data.additionalNotes) {
-     console.warn("ADDITIONAL_NOTES_ENTRY_ID is a placeholder or not configured for prep class form. 'Additional Notes' field will not be submitted correctly unless the ID is explicitly set to a non-placeholder value.");
+  if (data.additionalNotes) {
+    formData.append(PREP_CLASS_ADDITIONAL_NOTES_ENTRY_ID, data.additionalNotes);
   }
 
   try {
-    await fetch(GOOGLE_FORM_ACTION_URL, { method: 'POST', body: formData, mode: 'no-cors' });
+    await fetch(PREP_CLASS_GOOGLE_FORM_ACTION_URL, { method: 'POST', body: formData, mode: 'no-cors' });
     return { success: true, message: "Your booking request has been sent! We'll contact you shortly to confirm." };
   } catch (error) {
     console.error('Error submitting to Prep Class Booking Google Sheet:', error);
@@ -293,13 +262,13 @@ export default function ContactPage() {
                         )}/>
                         <FormField control={prepClassForm.control} name="preferredStartDate" render={({ field }) => (
                           <FormItem className="flex flex-col">
-                            <FormLabel className="flex items-center"><CalendarIcon className="mr-2 h-4 w-4 text-accent" />Preferred Start Date (Optional)</FormLabel>
+                            <FormLabel className="flex items-center"><CalendarIconLucide className="mr-2 h-4 w-4 text-accent" />Preferred Start Date (Optional)</FormLabel>
                             <Popover>
                               <PopoverTrigger asChild>
                                 <FormControl>
                                   <Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
                                     {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                    <CalendarIconLucide className="ml-auto h-4 w-4 opacity-50" />
                                   </Button>
                                 </FormControl>
                               </PopoverTrigger>
@@ -361,3 +330,5 @@ export default function ContactPage() {
     </div>
   );
 }
+
+    
