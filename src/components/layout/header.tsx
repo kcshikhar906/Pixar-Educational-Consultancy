@@ -2,7 +2,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Home, Info, Briefcase, MapPin, GraduationCap, Mail, ChevronDown, Menu, Wand2, HelpCircle, Sparkles, Share2, CheckSquare, MessageCircleQuestion } from 'lucide-react';
+import Image from 'next/image'; // Added Image import
+import { Home, Info, Briefcase, MapPin, Sparkles, Mail, ChevronDown, Menu, Wand2, HelpCircle, CheckSquare, MessageCircleQuestion, Share2 } from 'lucide-react'; // Removed GraduationCap as it's replaced by logo, Added Share2
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -10,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"; // Added SheetHeader, SheetTitle
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -24,7 +25,7 @@ const navItems = [
     icon: Sparkles,
     subItems: [
       { href: '/ai-assistants', label: 'Smart Tools', icon: Wand2 },
-      { href: '/book-appointment', label: 'English Test Guide', icon: HelpCircle },
+      { href: '/book-appointment', label: 'English Test Guide', icon: HelpCircle }, // Was /english-test-guide, now /book-appointment based on footer/previous context
       { href: '/pre-departure-toolkit', label: 'Pre-Departure Toolkit', icon: CheckSquare },
       { href: '/interview-qa', label: 'Interview Q&A', icon: MessageCircleQuestion },
     ],
@@ -149,8 +150,7 @@ export default function Header() {
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <Link href="/" passHref>
           <div className="flex items-center space-x-2 cursor-pointer">
-            <GraduationCap className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-headline font-bold text-primary">Pixar Edu</span>
+            <Image src="/logo.png" alt="Pixar Educational Consultancy Logo" width={120} height={30} priority />
           </div>
         </Link>
         <nav className="hidden md:flex space-x-1 items-center">
@@ -166,8 +166,8 @@ export default function Header() {
             <SheetContent side="right" className="w-[280px] bg-card p-0">
               <SheetHeader className="p-4 border-b border-border">
                 <SheetTitle className="text-lg font-semibold text-primary flex items-center">
-                  <GraduationCap className="mr-2 h-6 w-6" />
-                  Pixar Edu Menu
+                  <Image src="/logo.png" alt="Pixar Logo" width={24} height={24} className="mr-2"/>
+                  Menu
                 </SheetTitle>
               </SheetHeader>
               <div className="flex flex-col space-y-0.5 pt-2">
