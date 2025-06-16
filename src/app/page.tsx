@@ -6,10 +6,10 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import SectionTitle from '@/components/ui/section-title';
-import { ArrowRight, CheckCircle, Star, Loader2, Sparkles, MapPin, BookOpen, University as UniversityIconLucide, Info as InfoIcon, Search, ExternalLink, Wand2, Briefcase, DollarSign, ClipboardCheck, CalendarDays, Award as AwardIconFromData } from 'lucide-react';
-import { testimonials, services, fieldsOfStudy, gpaScaleOptions, educationLevelOptions } from '@/lib/data.tsx';
-import type { Testimonial, Service } from '@/lib/data.tsx';
-import { useState, useEffect, useMemo, useRef } from 'react'; // Added useRef
+import { ArrowRight, CheckCircle, Star, Loader2, Sparkles, MapPin, BookOpen, University as UniversityIconLucide, Info as InfoIcon, Search, ExternalLink, Wand2, Briefcase, DollarSign, ClipboardCheck, CalendarDays, Award as AwardIconFromData, Clock } from 'lucide-react';
+import { testimonials, services, fieldsOfStudy, gpaScaleOptions, educationLevelOptions, upcomingIntakeData } from '@/lib/data.tsx';
+import type { Testimonial, Service, IntakeInfo } from '@/lib/data.tsx';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -19,6 +19,7 @@ import { pathwayPlanner, type PathwayPlannerInput, type PathwayPlannerOutput } f
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from '@/lib/utils';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { format, differenceInCalendarMonths, addMonths, differenceInCalendarWeeks, startOfDay, differenceInDays } from 'date-fns';
 
 
 const pathwayFormSchema = z.object({
@@ -49,6 +50,54 @@ const selectableCountriesHomepage = [
 ];
 
 
+interface TimeRemaining {
+  displayText: string;
+}
+
+function calculateTimeRemaining(targetDateString: string): TimeRemaining {
+  const targetDate = startOfDay(new Date(targetDateString));
+  const now = startOfDay(new Date());
+
+  if (targetDate <= now) {
+    return { displayText: "Intake has passed or is current" };
+  }
+
+  let totalMonths = 0;
+  let tempDate = new Date(now);
+  while(addMonths(tempDate, 1) <= targetDate) {
+    tempDate = addMonths(tempDate, 1);
+    totalMonths++;
+  }
+
+  const dateAfterFullMonths = addMonths(now, totalMonths);
+  let totalWeeks = 0;
+  if (dateAfterFullMonths < targetDate) {
+      totalWeeks = differenceInCalendarWeeks(targetDate, dateAfterFullMonths, { weekStartsOn: 1 });
+  }
+   // Ensure weeks are not negative if target is very close to month boundary after full months
+  if (totalWeeks < 0) totalWeeks = 0;
+
+
+  const parts = [];
+  if (totalMonths > 0) {
+    parts.push(`${totalMonths} month${totalMonths > 1 ? 's' : ''}`);
+  }
+  if (totalWeeks > 0) {
+    parts.push(`${totalWeeks} week${totalWeeks > 1 ? 's' : ''}`);
+  }
+
+  if (parts.length === 0) {
+    const days = differenceInDays(targetDate, now);
+    if (days < 7 && days >=0) {
+        return { displayText: "Upcoming (less than 1 week)" };
+    }
+    return { displayText: "Upcoming soon" };
+  }
+
+  return { displayText: parts.join(', ') + " remaining" };
+}
+
+
 export default function HomePage() {
   const [isLoadingPathway, setIsLoadingPathway] = useState(false);
   const [pathwayError, setPathwayError] = useState<string | null>(null);
@@ -61,8 +110,11 @@ export default function HomePage() {
   const [showResultsArea, setShowResultsArea] = useState(false);
   const [resultsContainerAnimatedIn, setResultsContainerAnimatedIn] = useState(false);
 
+  const [intakeTimes, setIntakeTimes] = useState<Record<string, TimeRemaining>>({});
+
   const [heroSectionRef, isHeroSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.05, initialVisible: true });
   const [pathwaySearchSectionRef, isPathwaySearchSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.02, initialVisible: false });
+  const [upcomingIntakesSectionRef, isUpcomingIntakesSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.1 });
   const [whyChooseUsSectionRef, isWhyChooseUsSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.1 });
   const [servicesOverviewSectionRef, isServicesOverviewSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.1 });
   const [testimonialsSectionRef, isTestimonialsSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.1 });
@@ -92,6 +144,14 @@ export default function HomePage() {
     }, cycleTime);
     return () => clearInterval(intervalId);
   }, [heroAnimated]);
+  
+  useEffect(() => {
+    const newIntakeTimes: Record<string, TimeRemaining> = {};
+    upcomingIntakeData.forEach(intake => {
+      newIntakeTimes[intake.countrySlug] = calculateTimeRemaining(intake.nextIntakeDate);
+    });
+    setIntakeTimes(newIntakeTimes);
+  }, []);
 
 
   const pathwayForm = useForm<PathwayFormValues>({
@@ -424,6 +484,54 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Upcoming Intakes Section */}
+      <section 
+        ref={upcomingIntakesSectionRef}
+        className={cn(
+          "transition-all duration-700 ease-out",
+          isUpcomingIntakesSectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+        )}
+      >
+        <SectionTitle title="Upcoming Intakes & Deadlines" subtitle="Plan ahead for key application windows in popular countries." />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {upcomingIntakeData.map((intake: IntakeInfo, index: number) => {
+            const [intakeCardRef, isIntakeCardVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
+            const timeRemainingText = intakeTimes[intake.countrySlug]?.displayText || 'Calculating...';
+            
+            return (
+              <div key={intake.countrySlug} ref={intakeCardRef} className={cn("transition-all duration-500 ease-out", isIntakeCardVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")} style={{transitionDelay: `${index * 100}ms`}}>
+                <Card className="bg-card shadow-lg hover:shadow-xl transition-shadow h-full flex flex-col">
+                  <CardHeader>
+                    <CardTitle className="font-headline text-xl text-primary flex items-center">
+                      <span className="text-2xl mr-2">{intake.flagEmoji}</span>{intake.countryName}
+                    </CardTitle>
+                    <CardDescription className="text-xs text-muted-foreground">{intake.intakeNote}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex-grow space-y-2">
+                    <div className="flex items-center text-sm">
+                      <intake.icon className="h-5 w-5 text-accent mr-2" />
+                      <span className="font-medium">Next Intake:</span>&nbsp;
+                      {intake.nextIntakeDate ? format(new Date(intake.nextIntakeDate), "MMMM d, yyyy") : 'Contact for details'}
+                    </div>
+                    <div className="flex items-center text-sm">
+                      <Clock className="h-5 w-5 text-accent mr-2" />
+                      <span className="font-medium">Time Remaining:</span>&nbsp;
+                      <span className="text-foreground/80">{timeRemainingText}</span>
+                    </div>
+                  </CardContent>
+                  <CardFooter>
+                    <Button asChild variant="link" className="text-accent p-0 text-sm">
+                      <Link href={`/country-guides#${intake.countrySlug}`}>
+                        Learn More <ArrowRight className="ml-1 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </div>
+            );
+          })}
+        </div>
+      </section>
 
       {/* Why Choose Us Section */}
       <section

@@ -31,7 +31,8 @@ import {
   FileSpreadsheet as FileSpreadsheetIcon,
   BookMarked, 
   KeyRound, 
-  Activity 
+  Activity,
+  CalendarDays 
 } from 'lucide-react';
 
 export interface Testimonial {
@@ -472,4 +473,58 @@ export const gpaScaleOptions = [
   { value: "2.5-2.9", label: "2.5 - 2.9 (or equivalent)" },
   { value: "Below 2.5", label: "Below 2.5 (or equivalent)" },
   { value: "N/A", label: "Not Applicable / Varies" },
+];
+
+
+export interface IntakeInfo {
+  countrySlug: string;
+  countryName: string;
+  flagEmoji: string;
+  nextIntakeDate: string; // YYYY-MM-DD format
+  intakeNote: string; // E.g., "Fall 2025 Intake", "Major Intake: February"
+  icon: ElementType;
+}
+
+// Ensure intake dates are in the future relative to a common reference point (e.g., mid-2024 for planning)
+export const upcomingIntakeData: IntakeInfo[] = [
+  {
+    countrySlug: 'usa',
+    countryName: 'USA',
+    flagEmoji: getFlagEmoji("US"),
+    nextIntakeDate: '2025-09-01', // Fall 2025
+    intakeNote: 'Fall 2025 Intake',
+    icon: CalendarDays,
+  },
+  {
+    countrySlug: 'australia',
+    countryName: 'Australia',
+    flagEmoji: getFlagEmoji("AU"),
+    nextIntakeDate: '2025-02-15', // Feb 2025
+    intakeNote: 'Major Intake: February 2025',
+    icon: CalendarDays,
+  },
+  {
+    countrySlug: 'canada',
+    countryName: 'Canada',
+    flagEmoji: getFlagEmoji("CA"),
+    nextIntakeDate: '2025-01-10', // Jan 2025
+    intakeNote: 'Winter 2025 Intake',
+    icon: CalendarDays,
+  },
+  {
+    countrySlug: 'uk',
+    countryName: 'UK',
+    flagEmoji: getFlagEmoji("GB"),
+    nextIntakeDate: '2025-01-20', // Jan 2025
+    intakeNote: 'Spring 2025 Intake',
+    icon: CalendarDays,
+  },
+  {
+    countrySlug: 'new-zealand',
+    countryName: 'New Zealand',
+    flagEmoji: getFlagEmoji("NZ"),
+    nextIntakeDate: '2025-02-20', // Feb 2025
+    intakeNote: 'Semester 1, 2025 Intake',
+    icon: CalendarDays,
+  },
 ];
