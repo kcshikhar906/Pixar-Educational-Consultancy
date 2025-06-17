@@ -178,17 +178,10 @@ export interface TeamMember {
   dataAiHint?: string;
 }
 
+// Reordered and roles updated as per user request, preserving existing IDs, bios, imageUrls, dataAiHints
 export const teamMembers: TeamMember[] = [
- {
-    id: 'team-13',
-    name: 'Pradeep Khadka',
-    role: 'Founder & CEO',
-    bio: 'With over 15 years of experience in international education, Pradeep is passionate about helping students achieve their academic dreams.',
-    imageUrl: '/co.jpg', 
-    dataAiHint: 'ceo man',
-  },
   {
-    id: 'team-8',
+    id: 'team-8', 
     name: 'Pawan Acharya',
     role: 'Managing Director',
     bio: 'Oversees the operational and strategic direction of Pixar Educational Consultancy, ensuring service excellence.',
@@ -196,79 +189,23 @@ export const teamMembers: TeamMember[] = [
     dataAiHint: 'director man',
   },
   {
-    id: 'team-10',
-    name: 'Anisha Thapa',
-    role: 'Prep Class Head',
-    bio: 'Leads our English language test preparation programs (IELTS, PTE, TOEFL, Duolingo), ensuring high-quality coaching.',
-    imageUrl: 'https://placehold.co/300x300.png', // Placeholder
-    dataAiHint: 'teacher woman',
-  },
-  {
-    id: 'team-12',
-    name: 'Shikhar KC',
-    role: 'IT Head',
-    bio: 'Manages our IT infrastructure and digital platforms, ensuring smooth technological operations.',
-    imageUrl: '/teams/shikhar.jpg',
-    dataAiHint: 'tech professional',
-  },
-   {
-    id: 'team-1',
-    name: 'Saubhana Bhandari',
-    role: 'Front Desk Officer',
-    bio: 'Manages front office operations and assists students with initial inquiries, ensuring a welcoming experience.',
-    imageUrl: 'https://placehold.co/300x300.png', // Placeholder
-    dataAiHint: 'professional woman',
-  },
-  {
-    id: 'team-2',
-    name: 'Shyam Babu Ojha',
-    role: 'New Zealand Counselor',
-    bio: 'Specializes in New Zealand university admissions and visa processes, providing expert guidance.',
-    imageUrl: 'https://placehold.co/300x300.png', // Placeholder
-    dataAiHint: 'counselor man',
-  },
-  {
-    id: 'team-3',
+    id: 'team-3', 
     name: 'Mujal Amatya',
     role: 'USA Counselor',
     bio: 'Expert in U.S. university applications, scholarships, and F-1 visa procedures.',
-    imageUrl: 'https://placehold.co/300x300.png', // Placeholder
+    imageUrl: 'https://placehold.co/300x300.png', 
     dataAiHint: 'advisor man',
   },
   {
-    id: 'team-4',
-    name: 'Sonima Rijal',
-    role: 'Application Officer',
-    bio: 'Assists students with the university application process, ensuring all documents are perfectly prepared.',
-    imageUrl: 'https://placehold.co/300x300.png', // Placeholder
-    dataAiHint: 'officer woman',
+    id: 'team-2', 
+    name: 'Shyam Babu Ojha',
+    role: 'New Zealand Counselor',
+    bio: 'Specializes in New Zealand university admissions and visa processes, providing expert guidance.',
+    imageUrl: 'https://placehold.co/300x300.png', 
+    dataAiHint: 'counselor man',
   },
   {
-    id: 'team-5',
-    name: 'Sujata Nepal',
-    role: 'Application Officer',
-    bio: 'Dedicated to helping students meticulously complete their applications for various universities.',
-    imageUrl: 'https://placehold.co/300x300.png', // Placeholder
-    dataAiHint: 'professional portrait',
-  },
-  {
-    id: 'team-6',
-    name: 'Mamata Chapagain',
-    role: 'Documents Officer',
-    bio: 'Expert in managing and verifying student documentation for smooth application submissions.',
-    imageUrl: 'https://placehold.co/300x300.png', // Placeholder
-    dataAiHint: 'woman team',
-  },
-  {
-    id: 'team-7',
-    name: 'Sunita Khadka',
-    role: 'Office Caretaker',
-    bio: 'Ensures a clean, organized, and welcoming office environment for students and staff.',
-    imageUrl: 'https://placehold.co/300x300.png', // Placeholder
-    dataAiHint: 'office staff',
-  },
-  {
-    id: 'team-9',
+    id: 'team-9', 
     name: 'Sabina Thapa',
     role: 'Australia Counselor',
     bio: 'Provides specialized counseling for students aspiring to study in Australia, focusing on admissions and visas.',
@@ -276,14 +213,79 @@ export const teamMembers: TeamMember[] = [
     dataAiHint: 'counselor woman',
   },
   {
-    id: 'team-11',
+    id: 'team-4', 
+    name: 'Sonima Rijal',
+    role: 'Application Officer',
+    bio: 'Assists students with the university application process, ensuring all documents are perfectly prepared.',
+    imageUrl: 'https://placehold.co/300x300.png', 
+    dataAiHint: 'officer woman',
+  },
+  {
+    id: 'team-5', 
+    name: 'Sujata Nepal',
+    role: 'Application Officer',
+    bio: 'Dedicated to helping students meticulously complete their applications for various universities.',
+    imageUrl: 'https://placehold.co/300x300.png', 
+    dataAiHint: 'professional portrait',
+  },
+  {
+    id: 'team-10', 
+    name: 'Anisha Thapa',
+    role: 'Academic Head - IELTS & PTE', // Role updated
+    bio: 'Leads our English language test preparation programs (IELTS, PTE, TOEFL, Duolingo), ensuring high-quality coaching.',
+    imageUrl: 'https://placehold.co/300x300.png', 
+    dataAiHint: 'teacher woman',
+  },
+  {
+    id: 'team-1', 
+    name: 'Saubhana Bhandari',
+    role: 'Frontdesk Officer', // Role updated
+    bio: 'Manages front office operations and assists students with initial inquiries, ensuring a welcoming experience.',
+    imageUrl: 'https://placehold.co/300x300.png', 
+    dataAiHint: 'professional woman',
+  },
+  {
+    id: 'team-6', 
+    name: 'Mamata Chapagain',
+    role: 'Documents Officer',
+    bio: 'Expert in managing and verifying student documentation for smooth application submissions.',
+    imageUrl: 'https://placehold.co/300x300.png', 
+    dataAiHint: 'woman team',
+  },
+  {
+    id: 'team-7', 
+    name: 'Sunita Khadka',
+    role: 'Office Caretaker',
+    bio: 'Ensures a clean, organized, and welcoming office environment for students and staff.',
+    imageUrl: 'https://placehold.co/300x300.png', 
+    dataAiHint: 'office staff',
+  },
+  {
+    id: 'team-12', 
+    name: 'Shikhar KC',
+    role: 'IT Head',
+    bio: 'Manages our IT infrastructure and digital platforms, ensuring smooth technological operations.',
+    imageUrl: '/teams/shikhar.jpg',
+    dataAiHint: 'tech professional',
+  },
+  {
+    id: 'team-11', 
     name: 'Ram Babu Ojha',
     role: 'Video Editor',
     bio: 'Creates engaging video content for our promotional and informational materials.',
-    imageUrl: 'https://placehold.co/300x300.png', // Placeholder
+    imageUrl: 'https://placehold.co/300x300.png', 
     dataAiHint: 'creative man',
   },
+  {
+    id: 'team-13', 
+    name: 'Pradeep Khadka',
+    role: 'Chief Executive Officer', // Role updated
+    bio: 'With over 15 years of experience in international education, Pradeep is passionate about helping students achieve their academic dreams.',
+    imageUrl: '/co.jpg', 
+    dataAiHint: 'ceo man',
+  },
 ];
+
 
 export interface Accreditation {
   id: string;
@@ -602,3 +604,4 @@ export const upcomingIntakeData: IntakeInfo[] = [
     icon: CalendarDays,
   },
 ];
+

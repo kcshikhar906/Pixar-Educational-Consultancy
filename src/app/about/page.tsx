@@ -8,10 +8,7 @@ import { teamMembers, accreditations } from '@/lib/data.tsx';
 import type { TeamMember, Accreditation } from '@/lib/data.tsx'; 
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { useState } from 'react';
+// Removed Button, Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, ScrollArea, useState as they are no longer needed for the team section popup.
 
 export default function AboutPage() {
   const whyChooseUsPoints = [
@@ -37,10 +34,11 @@ export default function AboutPage() {
   const [s5Ref, s5Visible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true });
   const [s6Ref, s6Visible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true });
 
-  const [isTeamPopupOpen, setIsTeamPopupOpen] = useState(false);
-  const initialDisplayCount = 6;
-  const displayedTeamMembers = teamMembers.slice(0, initialDisplayCount);
-  const remainingTeamMembers = teamMembers.slice(initialDisplayCount);
+  // Slicing team members for the new layout
+  const firstRowTeamMembers = teamMembers.slice(0, 6);
+  const secondRowTeamMembers = teamMembers.slice(6, 12);
+  const lastRowTeamMember = teamMembers.length > 12 ? teamMembers[12] : null;
+
 
   const renderTeamMemberCard = (member: TeamMember) => (
     <Card className="text-center overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-card h-full flex flex-col group">
@@ -178,8 +176,10 @@ export default function AboutPage() {
       <section ref={s5Ref} className={cn("bg-secondary/50 py-16 rounded-lg shadow-inner transition-all duration-700 ease-out", s5Visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")}>
         <div className="container mx-auto px-4">
           <SectionTitle title="Meet Our Expert Team" subtitle="Dedicated professionals passionate about your educational journey." />
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
-            {displayedTeamMembers.map((member: TeamMember, index: number) => {
+          
+          {/* First row of 6 team members */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+            {firstRowTeamMembers.map((member: TeamMember, index: number) => {
                const [cardRef, cardVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
               return (
                 <div key={member.id} ref={cardRef} className={cn("transition-all duration-500 ease-out", cardVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")} style={{transitionDelay: `${index * 100}ms`}}>
@@ -188,32 +188,34 @@ export default function AboutPage() {
               );
             })}
           </div>
-          {remainingTeamMembers.length > 0 && (
-            <div className="text-center">
-              <Dialog open={isTeamPopupOpen} onOpenChange={setIsTeamPopupOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" size="lg" className="text-primary hover:text-primary-foreground hover:bg-primary/90 border-primary">
-                    <UsersRound className="mr-2 h-5 w-5" /> View {remainingTeamMembers.length} More Team Members
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-4xl max-h-[90vh] flex flex-col">
-                  <DialogHeader>
-                    <DialogTitle className="text-2xl font-headline text-primary">Our Dedicated Team</DialogTitle>
-                    <DialogDescription>
-                      Get to know the rest of our professionals committed to your success.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <ScrollArea className="flex-grow pr-3 -mr-3"> {/* Added padding for scrollbar */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 py-4">
-                      {remainingTeamMembers.map((member: TeamMember) => (
-                        <div key={member.id}>
-                          {renderTeamMemberCard(member)}
-                        </div>
-                      ))}
+
+          {/* Second row of 6 team members */}
+          {secondRowTeamMembers.length > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+              {secondRowTeamMembers.map((member: TeamMember, index: number) => {
+                const [cardRef, cardVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
+                return (
+                  <div key={member.id} ref={cardRef} className={cn("transition-all duration-500 ease-out", cardVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")} style={{transitionDelay: `${(index + 6) * 80}ms`}}> {/* Adjust delay for staggered effect */}
+                    {renderTeamMemberCard(member)}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Last row with a single centered team member */}
+          {lastRowTeamMember && (
+            <div className="mt-8 flex justify-center">
+               <div className="w-full max-w-xs"> {/* Adjust max-width as needed for the card size */}
+                {(() => { // Immediately invoked function for scroll animation hook
+                  const [cardRef, cardVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
+                  return (
+                    <div ref={cardRef} className={cn("transition-all duration-500 ease-out", cardVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")} style={{transitionDelay: `${12 * 70}ms`}}>
+                      {renderTeamMemberCard(lastRowTeamMember)}
                     </div>
-                  </ScrollArea>
-                </DialogContent>
-              </Dialog>
+                  );
+                })()}
+              </div>
             </div>
           )}
         </div>
