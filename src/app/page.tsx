@@ -373,7 +373,7 @@ export default function HomePage() {
             showResultsArea ? "grid grid-cols-1 md:grid-cols-3" : "flex flex-col items-center" 
         )}>
           <div className={cn(
-            showResultsArea ? "md:col-span-1 w-full" : "max-w-2xl w-full" 
+            showResultsArea ? "md:col-span-1 w-full" : "max-w-4xl w-full" 
            )}>
             {renderPathwayForm()}
           </div>
@@ -503,7 +503,7 @@ export default function HomePage() {
           <div
             ref={scrollContainerRef}
             className={cn(
-              "py-2 no-scrollbar", // Added no-scrollbar class here
+              "py-2 no-scrollbar", 
               "flex flex-nowrap overflow-x-auto space-x-4 snap-x snap-mandatory scroll-smooth", 
               "lg:grid lg:grid-cols-5 lg:gap-4 lg:space-x-0 lg:overflow-visible lg:snap-none" 
             )}
