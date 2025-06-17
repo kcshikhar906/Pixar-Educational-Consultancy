@@ -108,8 +108,6 @@ export default function HomePage() {
   const [heroAnimated, setHeroAnimated] = useState(false);
 
   const [currentTaglineText, setCurrentTaglineText] = useState(taglines[0]);
-  // isTaglineVisible state might not be strictly needed if GSAP handles visibility directly
-  // const [isTaglineVisible, setIsTaglineVisible] = useState(false); 
 
   const [showResultsArea, setShowResultsArea] = useState(false);
   const [resultsContainerAnimatedIn, setResultsContainerAnimatedIn] = useState(false);
@@ -120,10 +118,9 @@ export default function HomePage() {
   const heroTitleRef = useRef<HTMLDivElement>(null);
   const taglineRef = useRef<HTMLHeadingElement>(null);
   
-  // Refs for the new SVG animation
   const svgStageRef = useRef<SVGSVGElement>(null);
   const heroBackgroundPathRef = useRef<SVGPathElement>(null);
-  const heroAnimatedElementRef = useRef<SVGGElement>(null); // Changed to SVGGElement for the plane group
+  const heroAnimatedElementRef = useRef<SVGGElement>(null); 
 
   const [heroSectionRef, isHeroSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.05, initialVisible: true });
   const [pathwaySearchSectionRef, isPathwaySearchSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.02, initialVisible: false });
@@ -152,7 +149,6 @@ export default function HomePage() {
     if (!heroAnimated || !taglineRef.current) {
       return;
     }
-    // Initial reveal for the first tagline
     gsap.fromTo(
       taglineRef.current,
       { autoAlpha: 0, y: 20 },
@@ -169,7 +165,7 @@ export default function HomePage() {
         ease: 'power2.in',
         onComplete: () => {
           currentIdx = (currentIdx + 1) % taglines.length;
-          setCurrentTaglineText(taglines[currentIdx]); // This will trigger re-render, then the next GSAP call
+          setCurrentTaglineText(taglines[currentIdx]); 
           gsap.fromTo(
             taglineRef.current,
             { autoAlpha: 0, y: 20 },
@@ -183,20 +179,18 @@ export default function HomePage() {
   
   useEffect(() => {
     if (heroAnimated && heroAnimatedElementRef.current && heroBackgroundPathRef.current && svgStageRef.current) {
-      // Fade in the entire SVG stage
       gsap.to(svgStageRef.current, {
         opacity: 1,
         duration: 1.5,
-        delay: 0.5, // Start after text animations
+        delay: 0.5, 
         ease: "power1.inOut"
       });
 
-      // Animate the plane along the path
       gsap.to(heroAnimatedElementRef.current, {
-        duration: 20, // Adjust for desired speed
+        duration: 20, 
         repeat: -1,
-        // yoyo: true, // yoyo might not be desired for a plane flight, unless it's a patrol path
-        ease: "power1.inOut", // Or "none" for constant speed
+        // yoyo: true, // Removed for continuous flight path for a plane
+        ease: "power1.inOut", 
         motionPath: {
           path: heroBackgroundPathRef.current,
           align: heroBackgroundPathRef.current,
@@ -371,31 +365,29 @@ export default function HomePage() {
       <section
         ref={heroSectionRef}
         className={cn(
-          "relative py-20 md:py-32 rounded-lg shadow-xl overflow-hidden", // Removed bg-cover, bg-center here
+          "relative py-20 md:py-32 rounded-lg shadow-xl overflow-hidden",
           isHeroSectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10",
           "transition-all duration-700 ease-out"
         )}
       >
-        {/* Background Image - now an Image component for better Next.js optimization */}
         <Image
-          src="/main.jpg" // Assuming main.jpg is in public folder
+          src="/main.jpg"
           alt="Global Education Journey Background"
           layout="fill"
           objectFit="cover"
           className="absolute inset-0 z-0"
           priority
         />
-        <div className="absolute inset-0 bg-black opacity-70 z-0"></div>
+        <div className="absolute inset-0 bg-black opacity-70 z-10"></div>
         
-        {/* GSAP Motion Path Background Animation - user provided SVG */}
-        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 z-20 overflow-hidden pointer-events-none"> {/* Ensure this container is above the image and overlay */}
           <svg 
             id="svg-stage" 
             ref={svgStageRef}
             xmlns="http://www.w3.org/2000/svg" 
-            viewBox="-40 -180 1250 1100" // From user's CodePen
-            opacity="0" // Initial opacity for GSAP fade-in
-            className="w-full h-full" // Ensure it scales
+            viewBox="-40 -180 1250 1100" 
+            opacity="0" 
+            className="w-full h-full" 
             preserveAspectRatio="xMidYMid slice"
           >
             <defs>
@@ -406,14 +398,14 @@ export default function HomePage() {
             </defs>
             <path 
               ref={heroBackgroundPathRef}
-              className="mp" // Class from CodePen, can be styled if needed
+              className="mp" 
               fill="none" 
               stroke="url(#grad)" 
-              strokeWidth="2" // Reduced for subtlety
-              opacity="0.5" // Make path slightly subtle
+              strokeWidth="2" 
+              opacity="0.5" 
               d="M-92 17.713c154.32 237.253 348.7 486.913 585.407 466.93 137.542-17.257 247.733-123.595 279.259-239.307 27.368-100.43-21.323-229.59-140.017-241.76-118.693-12.172-208.268 98.897-231.122 199.803-34.673 151.333 12.324 312.301 125.096 429.074C639.395 749.225 815.268 819.528 995 819"
             />
-            <g ref={heroAnimatedElementRef} className="plane"> {/* Ref for the plane group */}
+            <g ref={heroAnimatedElementRef} className="plane"> 
               <path fill="url(#grad)" opacity="0.3" d="m82.8 35 215.9 94.6L79 92l3.8-57Z"/>
               <path fill="url(#grad)" d="m82.8 35 52-23.5 163.9 118.1-216-94.5Z"/>
               <path fill="url(#grad)" opacity="0.3" d="m76.8 107.1 214.4 19.6L74.7 131l2.1-23.9Z"/>
@@ -422,7 +414,7 @@ export default function HomePage() {
           </svg>
         </div>
 
-        <div className="container mx-auto px-4 text-center relative z-10">
+        <div className="container mx-auto px-4 text-center relative z-30"> {/* Ensure text content is above the SVG animation */}
           <div
             ref={heroTitleRef}
             className={`text-5xl md:text-7xl font-headline font-bold text-primary-foreground mb-4`}
