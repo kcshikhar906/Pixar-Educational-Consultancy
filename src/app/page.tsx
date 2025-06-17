@@ -21,6 +21,9 @@ import { cn } from '@/lib/utils';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { format, differenceInCalendarMonths, addMonths, differenceInCalendarWeeks, startOfDay, differenceInDays } from 'date-fns';
 import { gsap } from 'gsap';
+import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
+
+gsap.registerPlugin(MotionPathPlugin);
 
 
 const pathwayFormSchema = z.object({
@@ -39,7 +42,7 @@ const taglines = [
   "Your Bridge to World-Class Universities",
 ];
 
-const FADE_DURATION_MS = 500; // Increased slightly for GSAP smoothness
+const FADE_DURATION_MS = 500;
 const DISPLAY_DURATION_MS = 2500;
 
 const selectableCountriesHomepage = [
@@ -105,7 +108,7 @@ export default function HomePage() {
   const [heroAnimated, setHeroAnimated] = useState(false);
 
   const [currentTaglineText, setCurrentTaglineText] = useState(taglines[0]);
-  const [isTaglineVisible, setIsTaglineVisible] = useState(false); // Still useful for timing GSAP
+  const [isTaglineVisible, setIsTaglineVisible] = useState(false);
 
   const [showResultsArea, setShowResultsArea] = useState(false);
   const [resultsContainerAnimatedIn, setResultsContainerAnimatedIn] = useState(false);
@@ -115,6 +118,8 @@ export default function HomePage() {
 
   const heroTitleRef = useRef<HTMLDivElement>(null);
   const taglineRef = useRef<HTMLHeadingElement>(null);
+  const heroBackgroundPathRef = useRef<SVGPathElement>(null);
+  const heroAnimatedElementRef = useRef<SVGCircleElement>(null);
 
   const [heroSectionRef, isHeroSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.05, initialVisible: true });
   const [pathwaySearchSectionRef, isPathwaySearchSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.02, initialVisible: false });
@@ -129,7 +134,6 @@ export default function HomePage() {
     return () => clearTimeout(timer);
   }, []);
 
-  // GSAP animation for the main hero title
   useEffect(() => {
     if (heroAnimated && heroTitleRef.current) {
       gsap.fromTo(
@@ -140,49 +144,60 @@ export default function HomePage() {
     }
   }, [heroAnimated]);
 
-  // Tagline cycling logic (unchanged)
   useEffect(() => {
     if (!heroAnimated) {
       return;
     }
-    // Initial tagline display
     setIsTaglineVisible(true); 
 
     let currentIdx = 0;
     const cycleTime = DISPLAY_DURATION_MS + FADE_DURATION_MS;
     const intervalId = setInterval(() => {
-      setIsTaglineVisible(false); // Trigger fade out
-      setTimeout(() => {
-        currentIdx = (currentIdx + 1) % taglines.length;
-        setCurrentTaglineText(taglines[currentIdx]);
-        setIsTaglineVisible(true); // Trigger fade in
-      }, FADE_DURATION_MS);
+      gsap.to(taglineRef.current, {
+        autoAlpha: 0,
+        y: -20,
+        duration: FADE_DURATION_MS / 1000,
+        ease: 'power2.in',
+        onComplete: () => {
+          currentIdx = (currentIdx + 1) % taglines.length;
+          setCurrentTaglineText(taglines[currentIdx]);
+          gsap.fromTo(
+            taglineRef.current,
+            { autoAlpha: 0, y: 20 },
+            { autoAlpha: 1, y: 0, duration: FADE_DURATION_MS / 1000, ease: 'power2.out' }
+          );
+        }
+      });
     }, cycleTime);
     return () => clearInterval(intervalId);
   }, [heroAnimated]);
-
-  // GSAP animation for taglines
+  
   useEffect(() => {
-    if (heroAnimated && taglineRef.current) {
-      if (isTaglineVisible) {
-        gsap.fromTo(
-          taglineRef.current,
-          { autoAlpha: 0, y: 20 },
-          { autoAlpha: 1, y: 0, duration: FADE_DURATION_MS / 1000, ease: 'power2.out' }
-        );
-      } else {
-        // Only animate out if it's not the initial hide
-        if (gsap.getProperty(taglineRef.current, "autoAlpha") > 0) { 
-            gsap.to(taglineRef.current, {
-            autoAlpha: 0,
-            y: -20,
-            duration: FADE_DURATION_MS / 1000,
-            ease: 'power2.in',
-            });
-        }
-      }
+    if (heroAnimated && taglineRef.current && isTaglineVisible) {
+      gsap.fromTo(
+        taglineRef.current,
+        { autoAlpha: 0, y: 20 },
+        { autoAlpha: 1, y: 0, duration: FADE_DURATION_MS / 1000, ease: 'power2.out' }
+      );
     }
   }, [currentTaglineText, isTaglineVisible, heroAnimated]);
+
+  useEffect(() => {
+    if (heroAnimatedElementRef.current && heroBackgroundPathRef.current) {
+      gsap.to(heroAnimatedElementRef.current, {
+        duration: 10,
+        repeat: -1,
+        yoyo: true,
+        ease: "power1.inOut",
+        motionPath: {
+          path: heroBackgroundPathRef.current,
+          align: heroBackgroundPathRef.current,
+          alignOrigin: [0.5, 0.5],
+          autoRotate: true,
+        }
+      });
+    }
+  }, [heroAnimated]);
   
   useEffect(() => {
     const newIntakeTimes: Record<string, TimeRemaining> = {};
@@ -355,24 +370,35 @@ export default function HomePage() {
         style={{ backgroundImage: 'url("/main.jpg")' }}
       >
         <div className="absolute inset-0 bg-black opacity-70"></div>
+        
+        {/* GSAP Motion Path Background Animation */}
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          <svg width="100%" height="100%" viewBox="0 0 1000 400" preserveAspectRatio="xMidYMid slice">
+            <path 
+              ref={heroBackgroundPathRef}
+              d="M50,350 Q250,50 450,200 T850,150 Q950,300 950,350" // A sample curve path
+              fill="none" 
+              stroke="hsla(var(--accent) / 0.1)" // Subtle stroke for the path itself
+              strokeWidth="1"
+            />
+            <circle ref={heroAnimatedElementRef} r="3" fill="hsla(var(--accent) / 0.5)" />
+          </svg>
+        </div>
+
         <div className="container mx-auto px-4 text-center relative z-10">
           <div
             ref={heroTitleRef}
-            className={`text-5xl md:text-7xl font-headline font-bold text-primary-foreground mb-4 transition-all ease-out duration-700 ${
-              heroAnimated ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-            }`}
-            style={{ willChange: 'transform, opacity' }} // Hint for GSAP
+            className={`text-5xl md:text-7xl font-headline font-bold text-primary-foreground mb-4`}
+            style={{ opacity: 0 }} // Initial state for GSAP
           >
             Pixar Education
           </div>
           <h1
             ref={taglineRef}
             className={cn(
-              "text-4xl md:text-5xl font-headline font-bold text-primary-foreground mb-6 h-[5rem] md:min-h-[6rem] flex items-center justify-center", 
-              "transition-transform ease-out duration-700 delay-100", // Keep base transform for block animation
-              heroAnimated ? "translate-y-0" : "translate-y-10 opacity-0"
+              "text-4xl md:text-5xl font-headline font-bold text-primary-foreground mb-6 h-[5rem] md:min-h-[6rem] flex items-center justify-center"
             )}
-            style={{ willChange: 'transform, opacity' }} // Hint for GSAP
+            style={{ opacity: 0 }} // Initial state for GSAP
           >
             <span>{currentTaglineText}</span>
           </h1>
@@ -411,10 +437,10 @@ export default function HomePage() {
         <SectionTitle title="Pathway Quick Search" subtitle="Find universities matching your interests instantly." />
         <div className={cn(
             "items-start gap-8",
-            showResultsArea ? "grid grid-cols-1 md:grid-cols-3" : "flex flex-col items-center" 
+            showResultsArea ? "grid grid-cols-1 md:grid-cols-3" : "max-w-4xl mx-auto" 
         )}>
           <div className={cn(
-            showResultsArea ? "md:col-span-1 w-full" : "max-w-4xl w-full" 
+            showResultsArea ? "md:col-span-1 w-full" : "w-full" 
            )}>
             {renderPathwayForm()}
           </div>
@@ -734,3 +760,6 @@ export default function HomePage() {
     </div>
   );
 }
+
+
+    
