@@ -1,6 +1,7 @@
 
 'use client';
 import Image from 'next/image';
+import Link from 'next/link'; // Added Link import
 import SectionTitle from '@/components/ui/section-title';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Target, Users, Award, CheckCircle, Building, Heart, Handshake, Goal, Lightbulb, UsersRound } from 'lucide-react';
@@ -80,7 +81,13 @@ export default function AboutPage() {
           </div>
           <div className="space-y-6">
             <p className="text-lg text-foreground/80">
-              Pixar Educational Consultancy, Nepal’s trusted guide to fulfilling your dreams of studying in premier destinations including the USA 🇺🇸, Australia 🇦🇺, UK 🇬🇧, Canada 🇨🇦, and New Zealand 🇳🇿. Established in 2013, we have been at the forefront of student visa counselling for over a decade, helping countless Nepali students unlock life-changing opportunities in these leading study destinations.
+              Pixar Educational Consultancy, Nepal’s trusted guide to fulfilling your dreams of studying in premier destinations including the{' '}
+              <Link href="/country-guides#usa" className="hover:underline text-accent">USA 🇺🇸</Link>,{' '}
+              <Link href="/country-guides#australia" className="hover:underline text-accent">Australia 🇦🇺</Link>,{' '}
+              <Link href="/country-guides#uk" className="hover:underline text-accent">UK 🇬🇧</Link>,{' '}
+              <Link href="/country-guides#canada" className="hover:underline text-accent">Canada 🇨🇦</Link>, and{' '}
+              <Link href="/country-guides#new-zealand" className="hover:underline text-accent">New Zealand 🇳🇿</Link>. 
+              Established in 2013, we have been at the forefront of student visa counselling for over a decade, helping countless Nepali students unlock life-changing opportunities in these leading study destinations.
             </p>
             <p className="text-foreground/70">
               Located in the heart of Nepal, Pixar Educational Consultancy is more than just a consultancy—we are your partners in turning your dreams into reality. With a decade of experience and an unwavering commitment to excellence, we are dedicated to helping you navigate the complexities of studying abroad with ease.
@@ -257,3 +264,4 @@ export default function AboutPage() {
     </div>
   );
 }
+

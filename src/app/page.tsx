@@ -120,8 +120,8 @@ export default function HomePage() {
   const taglineRef = useRef<HTMLHeadingElement>(null);
   
   const svgStageRef = useRef<SVGSVGElement>(null);
-  const heroBackgroundPathRef = useRef<SVGPathElement>(null); // This will be the invisible guide path
-  const heroAnimatedElementRef = useRef<SVGGElement>(null); // This is the plane
+  const heroBackgroundPathRef = useRef<SVGPathElement>(null); 
+  const heroAnimatedElementRef = useRef<SVGGElement>(null); 
 
   const [heroSectionRef, isHeroSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.05, initialVisible: true });
   const [pathwaySearchSectionRef, isPathwaySearchSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.02, initialVisible: false });
@@ -178,7 +178,7 @@ export default function HomePage() {
     return () => clearInterval(intervalId);
   }, [heroAnimated]);
   
-  useEffect(() => {
+ useEffect(() => {
     if (heroAnimated && heroAnimatedElementRef.current && heroBackgroundPathRef.current && svgStageRef.current) {
       gsap.to(svgStageRef.current, {
         opacity: 1,
@@ -188,9 +188,9 @@ export default function HomePage() {
       });
 
       gsap.to(heroAnimatedElementRef.current, {
-        duration: 12, // Faster duration for one loop
-        repeat: -1,   // Infinite loop
-        ease: "linear", // Constant speed
+        duration: 12, 
+        repeat: -1,   
+        ease: "linear", 
         motionPath: {
           path: heroBackgroundPathRef.current,
           align: heroBackgroundPathRef.current,
@@ -367,7 +367,7 @@ export default function HomePage() {
         className={cn(
           "relative py-20 md:py-32 rounded-lg shadow-xl overflow-hidden",
           isHeroSectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10",
-          "transition-all duration-700 ease-out bg-card"
+          "transition-all duration-700 ease-out bg-card" 
         )}
       >
         <Image
@@ -393,8 +393,8 @@ export default function HomePage() {
           >
             <defs>
               <linearGradient id="grad" x1="154" x2="160" y1="49" y2="132" gradientUnits="userSpaceOnUse">
-                <stop offset="0" stopColor="hsl(var(--primary))"></stop> 
-                <stop offset="1" stopColor="hsl(var(--accent))"></stop>
+                <stop offset="0" stopColor="hsl(var(--primary) / 0.6)"></stop> 
+                <stop offset="1" stopColor="hsl(var(--accent) / 0.6)"></stop>
               </linearGradient>
             </defs>
             <path 
@@ -437,7 +437,13 @@ export default function HomePage() {
               heroAnimated ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
             }`}
           >
-            Your trusted partner for international studies, guiding Nepali students to success in the USA 🇺🇸, Australia 🇦🇺, UK 🇬🇧, Canada 🇨🇦, & New Zealand 🇳🇿. Start your adventure today!
+            Your trusted partner for international studies, guiding Nepali students to success in the{' '}
+            <Link href="/country-guides#usa" className="hover:underline text-blue-300">USA 🇺🇸</Link>,{' '}
+            <Link href="/country-guides#australia" className="hover:underline text-yellow-300">Australia 🇦🇺</Link>,{' '}
+            <Link href="/country-guides#uk" className="hover:underline text-red-300">UK 🇬🇧</Link>,{' '}
+            <Link href="/country-guides#canada" className="hover:underline text-red-200">Canada 🇨🇦</Link>, &{' '}
+            <Link href="/country-guides#new-zealand" className="hover:underline text-sky-300">New Zealand 🇳🇿</Link>.
+            Start your adventure today!
           </p>
           <div
              className={cn(
