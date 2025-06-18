@@ -479,16 +479,6 @@ export default function SmartToolsPage() {
                         </CardContent>
                     </Card>
                 )}
-                 <Alert className="m-6 mt-4">
-                    <Info className="h-4 w-4" />
-                    <AlertTitle>Admin Note: Adding Sample Files</AlertTitle>
-                    <AlertDescription className="text-xs">
-                        To make SOP samples downloadable, create a folder named `sop-samples` inside your project's `public` directory.
-                        Place your `.docx` (or other format) files there. The system expects filenames like:
-                        `SOP_USA_Bachelors.docx`, `SOP_Canada_Masters.docx`, etc., based on the `sopSampleFiles` mapping in this page's code.
-                        If a file is missing, the download will fail. Ensure the `path` in `sopSampleFiles` matches the actual file path (e.g., `/sop-samples/FILENAME.docx`).
-                    </AlertDescription>
-                </Alert>
             </Card>
           </TabsContent>
 
