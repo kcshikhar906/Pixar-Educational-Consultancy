@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image'; // Added Image import
-import { Home, Info, Briefcase, MapPin, Sparkles, Mail, ChevronDown, Menu, Wand2, HelpCircle, CheckSquare, MessageCircleQuestion, Share2 } from 'lucide-react'; // Removed GraduationCap as it's replaced by logo, Added Share2
+import { Home, Info, Briefcase, MapPin, Sparkles, Mail, ChevronDown, Menu, Wand2, HelpCircle, CheckSquare, MessageCircleQuestion, Share2 } from 'lucide-react'; // Added Share2
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -25,12 +25,12 @@ const navItems = [
     icon: Sparkles,
     subItems: [
       { href: '/ai-assistants', label: 'Smart Tools', icon: Wand2 },
-      { href: '/book-appointment', label: 'English Test Guide', icon: HelpCircle }, // Was /english-test-guide, now /book-appointment based on footer/previous context
+      { href: '/book-appointment', label: 'English Test Guide', icon: HelpCircle },
       { href: '/pre-departure-toolkit', label: 'Pre-Departure Toolkit', icon: CheckSquare },
       { href: '/interview-qa', label: 'Interview Q&A', icon: MessageCircleQuestion },
     ],
   },
-  { href: '/connect', label: 'Connect', icon: Share2 },
+  { href: '/connect', label: 'Social Media', icon: Share2 }, // Changed "Connect" to "Social Media"
   { href: '/contact', label: 'Contact Us', icon: Mail },
 ];
 

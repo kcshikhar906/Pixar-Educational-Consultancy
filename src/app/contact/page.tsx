@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import SectionTitle from '@/components/ui/section-title';
-import { Mail, MapPin, Phone, MessageSquare, Send, Loader2, BookUser, StickyNote, Target, Languages, GraduationCap, CalendarIcon as CalendarIconLucide, Users, BookCopy, NotebookPen } from 'lucide-react';
+import { Mail, MapPin, Phone, MessageSquare, Send, Loader2, BookUser, StickyNote, Target, Languages, GraduationCap, CalendarIcon as CalendarIconLucide, Users, BookCopy, NotebookPen, ExternalLink } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { useState } from 'react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
@@ -21,6 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
+import { Separator } from '@/components/ui/separator'; // Added Separator
 
 // Schema for General Contact Form
 const generalContactFormSchema = z.object({
@@ -118,6 +119,43 @@ async function submitToPrepClassGoogleSheet(data: PreparationClassFormValues): P
     return { success: false, message: 'An error occurred with your booking request. Please try again or contact us directly.' };
   }
 }
+
+interface OfficeLocation {
+  name: string;
+  address: string;
+  email: string;
+  phone: string;
+  whatsappLink?: string;
+  mapEmbedUrl?: string;
+  mapLink?: string;
+}
+
+const officeLocations: OfficeLocation[] = [
+  {
+    name: "Head Office (Kathmandu)",
+    address: "New Baneshwor, Kathmandu, Nepal, 44600",
+    email: "info@pixaredu.com",
+    phone: "+977 9761859757",
+    whatsappLink: "https://wa.me/+9779761859757",
+    mapEmbedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3197.165484604168!2d85.3327993749223!3d27.686924426392938!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb19a84379c423%3A0xef4effecef07815d!2sPIXAR%20EDUCATIONAL%20CONSULTANCY!5e1!3m2!1sen!2sau!4v1749691561992!5m2!1sen!2sau",
+  },
+  {
+    name: "Branch Office (Demo Pokhara)",
+    address: "Lakeside, Pokhara, Kaski, Nepal (Demo)",
+    email: "pokhara.demo@pixaredu.com",
+    phone: "+977 9800000001 (Demo)",
+    whatsappLink: "https://wa.me/+9779800000001",
+    mapLink: "https://maps.google.com/?q=Pokhara+Lakeside+Nepal",
+  },
+  {
+    name: "Branch Office (Demo Butwal)",
+    address: "Traffic Chowk, Butwal, Rupandehi, Nepal (Demo)",
+    email: "butwal.demo@pixaredu.com",
+    phone: "+977 9800000002 (Demo)",
+    whatsappLink: "https://wa.me/+9779800000002",
+    mapLink: "https://maps.google.com/?q=Butwal+Traffic+Chowk+Nepal",
+  },
+];
 
 
 export default function ContactPage() {
@@ -295,33 +333,61 @@ export default function ContactPage() {
           </Tabs>
         </div>
 
-        {/* Contact Information & Map (Existing Section) */}
+        {/* Contact Information & Map Section */}
         <div ref={infoSectionRef} className={cn("space-y-8 transition-all duration-700 ease-out", isInfoSectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")} style={{transitionDelay: '100ms'}}>
           <Card className="shadow-xl bg-card">
-            <CardHeader><CardTitle className="font-headline text-primary">Contact Information</CardTitle></CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <MapPin className="h-6 w-6 text-accent mt-1 flex-shrink-0" />
-                <div><h4 className="font-semibold">Our Office</h4><p className="text-foreground/80">New Baneshwor, Kathmandu, Nepal, 44600</p></div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <Mail className="h-6 w-6 text-accent mt-1 flex-shrink-0" />
-                <div><h4 className="font-semibold">Email Us</h4><a href="mailto:info@pixaredu.com" className="text-foreground/80 hover:text-primary transition-colors">info@pixaredu.com</a></div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <Phone className="h-6 w-6 text-accent mt-1 flex-shrink-0" />
-                <div><h4 className="font-semibold">Call Us</h4><a href="tel:+9779761859757" className="text-foreground/80 hover:text-primary transition-colors">+977 9761859757</a></div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <MessageSquare className="h-6 w-6 text-accent mt-1 flex-shrink-0" />
-                <div><h4 className="font-semibold">Direct Chat</h4><a href="https://wa.me/+9779761859757" target="_blank" rel="noopener noreferrer" className="text-foreground/80 hover:text-primary transition-colors">Chat with us on WhatsApp</a></div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="shadow-xl bg-card">
-            <CardHeader><CardTitle className="font-headline text-primary">Find Us On Map</CardTitle></CardHeader>
-            <CardContent>
-              <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3197.165484604168!2d85.3327993749223!3d27.686924426392938!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb19a84379c423%3A0xef4effecef07815d!2sPIXAR%20EDUCATIONAL%20CONSULTANCY!5e1!3m2!1sen!2sau!4v1749691561992!5m2!1sen!2sau" width="100%" height="300" style={{border:0}} allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
+            <CardHeader>
+              <CardTitle className="font-headline text-primary">Our Offices</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {officeLocations.map((office, index) => (
+                <div key={office.name}>
+                  <h3 className="text-lg font-semibold text-accent mb-2">{office.name}</h3>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex items-start space-x-3">
+                      <MapPin className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <p className="text-foreground/80">{office.address}</p>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                      <Mail className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <a href={`mailto:${office.email}`} className="text-foreground/80 hover:text-accent transition-colors">{office.email}</a>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                      <Phone className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <a href={`tel:${office.phone.replace(/[^0-9+]/g, '')}`} className="text-foreground/80 hover:text-accent transition-colors">{office.phone}</a>
+                    </div>
+                    {office.whatsappLink && (
+                      <div className="flex items-start space-x-3">
+                        <MessageSquare className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <a href={office.whatsappLink} target="_blank" rel="noopener noreferrer" className="text-foreground/80 hover:text-accent transition-colors">Chat on WhatsApp</a>
+                      </div>
+                    )}
+                    {office.mapLink && !office.mapEmbedUrl && (
+                       <div className="flex items-start space-x-3">
+                        <ExternalLink className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <a href={office.mapLink} target="_blank" rel="noopener noreferrer" className="text-foreground/80 hover:text-accent transition-colors">View on Map</a>
+                      </div>
+                    )}
+                  </div>
+                  {index < officeLocations.length - 1 && <Separator className="my-6" />}
+                </div>
+              ))}
+              
+              {/* Main Map Embed (e.g., Head Office) */}
+              {officeLocations.find(loc => loc.mapEmbedUrl) && (
+                <div className="mt-6 pt-6 border-t border-border">
+                  <h3 className="text-lg font-semibold text-primary mb-3">Find Our Head Office</h3>
+                  <iframe 
+                    src={officeLocations.find(loc => loc.mapEmbedUrl)!.mapEmbedUrl} 
+                    width="100%" 
+                    height="300" 
+                    style={{border:0}} 
+                    allowFullScreen 
+                    loading="lazy" 
+                    referrerPolicy="no-referrer-when-downgrade"
+                  ></iframe>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -329,5 +395,4 @@ export default function ContactPage() {
     </div>
   );
 }
-
     

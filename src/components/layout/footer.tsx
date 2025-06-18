@@ -1,8 +1,17 @@
 
 import Link from 'next/link';
-import { GraduationCap, Mail, Phone, MapPin, ShieldCheck, FileText, CheckSquare, MessageCircleQuestion } from 'lucide-react'; // Added MessageCircleQuestion
+import { GraduationCap, Mail, Phone, MapPin, ShieldCheck, FileText, CheckSquare, MessageCircleQuestion, Users, Search, Info, Briefcase as BriefcaseIcon } from 'lucide-react'; // Added Info, BriefcaseIcon
 
 export default function Footer() {
+  const importantLinks = [
+    { href: '/about', label: 'About Us', icon: Info },
+    { href: '/services', label: 'Services', icon: BriefcaseIcon },
+    { href: '/country-guides', label: 'Country Guides', icon: MapPin },
+    { href: '/ai-assistants', label: 'Student Hub', icon: Users }, // Points to Smart Tools
+    { href: '/faq', label: 'FAQ', icon: MessageCircleQuestion },
+    { href: '/contact', label: 'Contact Us', icon: Mail },
+  ];
+
   return (
     <footer className="bg-primary text-primary-foreground mt-12">
       <div className="container mx-auto px-4 py-10">
@@ -22,14 +31,14 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4 font-headline">Quick Links</h3>
             <ul className="space-y-2">
-              <li><Link href="/about" className="hover:text-accent transition-colors">About Us</Link></li>
-              <li><Link href="/services" className="hover:text-accent transition-colors">Services</Link></li>
-              <li><Link href="/country-guides" className="hover:text-accent transition-colors">Country Guides</Link></li>
-              <li><Link href="/ai-assistants" className="hover:text-accent transition-colors">Student Hub (Smart Tools)</Link></li>
-              <li><Link href="/book-appointment" className="hover:text-accent transition-colors">English Test Guide</Link></li>
-              <li><Link href="/pre-departure-toolkit" className="flex items-center space-x-1 hover:text-accent transition-colors"><CheckSquare className="h-4 w-4 flex-shrink-0" /><span>Pre-Departure Toolkit</span></Link></li>
-              <li><Link href="/interview-qa" className="flex items-center space-x-1 hover:text-accent transition-colors"><MessageCircleQuestion className="h-4 w-4 flex-shrink-0" /><span>Interview Q&amp;A</span></Link></li> {/* New link */}
-              <li><Link href="/faq" className="hover:text-accent transition-colors">FAQ</Link></li>
+              {importantLinks.map(link => (
+                <li key={link.href}>
+                  <Link href={link.href} className="flex items-center space-x-2 hover:text-accent transition-colors">
+                    <link.icon className="h-4 w-4 flex-shrink-0" />
+                    <span>{link.label}</span>
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -79,6 +88,4 @@ export default function Footer() {
     </footer>
   );
 }
-
-
     
