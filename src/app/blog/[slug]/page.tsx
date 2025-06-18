@@ -60,15 +60,23 @@ export default async function PostPage({ params }: PostPageProps) {
         </div>
       </header>
 
-      {/* Apply basic prose styling for markdown content */}
+      {/* Apply Tailwind Typography prose styling for markdown content */}
       <div
-        className="prose dark:prose-invert prose-lg max-w-none
-                   prose-headings:font-headline prose-headings:text-primary dark:prose-headings:text-primary
+        className="prose dark:prose-invert 
+                   prose-lg 
+                   max-w-none
+                   prose-headings:font-headline 
+                   prose-headings:text-primary dark:prose-headings:text-primary
+                   prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl 
                    prose-a:text-accent hover:prose-a:text-accent/80 dark:prose-a:text-accent dark:hover:prose-a:text-accent/80
                    prose-strong:text-foreground/90 dark:prose-strong:text-foreground/90
-                   prose-blockquote:border-accent prose-blockquote:text-foreground/80
-                   prose-code:font-code prose-code:bg-muted prose-code:p-1 prose-code:rounded-sm
-                   prose-li:marker:text-accent"
+                   prose-em:text-foreground/80 dark:prose-em:text-foreground/80
+                   prose-blockquote:border-l-4 prose-blockquote:border-accent prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-foreground/80
+                   prose-ul:list-disc prose-ul:pl-5
+                   prose-ol:list-decimal prose-ol:pl-5
+                   prose-li:my-1 prose-li:marker:text-accent
+                   prose-code:font-code prose-code:bg-muted prose-code:text-foreground/80 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-sm
+                   prose-pre:bg-muted prose-pre:p-4 prose-pre:rounded-md prose-pre:overflow-x-auto"
         dangerouslySetInnerHTML={{ __html: postData.contentHtml || '' }}
       />
 
@@ -82,3 +90,4 @@ export default async function PostPage({ params }: PostPageProps) {
     </article>
   );
 }
+
