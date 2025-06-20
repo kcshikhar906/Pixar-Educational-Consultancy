@@ -39,18 +39,18 @@ export default function AboutPage() {
   const lastRowTeamMember = teamMembers.length > 12 ? teamMembers[12] : null;
 
 
-  const renderTeamMemberCard = (member: TeamMember) => {
+  const renderTeamMemberCard = (member: TeamMember, index: number) => {
     const isPradeep = member.id === 'team-13'; // Pradeep Khadka's ID
-    const imageSizeClass = isPradeep ? "w-24 h-24" : "w-28 h-28 sm:w-32 sm:h-32"; // Original for Pradeep, larger for others
-    const bioLineClampClass = isPradeep ? "line-clamp-3" : "line-clamp-2"; // Original for Pradeep, shorter for others
+    const imageSizeClass = isPradeep ? "w-24 h-24" : "w-28 h-28 sm:w-32 sm:h-32"; 
+    const bioLineClampClass = isPradeep ? "line-clamp-3" : "line-clamp-2"; 
 
     return (
       <Card className="text-center overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-card h-full flex flex-col group">
         <div className="pt-4 px-4">
           <div className={cn(
-            "relative mx-auto rounded-md overflow-hidden shadow-sm group-hover:shadow-lg transition-shadow",
+            "team-image-glint-container relative mx-auto rounded-md overflow-hidden shadow-sm group-hover:shadow-lg transition-shadow", // Added team-image-glint-container
             imageSizeClass
-          )}>
+          )} style={{ '--animation-index': index } as React.CSSProperties} >
             <Image
               src={member.imageUrl}
               alt={member.name}
@@ -200,7 +200,7 @@ export default function AboutPage() {
                const [cardRef, cardVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
               return (
                 <div key={member.id} ref={cardRef} className={cn("transition-all duration-500 ease-out", cardVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")} style={{transitionDelay: `${index * 100}ms`}}>
-                  {renderTeamMemberCard(member)}
+                  {renderTeamMemberCard(member, index)}
                 </div>
               );
             })}
@@ -213,7 +213,7 @@ export default function AboutPage() {
                 const [cardRef, cardVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
                 return (
                   <div key={member.id} ref={cardRef} className={cn("transition-all duration-500 ease-out", cardVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")} style={{transitionDelay: `${(index + 6) * 80}ms`}}> {/* Adjust delay for staggered effect */}
-                    {renderTeamMemberCard(member)}
+                    {renderTeamMemberCard(member, index + 6)}
                   </div>
                 );
               })}
@@ -228,7 +228,7 @@ export default function AboutPage() {
                   const [cardRef, cardVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
                   return (
                     <div ref={cardRef} className={cn("transition-all duration-500 ease-out", cardVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")} style={{transitionDelay: `${12 * 70}ms`}}>
-                      {renderTeamMemberCard(lastRowTeamMember)}
+                      {renderTeamMemberCard(lastRowTeamMember, 12)}
                     </div>
                   );
                 })()}
@@ -276,4 +276,3 @@ export default function AboutPage() {
     </div>
   );
 }
-

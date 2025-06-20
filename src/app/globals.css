@@ -146,6 +146,65 @@ body {
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
   }
+
+  /* Team Image Glint Effect */
+  .team-image-glint-container {
+    position: relative; /* Already present, but good to note */
+    overflow: hidden; /* Crucial for the glint effect */
+  }
+
+  .team-image-glint-container::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    /* Start off-screen left. Animation will handle the actual 'left' or 'transform' */
+    transform: translateX(-150%) skewX(-30deg);
+    width: 50%; /* Width of the glint */
+    height: 100%;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      hsl(var(--primary) / 0.1) 30%, /* Subtle primary highlight */
+      hsl(var(--primary) / 0.15) 50%, /* Peak of the glint, slightly brighter */
+      hsl(var(--primary) / 0.1) 70%, /* Subtle primary highlight */
+      transparent 100%
+    );
+    z-index: 1; /* Ensure it's above the image */
+    animation: subtleGlintAnimation 5s ease-in-out infinite; /* Slower, smoother animation */
+    /* Stagger animation for each card - this uses an inline CSS variable --animation-index */
+    animation-delay: calc(var(--animation-index, 0) * 0.2s);
+  }
+
+  @keyframes subtleGlintAnimation {
+    0% {
+      transform: translateX(-150%) skewX(-30deg);
+      opacity: 0.6;
+    }
+    /* Introduce a delay before the glint starts to move across */
+    10% {
+      transform: translateX(-150%) skewX(-30deg);
+      opacity: 0.6;
+    }
+    /* Glint appears and moves onto the image */
+    30% { 
+      transform: translateX(-50%) skewX(-30deg);
+      opacity: 0.8; /* Slightly more visible during sweep */
+    }
+    /* Glint moves across the image */
+    70% { 
+      transform: translateX(50%) skewX(-30deg);
+      opacity: 0.8;
+    }
+    /* Glint moves off the image and fades */
+    90% {
+      transform: translateX(150%) skewX(-30deg);
+      opacity: 0.6;
+    }
+    100% {
+      transform: translateX(150%) skewX(-30deg);
+      opacity: 0.6;
+    }
+  }
 }
 
 @keyframes marquee {
