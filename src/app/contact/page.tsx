@@ -144,7 +144,7 @@ const officeLocations: OfficeLocation[] = [
     address: "Kumaripati, Lalitpur 44600, Nepal",
     email: "study@pixaredu.com.au",
     phone: "015913809 / 9765833581",
-    // whatsappLink: "https://wa.me/+9779765833581",
+    whatsappLink: "https://wa.me/+9779765833581",
     mapLink: "https://maps.app.goo.gl/8JBZXd3SxGq3NjPn7",
   },
   {
@@ -152,7 +152,7 @@ const officeLocations: OfficeLocation[] = [
     address: "Level 1/18 Montgomery St, Kogarah NSW 2217",
     email: "info@pixaredu.com.au",
     phone: "02 85939110 / 0425347175",
-    // whatsappLink: "https://wa.me/+61425347175", 
+    whatsappLink: "https://wa.me/+61425347175", 
     mapLink: "https://maps.app.goo.gl/52hE2ptx3sw24irC9",
   },
 ];
@@ -354,7 +354,22 @@ export default function ContactPage() {
                     </div>
                     <div className="flex items-start space-x-3">
                       <Phone className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <a href={`tel:${office.phone.replace(/[^0-9+]/g, '')}`} className="text-foreground/80 hover:text-accent transition-colors">{office.phone}</a>
+                      <div>
+                        {office.phone.includes(' / ') ? (
+                          office.phone.split(' / ').map((num, i, arr) => (
+                            <span key={i}>
+                              <a href={`tel:${num.replace(/[^0-9+]/g, '')}`} className="text-foreground/80 hover:text-accent transition-colors">
+                                {num.trim()}
+                              </a>
+                              {i < arr.length - 1 && <span className="text-foreground/80"> / </span>}
+                            </span>
+                          ))
+                        ) : (
+                          <a href={`tel:${office.phone.replace(/[^0-9+]/g, '')}`} className="text-foreground/80 hover:text-accent transition-colors">
+                            {office.phone}
+                          </a>
+                        )}
+                      </div>
                     </div>
                     {office.whatsappLink && (
                       <div className="flex items-start space-x-3">
