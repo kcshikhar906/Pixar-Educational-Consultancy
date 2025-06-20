@@ -147,64 +147,75 @@ body {
     scrollbar-width: none;  /* Firefox */
   }
 
-  /* Team Image Glint Effect */
-  .team-image-glint-container {
-    position: relative; /* Already present, but good to note */
-    overflow: hidden; /* Crucial for the glint effect */
+  /* Team Image Animated Border Effect */
+  .team-image-animated-border-container {
+    position: relative;
+    /* The size of this container (w-24 h-24 or w-28 h-28 etc.) is set by imageSizeClass in the component */
+    padding: 2px; /* This creates the space for the "border" */
+    border-radius: 0.375rem; /* Default rounded-md. Adjust if image cards use a different radius */
+    overflow: hidden; /* Essential to clip the pseudo-element */
   }
 
-  .team-image-glint-container::after {
+  .team-image-animated-border-container::before {
     content: "";
     position: absolute;
-    top: 0;
-    /* Start off-screen left. Animation will handle the actual 'left' or 'transform' */
-    transform: translateX(-150%) skewX(-30deg);
-    width: 50%; /* Width of the glint */
-    height: 100%;
-    background: linear-gradient(
-      to right,
-      transparent 0%,
-      hsl(var(--primary) / 0.1) 30%, /* Subtle primary highlight */
-      hsl(var(--primary) / 0.15) 50%, /* Peak of the glint, slightly brighter */
-      hsl(var(--primary) / 0.1) 70%, /* Subtle primary highlight */
-      transparent 100%
+    inset: 0; /* Makes the pseudo-element cover the parent, including its padding area */
+    border-radius: inherit; /* Inherits border-radius from parent */
+    padding: 2px; /* This should match the parent's padding */
+    background: conic-gradient(
+      from var(--angle, 0deg) at 50% 50%,
+      hsl(var(--primary) / 0.0) 0%, /* Fully transparent */
+      hsl(var(--primary) / 0.6) 10%, /* Primary glow color */
+      hsl(var(--accent) / 0.7) 20%,  /* Accent glow color */
+      hsl(var(--primary) / 0.6) 30%, /* Primary glow color */
+      hsl(var(--primary) / 0.0) 40%, /* Fully transparent */
+      hsl(var(--primary) / 0.0) 100% /* Rest transparent */
     );
-    z-index: 1; /* Ensure it's above the image */
-    animation: subtleGlintAnimation 5s ease-in-out infinite; /* Slower, smoother animation */
-    /* Stagger animation for each card - this uses an inline CSS variable --animation-index */
-    animation-delay: calc(var(--animation-index, 0) * 0.2s);
+    
+    /* Mask to create the border effect (cuts out the center) */
+    -webkit-mask: 
+      linear-gradient(#fff 0 0) content-box, /* Transparent center */
+      linear-gradient(#fff 0 0); /* Solid outer area */
+    -webkit-mask-composite: xor; /* Older Safari */
+            mask-composite: exclude; /* Standard */
+    
+    animation: rotateBorderGlow 4s linear infinite;
+    animation-delay: calc(var(--animation-index, 0) * 0.25s); /* Stagger based on index */
+    z-index: 0; /* Behind the actual image content wrapper */
   }
 
-  @keyframes subtleGlintAnimation {
+  .team-image-content-wrapper {
+    position: relative;
+    z-index: 1; /* Sits on top of the ::before pseudo-element */
+    width: 100%;
+    height: 100%;
+    background-color: hsl(var(--card)); /* Obscures the center of the ::before gradient */
+    /* Inner radius should be parent's radius minus the padding */
+    border-radius: calc(0.375rem - 2px); 
+    overflow: hidden; /* Clips the Next.js Image if it tries to overflow */
+  }
+
+  .team-image-content-wrapper > img { /* Targets the actual <img> tag rendered by Next.js Image */
+    display: block; /* Removes any bottom space from inline images */
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the image covers the wrapper area */
+  }
+
+  @keyframes rotateBorderGlow {
     0% {
-      transform: translateX(-150%) skewX(-30deg);
-      opacity: 0.6;
-    }
-    /* Introduce a delay before the glint starts to move across */
-    10% {
-      transform: translateX(-150%) skewX(-30deg);
-      opacity: 0.6;
-    }
-    /* Glint appears and moves onto the image */
-    30% { 
-      transform: translateX(-50%) skewX(-30deg);
-      opacity: 0.8; /* Slightly more visible during sweep */
-    }
-    /* Glint moves across the image */
-    70% { 
-      transform: translateX(50%) skewX(-30deg);
-      opacity: 0.8;
-    }
-    /* Glint moves off the image and fades */
-    90% {
-      transform: translateX(150%) skewX(-30deg);
-      opacity: 0.6;
+      --angle: 0deg;
     }
     100% {
-      transform: translateX(150%) skewX(-30deg);
-      opacity: 0.6;
+      --angle: 360deg;
     }
   }
+
+  /* Remove or comment out the old glint effect if it's no longer desired */
+  /*
+  .team-image-glint-container::after { ... }
+  @keyframes subtleGlintAnimation { ... }
+  */
 }
 
 @keyframes marquee {

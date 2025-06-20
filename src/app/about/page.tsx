@@ -40,25 +40,34 @@ export default function AboutPage() {
 
 
   const renderTeamMemberCard = (member: TeamMember, index: number) => {
-    const isPradeep = member.id === 'team-13'; // Pradeep Khadka's ID
+    const isPradeep = member.id === 'team-13'; 
     const imageSizeClass = isPradeep ? "w-24 h-24" : "w-28 h-28 sm:w-32 sm:h-32"; 
     const bioLineClampClass = isPradeep ? "line-clamp-3" : "line-clamp-2"; 
+
+    // Base classes for the animated border container
+    const animatedBorderContainerBaseClasses = "relative mx-auto shadow-sm transition-all duration-300 ease-out group-hover:shadow-lg group-hover:scale-105";
+    // Classes for the image itself (no scaling here, parent scales)
+    const imageDisplayClasses = "";
+
 
     return (
       <Card className="text-center overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-card h-full flex flex-col group">
         <div className="pt-4 px-4">
           <div className={cn(
-            "team-image-glint-container relative mx-auto rounded-md overflow-hidden shadow-sm group-hover:shadow-lg transition-shadow", // Added team-image-glint-container
-            imageSizeClass
+            animatedBorderContainerBaseClasses,
+            "team-image-animated-border-container", // CSS hook for the new border animation
+            imageSizeClass // This class dictates the size of the border container
           )} style={{ '--animation-index': index } as React.CSSProperties} >
-            <Image
-              src={member.imageUrl}
-              alt={member.name}
-              layout="fill"
-              objectFit="cover"
-              className="transition-transform duration-300 ease-out group-hover:scale-105"
-              data-ai-hint={member.dataAiHint || 'professional portrait'}
-            />
+            <div className="team-image-content-wrapper"> {/* New inner wrapper for image */}
+              <Image
+                src={member.imageUrl}
+                alt={member.name}
+                layout="fill"
+                objectFit="cover"
+                className={imageDisplayClasses}
+                data-ai-hint={member.dataAiHint || 'professional portrait'}
+              />
+            </div>
           </div>
         </div>
         <CardHeader className="pt-3 pb-1 flex-grow">
