@@ -144,7 +144,7 @@ const officeLocations: OfficeLocation[] = [
     address: "Kumaripati, Lalitpur 44600, Nepal",
     email: "study@pixaredu.com.au",
     phone: "015913809 / 9765833581",
-    whatsappLink: "https://wa.me/+9779765833581",
+    // whatsappLink: "https://wa.me/+9779765833581",
     mapLink: "https://maps.app.goo.gl/8JBZXd3SxGq3NjPn7",
   },
   {
@@ -152,7 +152,7 @@ const officeLocations: OfficeLocation[] = [
     address: "Level 1/18 Montgomery St, Kogarah NSW 2217",
     email: "info@pixaredu.com.au",
     phone: "02 85939110 / 0425347175",
-    whatsappLink: "https://wa.me/+61425347175", 
+    // whatsappLink: "https://wa.me/+61425347175", 
     mapLink: "https://maps.app.goo.gl/52hE2ptx3sw24irC9",
   },
 ];
