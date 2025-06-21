@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { CalendarDays, UserCircle, BookOpen, Filter as FilterIcon, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { format, isAfter, subDays, subMonths, subYears, startOfDay } from 'date-fns';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -31,11 +31,15 @@ export default function BlogListWithFilter({ initialPosts }: BlogListWithFilterP
   const [selectedTimeFilter, setSelectedTimeFilter] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage, setPostsPerPage] = useState(10);
+  
+  // State for the posts that are actually displayed, and for pagination
+  const [displayedPosts, setDisplayedPosts] = useState<PostData[]>(initialPosts.slice(0, postsPerPage));
+  const [totalPages, setTotalPages] = useState(Math.ceil(initialPosts.length / postsPerPage));
 
-  const filteredPosts = useMemo(() => {
+  useEffect(() => {
+    // This effect runs on the client after hydration, and whenever filters change
     let posts = initialPosts;
 
-    // Apply search filter
     if (searchQuery) {
       posts = posts.filter(post =>
         post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -43,26 +47,16 @@ export default function BlogListWithFilter({ initialPosts }: BlogListWithFilterP
       );
     }
 
-    // Apply time filter
     if (selectedTimeFilter !== 'all') {
-      const now = new Date();
+      const now = new Date(); // This is now safe inside useEffect
       let startDate: Date;
 
       switch (selectedTimeFilter) {
-        case '7d':
-          startDate = subDays(now, 7);
-          break;
-        case '30d':
-          startDate = subDays(now, 30);
-          break;
-        case '90d':
-          startDate = subMonths(now, 3);
-          break;
-        case '1y':
-          startDate = subYears(now, 1);
-          break;
-        default:
-          startDate = new Date(0); // Should not happen
+        case '7d': startDate = subDays(now, 7); break;
+        case '30d': startDate = subDays(now, 30); break;
+        case '90d': startDate = subMonths(now, 3); break;
+        case '1y': startDate = subYears(now, 1); break;
+        default: startDate = new Date(0);
       }
       
       const startOfFilterDate = startOfDay(startDate);
@@ -78,15 +72,20 @@ export default function BlogListWithFilter({ initialPosts }: BlogListWithFilterP
       });
     }
 
-    return posts;
-  }, [initialPosts, searchQuery, selectedTimeFilter]);
+    // After filtering, calculate pagination for the *filtered* list
+    const newTotalPages = Math.ceil(posts.length / postsPerPage);
+    setTotalPages(newTotalPages);
+    
+    // Ensure currentPage is valid if filters change the total number of pages
+    const newCurrentPage = Math.max(1, Math.min(currentPage, newTotalPages));
+    if (currentPage !== newCurrentPage) {
+        setCurrentPage(newCurrentPage);
+    }
+    
+    const startIndex = (newCurrentPage - 1) * postsPerPage;
+    setDisplayedPosts(posts.slice(startIndex, startIndex + postsPerPage));
 
-  // Pagination logic
-  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
-  const paginatedPosts = useMemo(() => {
-    const startIndex = (currentPage - 1) * postsPerPage;
-    return filteredPosts.slice(startIndex, startIndex + postsPerPage);
-  }, [filteredPosts, currentPage, postsPerPage]);
+  }, [initialPosts, searchQuery, selectedTimeFilter, postsPerPage, currentPage]);
   
   // Handlers
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -154,9 +153,9 @@ export default function BlogListWithFilter({ initialPosts }: BlogListWithFilterP
       </div>
 
       {/* Blog List */}
-      {paginatedPosts.length > 0 ? (
+      {displayedPosts.length > 0 ? (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {paginatedPosts.map((post: PostData) => (
+          {displayedPosts.map((post: PostData) => (
             <Card key={post.id} className="flex flex-col bg-card shadow-lg hover:shadow-xl transition-shadow duration-300">
               <CardHeader>
                 <Link href={`/blog/${post.id}`} className="hover:text-accent">
