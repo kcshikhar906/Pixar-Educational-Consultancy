@@ -1,3 +1,4 @@
+
 // src/ai/flows/pathway-planner.ts
 'use server';
 
@@ -43,7 +44,6 @@ const UniversitySuggestionSchema = z.object({
 const PathwayPlannerOutputSchema = z.object({
   universitySuggestions: z
     .array(UniversitySuggestionSchema)
-    .min(15)
     .describe('A comprehensive list of at least 15-20 suggested universities with their details, relevant to the chosen country, field of study, GPA, and target education level. These suggestions are based on general knowledge and common information about universities.'),
   searchSummary: z.string().optional().describe("A brief summary of the search results or any general advice based on the query. For example, 'Here are some leading Engineering universities in the USA known for strong research programs that might be suitable for a student with a {{{gpa}}} GPA seeking a {{{targetEducationLevel}}}.' Acknowledge the GPA's and target education level's influence if relevant."),
 });
