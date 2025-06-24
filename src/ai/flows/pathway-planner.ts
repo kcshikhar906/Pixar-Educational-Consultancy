@@ -30,7 +30,6 @@ const UniversitySuggestionSchema = z.object({
   name: z.string().describe("The name of the suggested university."),
   category: z.string().describe("The main category or specialization of the university (e.g., Engineering, Arts, Business)."),
   reasoning: z.string().describe("A brief, one-sentence explanation of why this university is a good match for the student's profile, mentioning specific strengths like research focus, program uniqueness, or suitability for the provided GPA."),
-  logoDataAiHint: z.string().optional().describe("A 1-2 word hint for the university's logo for placeholder generation (e.g., 'university shield', 'modern building')."),
   website: z.string().describe("The official website URL of the university. Provide the most direct and commonly known official URL."),
   programDuration: z.string().describe("The typical duration for a relevant program in the field of study, e.g., '3-4 years', '18 months', '2 years full-time'."),
   type: z.enum(["Public", "Private", "Unknown"]).describe("The type of university (Public, Private, or Unknown)."),
@@ -77,7 +76,6 @@ const pathwayPlannerPrompt = ai.definePrompt({
   - 'name': The official name of the university.
   - 'category': The main academic category or specialization relevant to the field of study.
   - 'reasoning': A brief, one-sentence explanation of why this university is a good match for the student's profile, mentioning specific strengths or suitability for the provided GPA.
-  - 'logoDataAiHint': A very short (1-2 words) hint for a placeholder logo.
   - 'website': The official website URL.
   - 'programDuration': Typical duration for a relevant program at the target education level.
   - 'type': "Public", "Private", or "Unknown".

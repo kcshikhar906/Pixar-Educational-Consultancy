@@ -537,15 +537,12 @@ export default function HomePage() {
                     </div>
                     <div className="space-y-4 pt-4">
                       {[...Array(3)].map((_, i) => (
-                        <div key={i} className="flex space-x-4 p-4 border rounded-lg bg-background/50">
-                          <Skeleton className="h-20 w-32 rounded" />
-                          <div className="flex-1 space-y-2">
-                            <Skeleton className="h-5 w-3/4" />
-                            <Skeleton className="h-4 w-1/2" />
-                            <div className="flex gap-4 pt-2">
-                               <Skeleton className="h-4 w-1/3" />
-                               <Skeleton className="h-4 w-1/3" />
-                            </div>
+                        <div key={i} className="space-y-2 p-4 border rounded-lg bg-background/50">
+                          <Skeleton className="h-5 w-3/4" />
+                          <Skeleton className="h-4 w-1/2" />
+                          <div className="flex gap-4 pt-2">
+                             <Skeleton className="h-4 w-1/3" />
+                             <Skeleton className="h-4 w-1/3" />
                           </div>
                         </div>
                       ))}
@@ -575,51 +572,48 @@ export default function HomePage() {
                         <ul className="space-y-4">
                         {universitySuggestions.map((uni: UniversitySuggestion, index: number) => (
                             <li key={index} className="p-4 border rounded-lg bg-background/50 hover:shadow-md transition-shadow">
-                                <div className="flex flex-col sm:flex-row gap-4">
-                                    <Image src={`https://placehold.co/120x80.png?text=${encodeURIComponent(uni.name.substring(0,3))}`} alt={`${uni.name} logo placeholder`} width={120} height={80} className="rounded object-cover self-start sm:self-center" data-ai-hint={uni.logoDataAiHint || 'university building'} />
-                                    <div className="flex-1">
-                                        <h4 className="font-semibold text-primary flex items-center text-lg mb-1">
-                                            <UniversityIconLucide className="mr-2 h-5 w-5 text-accent flex-shrink-0" />
-                                            {uni.name}
-                                        </h4>
-                                        <p className="text-xs text-muted-foreground mb-2 ml-7">{uni.category || 'N/A'}</p>
+                                <div className="flex-1">
+                                    <h4 className="font-semibold text-primary flex items-center text-lg mb-1">
+                                        <UniversityIconLucide className="mr-2 h-5 w-5 text-accent flex-shrink-0" />
+                                        {uni.name}
+                                    </h4>
+                                    <p className="text-xs text-muted-foreground mb-2 ml-7">{uni.category || 'N/A'}</p>
 
-                                        {uni.reasoning && (
-                                            <p className="text-sm text-foreground/80 my-2 pl-1 flex items-start border-l-2 border-accent/50 ml-6 pl-3">
-                                                <InfoIcon className="mr-2 h-4 w-4 text-accent flex-shrink-0 mt-1" />
-                                                <span className="italic">{uni.reasoning}</span>
-                                            </p>
-                                        )}
+                                    {uni.reasoning && (
+                                        <p className="text-sm text-foreground/80 my-2 pl-1 flex items-start border-l-2 border-accent/50 ml-6 pl-3">
+                                            <InfoIcon className="mr-2 h-4 w-4 text-accent flex-shrink-0 mt-1" />
+                                            <span className="italic">{uni.reasoning}</span>
+                                        </p>
+                                    )}
 
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-sm mb-3">
-                                            <div className="flex items-start" title="University Location">
-                                                <MapPin className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0 mt-0.5" />
-                                                <span className="text-foreground/80">{uni.location || 'N/A'}</span>
-                                            </div>
-                                            <div className="flex items-start" title="University Type">
-                                                <Briefcase className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0 mt-0.5" />
-                                                <span className="text-foreground/80">Type: {uni.type || 'N/A'}</span>
-                                            </div>
-                                            <div className="flex items-start" title="Program Duration">
-                                                <BookOpen className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0 mt-0.5" />
-                                                <span className="text-foreground/80">Duration: {uni.programDuration || 'N/A'}</span>
-                                            </div>
-                                            <div className="flex items-start" title="Tuition Category & Range">
-                                                <DollarSign className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0 mt-0.5" />
-                                                <span className="text-foreground/80">
-                                                    Tuition: {uni.tuitionCategory || 'N/A'}
-                                                    {uni.tuitionFeeRange && ` (${uni.tuitionFeeRange})`}
-                                                    {uni.tuitionFeeRange && <span className="text-xs text-muted-foreground italic"> (Estimates, may vary. Check official site.)</span>}
-                                                </span>
-                                            </div>
-                                            <div className="flex items-start" title="Next Intake Date">
-                                                <CalendarDays className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0 mt-0.5" />
-                                                <span className="text-foreground/80">Next Intake: {uni.nextIntakeDate || 'N/A'}</span>
-                                            </div>
-                                            <div className="flex items-start" title="English Test Requirements">
-                                                <ClipboardCheck className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0 mt-0.5" />
-                                                <span className="text-foreground/80">English Tests: {uni.englishTestRequirements || 'N/A'}</span>
-                                            </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-sm mb-3">
+                                        <div className="flex items-start" title="University Location">
+                                            <MapPin className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0 mt-0.5" />
+                                            <span className="text-foreground/80">{uni.location || 'N/A'}</span>
+                                        </div>
+                                        <div className="flex items-start" title="University Type">
+                                            <Briefcase className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0 mt-0.5" />
+                                            <span className="text-foreground/80">Type: {uni.type || 'N/A'}</span>
+                                        </div>
+                                        <div className="flex items-start" title="Program Duration">
+                                            <BookOpen className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0 mt-0.5" />
+                                            <span className="text-foreground/80">Duration: {uni.programDuration || 'N/A'}</span>
+                                        </div>
+                                        <div className="flex items-start" title="Tuition Category & Range">
+                                            <DollarSign className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0 mt-0.5" />
+                                            <span className="text-foreground/80">
+                                                Tuition: {uni.tuitionCategory || 'N/A'}
+                                                {uni.tuitionFeeRange && ` (${uni.tuitionFeeRange})`}
+                                                {uni.tuitionFeeRange && <span className="text-xs text-muted-foreground italic"> (Estimates, may vary. Check official site.)</span>}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-start" title="Next Intake Date">
+                                            <CalendarDays className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0 mt-0.5" />
+                                            <span className="text-foreground/80">Next Intake: {uni.nextIntakeDate || 'N/A'}</span>
+                                        </div>
+                                        <div className="flex items-start" title="English Test Requirements">
+                                            <ClipboardCheck className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0 mt-0.5" />
+                                            <span className="text-foreground/80">English Tests: {uni.englishTestRequirements || 'N/A'}</span>
                                         </div>
                                     </div>
                                 </div>
