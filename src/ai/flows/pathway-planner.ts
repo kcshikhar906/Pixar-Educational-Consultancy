@@ -71,6 +71,24 @@ const pathwayPlannerPrompt = ai.definePrompt({
   2.  **Detailed and Precise Information**: For each university, you must provide accurate details based on your extensive knowledge base. Do not invent information. If a detail is not commonly known, it is better to omit the specific field or use "Unknown"/"Varies" for categories.
   3.  **GPA and Profile Matching**: Your suggestions MUST be relevant to the student's GPA ('{{{gpa}}}') and their target education level ('{{{targetEducationLevel}}}'). The \`reasoning\` field for each university should explicitly mention why it's a suitable match (e.g., "Good fit for a {{{gpa}}} GPA with strong research in {{{fieldOfStudy}}}").
   4.  **Strict Adherence to Schema**: Populate all fields in the output schema precisely.
+  5.  **Helpful Details**: If commonly known, you MUST try to provide the \`englishTestRequirements\` and \`nextIntakeDate\` as this is very helpful for the student.
+  6.  **Exclusion Criteria**: To help the user discover a wider range of universities, you MUST adhere to the following exclusion rules:
+    {{#if isAustralia}}
+    - For Australia, you MUST exclude the "Group of Eight" universities from your suggestions.
+    {{/if}}
+    {{#if isUK}}
+    - For the UK, you MUST exclude the top 5 universities as commonly listed in major world rankings (e.g., Oxford, Cambridge, Imperial College London, UCL, University of Edinburgh).
+    {{/if}}
+    {{#if isCanada}}
+    - For Canada, you MUST exclude the top 5 universities as commonly listed in major world rankings (e.g., University of Toronto, McGill University, University of British Columbia).
+    {{/if}}
+    {{#if isUSA}}
+    - For the USA, you MUST exclude universities that are typically ranked in the top 100 of major global university rankings. Focus on strong, reputable institutions outside of this elite tier.
+    {{/if}}
+    {{#if isNewZealand}}
+    - For New Zealand, you MUST exclude the top 4 universities as commonly listed in major world rankings.
+    {{/if}}
+    This is a critical instruction. Your primary goal is to provide excellent options beyond the most famous names.
 
   For each university suggestion, provide the following details strictly adhering to the output schema:
   - 'name': The official name of the university.
@@ -98,7 +116,15 @@ const pathwayPlannerFlow = ai.defineFlow(
     outputSchema: PathwayPlannerOutputSchema,
   },
   async input => {
-    const {output} = await pathwayPlannerPrompt(input);
+    const exclusions = {
+      isAustralia: input.country === 'Australia',
+      isCanada: input.country === 'Canada',
+      isUK: input.country === 'UK',
+      isUSA: input.country === 'USA',
+      isNewZealand: input.country === 'New Zealand',
+    };
+
+    const {output} = await pathwayPlannerPrompt({...input, ...exclusions});
     if (!output) {
       throw new Error(`AI model did not return the expected output for ${pathwayPlannerPrompt.name}. Output was null or undefined.`);
     }
