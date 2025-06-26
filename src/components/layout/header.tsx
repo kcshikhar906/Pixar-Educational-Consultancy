@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Home, Info, Briefcase, MapPin, Sparkles, Mail, ChevronDown, Menu, Wand2, HelpCircle, CheckSquare, MessageCircleQuestion, Share2, Newspaper, Award } from 'lucide-react';
+import { Home, Info, Briefcase, MapPin, Mail, ChevronDown, Menu, Wand2, HelpCircle, CheckSquare, MessageCircleQuestion, Newspaper, Award, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -22,24 +22,25 @@ const navItems = [
     subItems: [
       { href: '/about', label: 'About Us', icon: Info },
       { href: '/services', label: 'Our Services', icon: Briefcase },
+      { href: '/success-stories', label: 'Success Stories', icon: Award },
     ],
   },
-  { href: '/success-stories', label: 'Success Stories', icon: Award },
-  { href: '/country-guides', label: 'Country Guides', icon: MapPin },
   {
-    label: 'Student Hub',
-    icon: Sparkles,
-    isPromoted: true, // Flag to make this item stand out
+    label: 'Resources',
+    icon: BookOpen,
+    isPromoted: true,
     subItems: [
+      { href: '/country-guides', label: 'Country Guides', icon: MapPin },
       { href: '/ai-assistants', label: 'Smart Tools', icon: Wand2 },
       { href: '/book-appointment', label: 'English Test Guide', icon: HelpCircle },
       { href: '/pre-departure-toolkit', label: 'Pre-Departure Toolkit', icon: CheckSquare },
       { href: '/interview-qa', label: 'Interview Q&A', icon: MessageCircleQuestion },
+      { href: '/blog', label: 'Blog', icon: Newspaper },
     ],
   },
-  { href: '/connect', label: 'Social Media', icon: Share2 },
   { href: '/contact', label: 'Contact Us', icon: Mail },
 ];
+
 
 const MD_BREAKPOINT = 768; // Tailwind's 'md' breakpoint
 
