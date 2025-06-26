@@ -95,6 +95,89 @@ export const testimonials: Testimonial[] = [
   },
 ];
 
+export interface VisaSuccess {
+  name: string;
+  destination: string;
+}
+
+export interface VisaSuccessesByCountry {
+  [country: string]: VisaSuccess[];
+}
+
+export const visaSuccesses: VisaSuccessesByCountry = {
+  "USA": [
+    { name: "Bhawana Paneru", destination: "University of Central Arkansas, USA" },
+    { name: "Bivusha Gautam", destination: "Arkansas State University, USA" },
+    { name: "Rajan Yadav", destination: "University of Central Missouri, USA" },
+    { name: "Indra Bahadur Air", destination: "Murray State University, USA" },
+    { name: "Aryan Raj Pokhrel", destination: "Harrisburg University, USA" },
+    { name: "Safal Tamang Pakhrin", destination: "Washington University Of Science And Technology, USA" },
+    { name: "Anish Khadka", destination: "Wright State University, USA" },
+    { name: "Roshi Pandey", destination: "NorthWest Missouri State University, USA" },
+    { name: "Pooja Nepali", destination: "Webster University, USA" },
+    { name: "Sunil Prakash Yadav", destination: "Webster University, USA" },
+    { name: "Sulab Bhandari", destination: "Louisiana Tech University, USA" },
+    { name: "Sadikshya Tiwari", destination: "University Of Central Arkansas, USA" },
+    { name: "Meera Koirala", destination: "St. Cloud State University, USA" },
+    { name: "Biprashna Gochhe Shrestha", destination: "University Of Central Arkansas, USA" },
+    { name: "Ujwal Thapa", destination: "Westcliff University, USA" },
+    { name: "Rojina Shrestha", destination: "Washington University Of Science And Technology, USA" },
+    { name: "Binod Khatri", destination: "Arkansas State University, USA" },
+    { name: "Kushum Bhattrai", destination: "Washington University Of Science And Technology, USA" },
+    { name: "Nabaraj Singh", destination: "Washington University Of Science And Technology, USA" },
+    { name: "Sanjip Ghalan", destination: "Washington University Of Science And Technology, USA" },
+    { name: "Samir Gurung", destination: "Washington University Of Science And Technology, USA" },
+    { name: "Karuna Chettri", destination: "University OF South Dakota, USA" },
+    { name: "Shuprava Pandey", destination: "Louisiana Tech University, USA" },
+    { name: "Binita Karki", destination: "Washington University Of Science And Technology, USA" },
+    { name: "Laxmi Kumari Teli", destination: "Washington University Of Science And Technology, USA" },
+    { name: "Bikash Yadav", destination: "Washington University Of Science And Technology, USA" },
+    { name: "Sabina Khatri", destination: "Washington University Of Science And Technology, USA" },
+    { name: "Kamana Dhital", destination: "Washington University Of Science And Technology, USA" },
+    { name: "Nobel Regmi", destination: "Washington University Of Science And Technology, USA" },
+    { name: "Kritika Khati", destination: "Washington University Of Science And Technology, USA" },
+    { name: "Swastika Shrestha", destination: "Southeast Missouri State University, USA" },
+    { name: "Anjila Shahi", destination: "Wright State University, USA" },
+    { name: "Manav Adhikari", destination: "Wichita State University, USA" },
+    { name: "Vikash Kumar", destination: "Montana State University, USA" },
+    { name: "Asif Mohammad", destination: "Midwestern State University, USA" },
+    { name: "Suvanga Rawal", destination: "University Of Central Arkansas, USA" },
+    { name: "Aayushma Thapa", destination: "Wright State University, USA" },
+    { name: "Saroj Oli", destination: "University Of Central Arkansas, USA" },
+    { name: "Jhakku Prasad Chalaune", destination: "University of Central Arkansas, USA" },
+    { name: "Nabin Rana", destination: "Arkansas State University, USA" },
+    { name: "Aruna Thapa", destination: "Westcliff University, USA" },
+    { name: "Janam Paijo Gurung", destination: "Southeast Missouri State University, USA" },
+    { name: "Purnima Dulal", destination: "Southeast Missouri State University, USA" }
+  ],
+  "Australia": [
+    { name: "Arju Pokhrel", destination: "University of New Castle, Australia" },
+    { name: "Sushruti Sharma", destination: "University of Wollongong, Australia" },
+    { name: "Rohit Sha Kanu", destination: "Flinders University, Australia" },
+    { name: "Rajan Gharti", destination: "Victoria University, Australia" },
+    { name: "Rahul Rumba", destination: "Flinders University, Australia" },
+    { name: "Bejil Shrestha", destination: "University of Wollongong, Australia" },
+    { name: "Hari Sharan Puri", destination: "La Trobe University, Australia" },
+    { name: "Janak Budhathoki", destination: "La Trobe University, Australia" },
+    { name: "Aanchal Thapa", destination: "Victoria University, Australia" },
+    { name: "Abhineet Sah", destination: "University of Wollongong, Australia" },
+    { name: "Bikash Shrestha", destination: "TIIS, Australia" }
+  ],
+  "Canada": [
+    { name: "Pratik B K", destination: "Georgian College, Canada" }
+  ],
+  "UK": [
+    { name: "Prashana Thapa Magar", destination: "Cardiff Metropolitan University, UK" }
+  ],
+  "New Zealand": [
+    { name: "Srijana Rana", destination: "Eastern Institute of Technology, New Zealand" },
+    { name: "Shulav Dangi", destination: "Otago Polytechnic, New Zealand" },
+    { name: "Puja Chaudhary", destination: "Auckland Institute Of Studies, New Zealand" },
+    { name: "Prasuna Sapkota", destination: "Auckland Institute Of Studies, New Zealand" },
+    { name: "Kailash Bhatta", destination: "Auckland Institute Of Studies, New Zealand" }
+  ]
+};
+
 export interface Service {
   id: string;
   title: string;
@@ -424,7 +507,7 @@ export const countryData: CountryInfo[] = [
     slug: 'uk',
     flagEmoji: '🇬🇧',
     description: 'The United Kingdom boasts a rich academic heritage with world-renowned universities, offering a diverse range of courses and a vibrant student life in historic cities.',
-    imageUrl: 'https://placehold.co/1200x400.png',
+    imageUrl: '/countries/uk.png',
     dataAiHint: 'uk landmark london',
     averageLivingCost: 'GBP £12,000 - £15,000 per year (London significantly higher)',
     workHoursStudent: 'Up to 20 hours/week during term-time for degree students at degree-awarding institutions.',
@@ -450,7 +533,7 @@ export const countryData: CountryInfo[] = [
     slug: 'new-zealand',
     flagEmoji: '🇳🇿',
     description: 'Study in a safe, welcoming country with a world-class education system and stunning natural landscapes. Offers unique programs and excellent research opportunities.',
-    imageUrl: 'https://placehold.co/1200x400.png',
+    imageUrl: '/countries/new-zealand.png',
     dataAiHint: 'new zealand landscape mountains',
     averageLivingCost: 'NZD $20,000 - $25,000 per year',
     workHoursStudent: 'Up to 20 hours/week during studies if your course meets requirements, full-time during scheduled holidays.',
