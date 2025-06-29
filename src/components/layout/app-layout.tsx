@@ -11,7 +11,7 @@ interface AppLayoutProps {
 
 export default function AppLayout({ children }: AppLayoutProps) {
   // You can change or remove this message easily
-  const siteStatusMessage = "Welcome to Pixar Educational Consultancy! Our core features like College Search and Student Hub Tools are ready for you to explore. Some informational content is still being polished. We appreciate your understanding as we put the final touches on our site!";
+  const siteStatusMessage = "Discover your ideal university instantly with our new AI Pathway Planner on the homepage! Explore all our guides and tools under the 'Resources' menu.";
   
   // Set this to false or remove the block to hide the message
   const showSiteStatusMessage = true; 
