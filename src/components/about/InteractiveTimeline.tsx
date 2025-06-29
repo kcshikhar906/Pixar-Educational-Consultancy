@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Building, Globe, Users, Award, Milestone, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -18,9 +17,22 @@ const timelineData = [
 ];
 
 export default function InteractiveTimeline() {
-  const [selectedYear, setSelectedYear] = useState(timelineData[timelineData.length - 1].year);
+  const [selectedYear, setSelectedYear] = useState(timelineData[0].year);
 
   const selectedEvent = timelineData.find(event => event.year === selectedYear);
+
+  // Auto-scroll effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSelectedYear(prevYear => {
+        const currentIndex = timelineData.findIndex(event => event.year === prevYear);
+        const nextIndex = (currentIndex + 1) % timelineData.length;
+        return timelineData[nextIndex].year;
+      });
+    }, 4000); // Change year every 4 seconds
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, []); // Empty dependency array means this effect runs once on component mount
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4">
@@ -32,12 +44,12 @@ export default function InteractiveTimeline() {
               <Button
                 variant="ghost"
                 className={cn(
-                  "w-8 h-8 rounded-full p-0 border-2 transition-all duration-300",
+                  "w-8 h-8 rounded-full p-0 border-2 transition-all duration-300 cursor-pointer", // Keep it looking like a button
                   selectedYear === event.year 
                     ? 'bg-primary border-primary-foreground text-primary-foreground scale-125' 
                     : 'bg-card border-border hover:bg-accent/20'
                 )}
-                onClick={() => setSelectedYear(event.year)}
+                onClick={() => setSelectedYear(event.year)} // Allow manual override
               >
                 <span className="sr-only">{event.year}</span>
               </Button>
