@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -9,7 +8,7 @@ import { testimonials, visaSuccesses } from '@/lib/data';
 import type { Testimonial, VisaSuccess } from '@/lib/data';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { cn } from '@/lib/utils';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
@@ -22,6 +21,47 @@ type SuccessStory = {
   text?: string;
   avatarUrl?: string;
   dataAiHint?: string;
+};
+
+// This new component correctly encapsulates the hook logic for a single card.
+const SuccessStoryCard = ({ story }: { story: SuccessStory }) => {
+  const [cardRef, isCardVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
+
+  return (
+    <div ref={cardRef} className={cn("transition-all duration-500 ease-out", isCardVisible ? "opacity-100 scale-100" : "opacity-0 scale-95")}>
+      <Card className="bg-card shadow-lg hover:shadow-xl transition-shadow h-full flex flex-col">
+        <CardHeader className="flex flex-row items-center space-x-4 pb-4">
+          {story.avatarUrl && (
+            <Image
+              src={story.avatarUrl}
+              alt={story.name}
+              width={60}
+              height={60}
+              className="rounded-full object-cover"
+              data-ai-hint={story.dataAiHint || "student portrait"}
+            />
+          )}
+          {!story.avatarUrl && (
+            <div className="h-[60px] w-[60px] bg-muted rounded-full flex items-center justify-center">
+                <span className="text-xl font-bold text-primary">{story.name.charAt(0)}</span>
+            </div>
+          )}
+          <div className="flex-1">
+            <CardTitle className="font-headline text-lg text-primary">{story.name}</CardTitle>
+            <CardDescription className="text-xs text-accent line-clamp-2">{story.studyDestination}</CardDescription>
+          </div>
+        </CardHeader>
+        {story.text && (
+          <CardContent className="flex-grow">
+            <div className="flex mb-2">
+              {[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 text-yellow-400 fill-yellow-400" />)}
+            </div>
+            <p className="text-foreground/80 italic text-sm">&quot;{story.text}&quot;</p>
+          </CardContent>
+        )}
+      </Card>
+    </div>
+  );
 };
 
 export default function SuccessStoriesPage() {
@@ -121,44 +161,9 @@ export default function SuccessStoriesPage() {
       ) : currentStories.length > 0 ? (
         <section>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {currentStories.map((story: SuccessStory) => {
-              const [cardRef, isCardVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
-              return (
-                <div key={story.id} ref={cardRef} className={cn("transition-all duration-500 ease-out", isCardVisible ? "opacity-100 scale-100" : "opacity-0 scale-95")}>
-                  <Card className="bg-card shadow-lg hover:shadow-xl transition-shadow h-full flex flex-col">
-                    <CardHeader className="flex flex-row items-center space-x-4 pb-4">
-                      {story.avatarUrl && (
-                        <Image
-                          src={story.avatarUrl}
-                          alt={story.name}
-                          width={60}
-                          height={60}
-                          className="rounded-full object-cover"
-                          data-ai-hint={story.dataAiHint || "student portrait"}
-                        />
-                      )}
-                      {!story.avatarUrl && (
-                        <div className="h-[60px] w-[60px] bg-muted rounded-full flex items-center justify-center">
-                            <span className="text-xl font-bold text-primary">{story.name.charAt(0)}</span>
-                        </div>
-                      )}
-                      <div className="flex-1">
-                        <CardTitle className="font-headline text-lg text-primary">{story.name}</CardTitle>
-                        <CardDescription className="text-xs text-accent line-clamp-2">{story.studyDestination}</CardDescription>
-                      </div>
-                    </CardHeader>
-                    {story.text && (
-                      <CardContent className="flex-grow">
-                        <div className="flex mb-2">
-                          {[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 text-yellow-400 fill-yellow-400" />)}
-                        </div>
-                        <p className="text-foreground/80 italic text-sm">&quot;{story.text}&quot;</p>
-                      </CardContent>
-                    )}
-                  </Card>
-                </div>
-              );
-            })}
+            {currentStories.map((story: SuccessStory) => (
+              <SuccessStoryCard key={story.id} story={story} />
+            ))}
           </div>
 
           {/* Pagination Controls */}
