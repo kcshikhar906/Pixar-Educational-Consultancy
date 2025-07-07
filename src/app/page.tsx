@@ -402,7 +402,7 @@ export default function HomePage() {
   );
 
   const stats = [
-    { icon: CheckCircle, value: 1500, label: 'Visas Approved', suffix: '+' },
+    { icon: CheckCircle, value: 3500, label: 'Visas Approved', suffix: '+' },
     { icon: GraduationCap, value: 1200, label: 'Students Enrolled', suffix: '+' },
     { icon: Building2, value: 250, label: 'Partner Institutions', suffix: '+' },
     { icon: Globe, value: 5, label: 'Countries Served' },
