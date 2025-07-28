@@ -14,6 +14,7 @@ import { chat } from '@/ai/flows/chatbot-flow';
 import type { ChatInput } from '@/ai/schemas/chatbot-schemas';
 import { nanoid } from 'nanoid';
 import { GeneralContactForm, PrepClassBookingForm } from './ChatForms';
+import ReactMarkdown from 'react-markdown';
 
 interface Message {
   id: string;
@@ -28,7 +29,6 @@ const predefinedQuestions = [
   "Which countries do you specialize in?",
   "How can I book a prep class?",
   "I have a general question.",
-  "What is the first step to study abroad?",
 ];
 
 export default function Chatbot() {
@@ -55,9 +55,10 @@ export default function Chatbot() {
   }, [isOpen]);
 
   useEffect(() => {
-    if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTo({
-        top: scrollAreaRef.current.scrollHeight,
+    const scrollArea = scrollAreaRef.current?.querySelector('div[data-radix-scroll-area-viewport]');
+    if (scrollArea) {
+      scrollArea.scrollTo({
+        top: scrollArea.scrollHeight,
         behavior: 'smooth',
       });
     }
@@ -72,7 +73,6 @@ export default function Chatbot() {
     setIsLoading(true);
 
     try {
-      // For now, we provide a generic context. This could be enhanced to be page-specific.
       const chatContext = "This context is from the main website of Pixar Educational Consultancy, a firm helping Nepalese students study in USA, UK, Australia, Canada, and New Zealand. Services include counseling, test prep (IELTS/PTE), visa support, and documentation assistance.";
       
       const validHistory = messages.filter(
@@ -88,7 +88,29 @@ export default function Chatbot() {
 
       const result = await chat(aiInput);
       const aiMessage: Message = { id: nanoid(), role: 'model', content: result.response, type: 'text' };
-      setMessages(prev => [...prev, aiMessage]);
+
+      if (result.response.includes("class booking form")) {
+        const systemMessage: Message = {
+            id: nanoid(),
+            role: 'system',
+            content: "Here is the class booking form for you.",
+            type: 'form',
+            formType: 'prep-class'
+        };
+        setMessages(prev => [...prev, aiMessage, systemMessage]);
+      } else if (result.response.includes("general inquiry form")) {
+        const systemMessage: Message = {
+            id: nanoid(),
+            role: 'system',
+            content: "Here is our general inquiry form.",
+            type: 'form',
+            formType: 'general'
+        };
+        setMessages(prev => [...prev, aiMessage, systemMessage]);
+      } else {
+        setMessages(prev => [...prev, aiMessage]);
+      }
+
     } catch (error) {
       console.error("Chatbot error:", error);
       const errorMessage: Message = { id: nanoid(), role: 'model', content: "Sorry, I'm having trouble connecting. Please try again later.", type: 'text' };
@@ -104,27 +126,7 @@ export default function Chatbot() {
   };
 
   const handlePredefinedQuestion = (question: string) => {
-    if (question.includes("prep class")) {
-      const systemMessage: Message = {
-        id: nanoid(),
-        role: 'system',
-        content: "Great! Let's get you booked for a preparation class. Please fill out the form below.",
-        type: 'form',
-        formType: 'prep-class'
-      };
-      setMessages(prev => [...prev, {id: nanoid(), role: 'user', content: "How can I book a prep class?", type: 'text'}, systemMessage]);
-    } else if (question.includes("general question")) {
-       const systemMessage: Message = {
-        id: nanoid(),
-        role: 'system',
-        content: "Of course. Please provide your details and question in the form below, and our team will get back to you shortly.",
-        type: 'form',
-        formType: 'general'
-      };
-      setMessages(prev => [...prev, {id: nanoid(), role: 'user', content: "I have a general question.", type: 'text'}, systemMessage]);
-    } else {
       handleSendMessage(question);
-    }
   };
 
   const onFormSuccess = (formType: 'general' | 'prep-class') => {
@@ -150,11 +152,17 @@ export default function Chatbot() {
             transition={{ duration: 0.3, ease: 'easeOut' }}
             className="fixed bottom-24 right-5 z-50 w-[calc(100vw-40px)] sm:w-[380px] h-[70vh] max-h-[600px] min-h-[400px]"
           >
-            <Card className="h-full flex flex-col shadow-2xl">
-              <CardHeader className="flex flex-row items-center justify-between border-b p-4">
-                <div>
-                  <CardTitle className="font-headline text-primary flex items-center"><Sparkles className="mr-2 h-6 w-6" />AI Assistant</CardTitle>
-                  <CardDescription>Your guide to studying abroad.</CardDescription>
+            <Card className="h-full w-full flex flex-col shadow-2xl bg-card">
+              <CardHeader className="flex flex-row items-center justify-between border-b p-3">
+                <div className="flex items-center space-x-3">
+                    <Avatar className="h-10 w-10 border-2 border-primary">
+                        <AvatarImage src="/logo.png" alt="AI Avatar" />
+                        <AvatarFallback>AI</AvatarFallback>
+                    </Avatar>
+                    <div>
+                        <CardTitle className="font-headline text-primary flex items-center"><Sparkles className="mr-1.5 h-5 w-5" />AI Assistant</CardTitle>
+                        <CardDescription className="text-xs">Your guide to studying abroad.</CardDescription>
+                    </div>
                 </div>
                 <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
                   <X className="h-5 w-5" />
@@ -172,22 +180,25 @@ export default function Chatbot() {
                           </Avatar>
                         )}
                         
-                        {m.type === 'form' && m.formType === 'general' ? (
+                        {m.type === 'form' ? (
                             <div className="w-full">
-                                <p className="text-sm text-center text-muted-foreground mb-2">{m.content}</p>
-                                <GeneralContactForm onSuccess={() => onFormSuccess('general')} />
-                            </div>
-                        ) : m.type === 'form' && m.formType === 'prep-class' ? (
-                             <div className="w-full">
-                                <p className="text-sm text-center text-muted-foreground mb-2">{m.content}</p>
-                                <PrepClassBookingForm onSuccess={() => onFormSuccess('prep-class')} />
+                                {m.content && <p className="text-sm text-center text-muted-foreground mb-2">{m.content}</p>}
+                                {m.formType === 'general' && <GeneralContactForm onSuccess={() => onFormSuccess('general')} />}
+                                {m.formType === 'prep-class' && <PrepClassBookingForm onSuccess={() => onFormSuccess('prep-class')} />}
                             </div>
                         ) : (
-                          <div className={cn("max-w-[85%] rounded-xl px-4 py-2 text-sm", 
-                            m.role === 'user' ? 'bg-primary text-primary-foreground ml-auto' : 'bg-muted text-muted-foreground',
-                            m.role === 'system' && 'bg-secondary/80 text-secondary-foreground text-center w-full max-w-full'
+                          <div className={cn("max-w-[85%] rounded-xl px-3 py-2 text-sm shadow-sm", 
+                            m.role === 'user' ? 'bg-primary text-primary-foreground ml-auto' : 'bg-muted text-card-foreground',
+                            m.role === 'system' && 'bg-secondary/50 border border-secondary/80 text-secondary-foreground text-center w-full max-w-full'
                           )}>
-                            <p className="whitespace-pre-wrap">{m.content}</p>
+                             <ReactMarkdown 
+                                className="prose prose-sm prose-p:my-0 prose-a:text-accent hover:prose-a:underline"
+                                components={{
+                                    a: ({node, ...props}) => <a {...props} target="_blank" rel="noopener noreferrer" />
+                                }}
+                             >
+                               {m.content}
+                            </ReactMarkdown>
                           </div>
                         )}
                          
@@ -212,10 +223,10 @@ export default function Chatbot() {
                   </div>
                 </ScrollArea>
               </CardContent>
-              <div className="border-t p-4 bg-background/80">
+              <div className="border-t p-2 bg-background/80">
                 {messages.length <= 1 && (
-                    <div className="mb-2 grid grid-cols-2 gap-2">
-                        {predefinedQuestions.slice(0, 4).map(q => (
+                    <div className="mb-2 grid grid-cols-2 gap-2 px-2">
+                        {predefinedQuestions.map(q => (
                             <Button key={q} variant="outline" size="sm" className="h-auto py-1.5 text-xs whitespace-normal" onClick={() => handlePredefinedQuestion(q)}>{q}</Button>
                         ))}
                     </div>
@@ -233,10 +244,10 @@ export default function Chatbot() {
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Ask a question..."
                     disabled={isLoading}
-                    className="flex-grow"
+                    className="flex-grow h-9"
                   />
-                  <Button type="submit" size="icon" disabled={isLoading || !input.trim()}>
-                    <Send className="h-5 w-5" />
+                  <Button type="submit" size="icon" className="h-9 w-9" disabled={isLoading || !input.trim()}>
+                    <Send className="h-4 w-4" />
                   </Button>
                 </form>
               </div>
