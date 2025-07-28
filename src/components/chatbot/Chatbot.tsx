@@ -74,10 +74,15 @@ export default function Chatbot() {
     try {
       // For now, we provide a generic context. This could be enhanced to be page-specific.
       const chatContext = "This context is from the main website of Pixar Educational Consultancy, a firm helping Nepalese students study in USA, UK, Australia, Canada, and New Zealand. Services include counseling, test prep (IELTS/PTE), visa support, and documentation assistance.";
+      
+      const validHistory = messages.filter(
+        (m): m is { id: string; role: 'user' | 'model'; content: string } =>
+          m.role === 'user' || m.role === 'model'
+      );
 
       const aiInput: ChatInput = {
         context: chatContext,
-        history: messages.map(({ role, content }) => ({ role, content })),
+        history: validHistory.map(({ role, content }) => ({ role, content })),
         query,
       };
 
