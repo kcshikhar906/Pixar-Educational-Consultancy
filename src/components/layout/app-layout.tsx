@@ -1,19 +1,18 @@
 import type { ReactNode } from 'react';
 import Header from './header';
 import Footer from './footer';
-import { Info } from 'lucide-react'; // Import the Info icon
+import { Info } from 'lucide-react'; 
 import FirebaseInitializer from '../firebase/initializer';
 import SocialSidebar from './SocialSidebar';
+import Chatbot from '../chatbot/Chatbot'; // Import the new Chatbot component
 
 interface AppLayoutProps {
   children: ReactNode;
 }
 
 export default function AppLayout({ children }: AppLayoutProps) {
-  // You can change or remove this message easily
   const siteStatusMessage = "Discover your ideal university instantly with our new AI Pathway Planner on the homepage! Explore all our guides and tools under the 'Resources' menu.";
   
-  // Set this to false or remove the block to hide the message
   const showSiteStatusMessage = true; 
 
   return (
@@ -30,6 +29,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
       )}
       <main className="flex-grow container mx-auto px-4 py-8">{children}</main>
       <SocialSidebar />
+      <Chatbot /> {/* Add the Chatbot component here */}
       <Footer />
     </div>
   );

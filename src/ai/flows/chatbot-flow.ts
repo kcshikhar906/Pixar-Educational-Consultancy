@@ -1,0 +1,83 @@
+'use server';
+
+/**
+ * @fileOverview A conversational chatbot flow for Pixar Educational Consultancy.
+ * This flow is designed to answer user questions based on provided website context
+ * and general knowledge, acting as a friendly educational consultant.
+ *
+ * - chat - A function that handles the conversational logic.
+ * - ChatInput - The input type for the chat function.
+ * - ChatOutput - The return type for the chat function.
+ */
+
+import { ai } from '@/ai/genkit';
+import { z } from 'genkit';
+
+// Input schema for the chat function
+export const ChatInputSchema = z.object({
+  context: z.string().describe('The relevant context from the website pages the user might be looking at.'),
+  history: z.array(z.object({
+    role: z.enum(['user', 'model']),
+    content: z.string(),
+  })).describe('The history of the conversation so far.'),
+  query: z.string().describe('The user\'s latest query or question.'),
+});
+export type ChatInput = z.infer<typeof ChatInputSchema>;
+
+// Output schema for the chat function
+const ChatOutputSchema = z.object({
+  response: z.string().describe('The AI\'s response to the user query.'),
+});
+export type ChatOutput = z.infer<typeof ChatOutputSchema>;
+
+// Define the main function that will be called by the chatbot component
+export async function chat(input: ChatInput): Promise<ChatOutput> {
+  // Call the Genkit flow with the provided input
+  const flowResult = await chatFlow(input);
+  return flowResult;
+}
+
+// Define the Genkit prompt
+const chatPrompt = ai.definePrompt({
+  name: 'chatbotPrompt',
+  input: { schema: ChatInputSchema },
+  output: { schema: ChatOutputSchema },
+  prompt: `You are a friendly and helpful AI assistant for Pixar Educational Consultancy, a company that helps Nepalese students study abroad in countries like USA, UK, Australia, Canada, and New Zealand.
+
+  Your persona is professional, encouraging, and knowledgeable. Your goal is to answer user questions accurately based on the provided website context and your general knowledge about studying abroad.
+
+  You MUST NOT invent information about Pixar's services, fees, or specific processes. If the answer is not in the provided context or your general knowledge, politely state that you don't have that specific information and suggest the user contact the consultancy directly for the most accurate details using the contact forms.
+
+  **Do not answer questions that are not related to studying abroad or Pixar Educational Consultancy's services.** If the user asks an unrelated question, politely steer the conversation back to study abroad topics.
+
+  **CONTEXT FROM WEBSITE:**
+  ---
+  {{{context}}}
+  ---
+
+  **CONVERSATION HISTORY:**
+  {{#each history}}
+  - {{role}}: {{{content}}}
+  {{/each}}
+
+  **USER's CURRENT QUESTION:**
+  "{{{query}}}"
+
+  Based on the context and history, provide a helpful and concise response. Keep your answers relatively short and easy to read in a chat format. Use markdown for formatting if it helps clarity (e.g., bullet points).`,
+});
+
+// Define the Genkit flow
+const chatFlow = ai.defineFlow(
+  {
+    name: 'chatbotFlow',
+    inputSchema: ChatInputSchema,
+    outputSchema: ChatOutputSchema,
+  },
+  async (input) => {
+    const { output } = await chatPrompt(input);
+    if (!output) {
+      return { response: "I'm sorry, I couldn't generate a response at the moment. Please try again." };
+    }
+    return output;
+  }
+);
