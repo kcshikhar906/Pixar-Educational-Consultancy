@@ -21,6 +21,7 @@ export async function chat(input: ChatInput): Promise<ChatOutput> {
 // Define the Genkit prompt
 const chatPrompt = ai.definePrompt({
   name: 'chatbotPrompt',
+  model: 'googleai/gemini-1.5-flash-latest', // Specify the model to use
   input: { schema: ChatInputSchema },
   output: { schema: ChatOutputSchema },
   prompt: `You are a friendly and helpful AI assistant for Pixar Educational Consultancy, a company that helps Nepalese students study abroad in countries like USA, UK, Australia, Canada, and New Zealand.
