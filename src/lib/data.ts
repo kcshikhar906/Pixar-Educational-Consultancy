@@ -60,7 +60,7 @@ export interface Student {
   collegeUniversityName?: string;
 }
 
-export const counselorNames = ['Pradeep Sir', 'Mujal Sir', 'Sabina Mam', 'Pawan Sir', 'Shyam Sir', 'Mamta Miss'];
+export const counselorNames = ['Unassigned', 'Pradeep Sir', 'Mujal Sir', 'Sabina Mam', 'Pawan Sir', 'Shyam Sir', 'Mamta Miss'];
 
 export interface Testimonial {
   id: string;
@@ -725,3 +725,5 @@ export const socialPlatforms = [
   { name: 'YouTube', icon: Youtube, url: 'https://www.youtube.com/@pixareducation', colorClass: 'hover:text-red-600', dataAiHint: 'youtube logo' },
   { name: 'Instagram', icon: Instagram, url: 'https://www.instagram.com/pixar.education?igsh=MXE5ZWJhZ2tmNTMybQ==', colorClass: 'hover:text-pink-500', dataAiHint: 'instagram logo' },
 ];
+
+    
