@@ -56,7 +56,7 @@ import {
   FileDown,
   Trash2,
   FilePenLine,
-  Eye, // Import Eye icon
+  Eye,
   BookUser,
   Mail,
   Phone,
@@ -368,7 +368,7 @@ export function DataTable() {
                         <Eye className="h-4 w-4" />
                         <span className="sr-only">View</span>
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={()={() => handleEdit(student)}>
+                      <Button variant="ghost" size="icon" onClick={() => handleEdit(student)}>
                         <FilePenLine className="h-4 w-4" />
                         <span className="sr-only">Edit</span>
                       </Button>
@@ -466,4 +466,3 @@ export function DataTable() {
     </div>
   );
 }
-
