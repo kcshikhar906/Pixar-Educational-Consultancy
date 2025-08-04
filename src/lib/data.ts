@@ -725,5 +725,3 @@ export const socialPlatforms = [
   { name: 'YouTube', icon: Youtube, url: 'https://www.youtube.com/@pixareducation', colorClass: 'hover:text-red-600', dataAiHint: 'youtube logo' },
   { name: 'Instagram', icon: Instagram, url: 'https://www.instagram.com/pixar.education?igsh=MXE5ZWJhZ2tmNTMybQ==', colorClass: 'hover:text-pink-500', dataAiHint: 'instagram logo' },
 ];
-
-    
