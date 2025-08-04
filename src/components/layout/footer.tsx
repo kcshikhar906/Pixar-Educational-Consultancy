@@ -1,6 +1,7 @@
 
 import Link from 'next/link';
 import { GraduationCap, Mail, Phone, MapPin, ShieldCheck, FileText, Users, Info, Briefcase as BriefcaseIcon, Newspaper, MessageCircleQuestion } from 'lucide-react'; // Added Newspaper, MessageCircleQuestion
+import AdminFooter from '../admin-footer'; // Import the new AdminFooter
 
 export default function Footer() {
   const importantLinks = [
@@ -14,6 +15,7 @@ export default function Footer() {
   ];
 
   return (
+    <>
     <footer className="bg-primary text-primary-foreground mt-12">
       <div className="container mx-auto px-4 py-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-sm">
@@ -87,6 +89,8 @@ export default function Footer() {
         </div>
       </div>
     </footer>
+    <AdminFooter />
+    </>
   );
 }
     
