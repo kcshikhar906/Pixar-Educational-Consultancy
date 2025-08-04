@@ -2,18 +2,21 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow public read access for general website content like blogs, services etc.
-    // This is a placeholder rule. You should restrict this to specific collections.
+    // Default deny all reads and writes
     match /{document=**} {
-      allow read: if true;
-      allow write: if false; 
+      allow read, write: if false;
     }
 
-    // Secure the 'students' collection
+    // Allow authenticated users to manage the 'students' collection
     match /students/{studentId} {
-      // Allow read, write, create, delete only for authenticated users.
-      // For a real app, you would likely restrict this further to specific admin UIDs.
-      allow read, write, create, delete: if request.auth != null;
+      allow read, write: if request.auth != null;
+    }
+
+    // Allow anyone to create (submit) a document in the generalInquiries collection.
+    // They cannot read, update, or delete entries.
+    match /generalInquiries/{inquiryId} {
+      allow create: if true;
+      allow read, update, delete: if false;
     }
   }
 }
