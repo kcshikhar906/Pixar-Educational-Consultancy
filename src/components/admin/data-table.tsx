@@ -32,13 +32,6 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -272,18 +265,6 @@ export function DataTable() {
                 </Button>
               </TableHead>
               <TableHead>Mobile</TableHead>
-              <TableHead onClick={() => handleSort('visaStatus')}>
-                 <Button variant="ghost" className="pl-0">
-                    Visa Status
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-              </TableHead>
-              <TableHead onClick={() => handleSort('serviceFeeStatus')}>
-                 <Button variant="ghost" className="pl-0">
-                    Fee Status
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-              </TableHead>
               <TableHead onClick={() => handleSort('assignedTo')}>
                  <Button variant="ghost" className="pl-0">
                     Assigned To
@@ -302,7 +283,7 @@ export function DataTable() {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={8} className="h-24 text-center">
+                <TableCell colSpan={6} className="h-24 text-center">
                   Loading data...
                 </TableCell>
               </TableRow>
@@ -312,8 +293,6 @@ export function DataTable() {
                   <TableCell className="font-medium">{student.fullName}</TableCell>
                   <TableCell>{student.email}</TableCell>
                   <TableCell>{student.mobileNumber}</TableCell>
-                  <TableCell>{student.visaStatus}</TableCell>
-                  <TableCell>{student.serviceFeeStatus}</TableCell>
                   <TableCell>{student.assignedTo}</TableCell>
                   <TableCell>
                     {student.timestamp ? format(student.timestamp.toDate(), 'PPP') : 'N/A'}
@@ -336,7 +315,7 @@ export function DataTable() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={8} className="h-24 text-center">
+                <TableCell colSpan={6} className="h-24 text-center">
                   No results found.
                 </TableCell>
               </TableRow>

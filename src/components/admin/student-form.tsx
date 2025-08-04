@@ -17,7 +17,8 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Student } from '@/lib/data';
+import { Textarea } from '@/components/ui/textarea';
+import { Student, allEducationLevels, englishTestOptions, studyDestinationOptions } from '@/lib/data';
 import { collection, addDoc, updateDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
@@ -28,6 +29,10 @@ const studentSchema = z.object({
   fullName: z.string().min(2, 'Full name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
   mobileNumber: z.string().min(10, 'Mobile number must be at least 10 digits'),
+  lastCompletedEducation: z.string().optional(),
+  englishProficiencyTest: z.string().optional(),
+  preferredStudyDestination: z.string().optional(),
+  additionalNotes: z.string().max(500, "Notes are too long.").optional(),
   visaStatus: z.enum(['Pending', 'Approved', 'Rejected', 'Not Applied']),
   serviceFeeStatus: z.enum(['Paid', 'Unpaid', 'Partial']),
   assignedTo: z.string().min(2, 'Assigned to must be at least 2 characters'),
@@ -45,46 +50,32 @@ export function StudentForm({ isOpen, onOpenChange, student }: StudentFormProps)
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
+  const defaultValues: StudentFormValues = {
+    fullName: '',
+    email: '',
+    mobileNumber: '',
+    lastCompletedEducation: '',
+    englishProficiencyTest: '',
+    preferredStudyDestination: '',
+    additionalNotes: '',
+    visaStatus: 'Not Applied',
+    serviceFeeStatus: 'Unpaid',
+    assignedTo: 'Unassigned',
+  };
+
   const form = useForm<StudentFormValues>({
     resolver: zodResolver(studentSchema),
-    defaultValues: student
-      ? {
-          fullName: student.fullName,
-          email: student.email,
-          mobileNumber: student.mobileNumber,
-          visaStatus: student.visaStatus,
-          serviceFeeStatus: student.serviceFeeStatus,
-          assignedTo: student.assignedTo,
-        }
-      : {
-          fullName: '',
-          email: '',
-          mobileNumber: '',
-          visaStatus: 'Not Applied',
-          serviceFeeStatus: 'Unpaid',
-          assignedTo: '',
-        },
+    defaultValues: student ? {
+      ...defaultValues,
+      ...student,
+    } : defaultValues,
   });
 
   React.useEffect(() => {
     if (isOpen) {
       form.reset(student
-        ? {
-            fullName: student.fullName,
-            email: student.email,
-            mobileNumber: student.mobileNumber,
-            visaStatus: student.visaStatus,
-            serviceFeeStatus: student.serviceFeeStatus,
-            assignedTo: student.assignedTo,
-          }
-        : {
-            fullName: '',
-            email: '',
-            mobileNumber: '',
-            visaStatus: 'Not Applied',
-            serviceFeeStatus: 'Unpaid',
-            assignedTo: '',
-          });
+        ? { ...defaultValues, ...student }
+        : defaultValues);
     }
   }, [isOpen, student, form]);
 
@@ -92,15 +83,23 @@ export function StudentForm({ isOpen, onOpenChange, student }: StudentFormProps)
   const onSubmit = async (data: StudentFormValues) => {
     setIsLoading(true);
     try {
+      const submissionData = {
+        ...data,
+        lastCompletedEducation: data.lastCompletedEducation || '',
+        englishProficiencyTest: data.englishProficiencyTest || '',
+        preferredStudyDestination: data.preferredStudyDestination || '',
+        additionalNotes: data.additionalNotes || '',
+      };
+
       if (student) {
         // Update existing student
         const studentRef = doc(db, 'students', student.id);
-        await updateDoc(studentRef, data);
+        await updateDoc(studentRef, submissionData);
         toast({ title: 'Student Updated', description: 'Student data has been successfully updated.' });
       } else {
         // Add new student
         await addDoc(collection(db, 'students'), {
-          ...data,
+          ...submissionData,
           timestamp: serverTimestamp(),
         });
         toast({ title: 'Student Added', description: 'New student has been successfully added.' });
@@ -120,30 +119,45 @@ export function StudentForm({ isOpen, onOpenChange, student }: StudentFormProps)
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-xl">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <DialogHeader>
               <DialogTitle>{student ? 'Edit Student' : 'Add New Student'}</DialogTitle>
               <DialogDescription>
-                {student ? 'Update the details for this student.' : 'Fill in the details to add a new student.'}
+                {student ? `Update details for ${student.fullName}.` : 'Fill in the details for a new student record.'}
               </DialogDescription>
             </DialogHeader>
-            <div className="py-4 space-y-4">
-              <FormField
-                control={form.control}
-                name="fullName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Full Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., John Doe" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
+            <div className="py-4 space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="fullName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g., John Doe" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="mobileNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Mobile Number</FormLabel>
+                      <FormControl>
+                        <Input placeholder="+977..." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+               <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
@@ -156,33 +170,62 @@ export function StudentForm({ isOpen, onOpenChange, student }: StudentFormProps)
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="mobileNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Mobile Number</FormLabel>
-                    <FormControl>
-                      <Input placeholder="+977..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="assignedTo"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Assigned To</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Counselor Name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
               <div className="grid grid-cols-2 gap-4">
+                <FormField
+                    control={form.control}
+                    name="lastCompletedEducation"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Last Education</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl><SelectTrigger><SelectValue placeholder="Select education level" /></SelectTrigger></FormControl>
+                                <SelectContent>{allEducationLevels.map(level => (<SelectItem key={level.value} value={level.value}>{level.name}</SelectItem>))}</SelectContent>
+                            </Select>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="englishProficiencyTest"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>English Test</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl><SelectTrigger><SelectValue placeholder="Select test status" /></SelectTrigger></FormControl>
+                                <SelectContent>{englishTestOptions.map(option => (<SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>))}</SelectContent>
+                            </Select>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+              </div>
+              <FormField
+                  control={form.control}
+                  name="preferredStudyDestination"
+                  render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Preferred Destination</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl><SelectTrigger><SelectValue placeholder="Select destination" /></SelectTrigger></FormControl>
+                              <SelectContent>{studyDestinationOptions.map(option => (<SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>))}</SelectContent>
+                          </Select>
+                          <FormMessage />
+                      </FormItem>
+                  )}
+              />
+              <FormField
+                  control={form.control}
+                  name="additionalNotes"
+                  render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Additional Notes</FormLabel>
+                          <FormControl><Textarea placeholder="Any other details or specific questions..." rows={3} {...field} /></FormControl>
+                          <FormMessage />
+                      </FormItem>
+                  )}
+              />
+              <div className="grid grid-cols-3 gap-4 border-t pt-4">
                 <FormField
                   control={form.control}
                   name="visaStatus"
@@ -227,6 +270,19 @@ export function StudentForm({ isOpen, onOpenChange, student }: StudentFormProps)
                       <FormMessage />
                     </FormItem>
                   )}
+                />
+                 <FormField
+                    control={form.control}
+                    name="assignedTo"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Assigned To</FormLabel>
+                        <FormControl>
+                        <Input placeholder="Counselor Name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
                 />
               </div>
             </div>
