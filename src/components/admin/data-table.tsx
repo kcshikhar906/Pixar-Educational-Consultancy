@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Fragment } from 'react';
 import {
   collection,
   onSnapshot,
@@ -32,6 +32,13 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -49,16 +56,42 @@ import {
   FileDown,
   Trash2,
   FilePenLine,
+  Eye, // Import Eye icon
+  BookUser,
+  Mail,
+  Phone,
+  GraduationCap,
+  Languages,
+  Target,
+  StickyNote,
+  Users,
+  CalendarDays,
+  CircleDollarSign,
+  Briefcase,
+  ShieldQuestion,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { Separator } from '../ui/separator';
 
 type SortConfig = {
   key: keyof Student;
   direction: 'ascending' | 'descending';
 };
+
+// Detail Item component for the View Dialog
+const DetailItem = ({ icon: Icon, label, value }: { icon: React.ElementType, label: string, value: React.ReactNode }) => (
+  <div className="flex items-start space-x-3">
+    <Icon className="h-5 w-5 text-muted-foreground mt-1 flex-shrink-0" />
+    <div className="flex-grow">
+      <p className="text-sm font-medium text-muted-foreground">{label}</p>
+      <p className="text-md text-foreground">{value || 'N/A'}</p>
+    </div>
+  </div>
+);
+
 
 export function DataTable() {
   const [students, setStudents] = useState<Student[]>([]);
@@ -72,6 +105,10 @@ export function DataTable() {
 
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [studentToDelete, setStudentToDelete] = useState<Student | null>(null);
+
+  const [isViewOpen, setIsViewOpen] = useState(false);
+  const [studentToView, setStudentToView] = useState<Student | null>(null);
+
   const { toast } = useToast();
 
 
@@ -163,6 +200,11 @@ export function DataTable() {
   const handleEdit = (student: Student) => {
     setSelectedStudent(student);
     setIsFormOpen(true);
+  };
+
+  const handleView = (student: Student) => {
+    setStudentToView(student);
+    setIsViewOpen(true);
   };
 
   const openDeleteAlert = (student: Student) => {
@@ -321,8 +363,12 @@ export function DataTable() {
                     {student.timestamp ? format(student.timestamp.toDate(), 'PPP') : 'N/A'}
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Button variant="ghost" size="icon" onClick={() => handleEdit(student)}>
+                    <div className="flex items-center justify-end gap-1">
+                      <Button variant="ghost" size="icon" onClick={() => handleView(student)}>
+                        <Eye className="h-4 w-4" />
+                        <span className="sr-only">View</span>
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={()={() => handleEdit(student)}>
                         <FilePenLine className="h-4 w-4" />
                         <span className="sr-only">Edit</span>
                       </Button>
@@ -344,11 +390,65 @@ export function DataTable() {
           </TableBody>
         </Table>
       </div>
+      
+      {/* Student View Dialog */}
+      <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold flex items-center"><BookUser className="mr-2 h-6 w-6"/>Student Details</DialogTitle>
+            <DialogDescription>
+              A complete overview of {studentToView?.fullName}'s record.
+            </DialogDescription>
+          </DialogHeader>
+          {studentToView && (
+            <div className="py-4 space-y-6 max-h-[70vh] overflow-y-auto pr-4">
+              {/* Personal Details */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg text-primary">Personal & Contact Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <DetailItem icon={Mail} label="Email" value={studentToView.email} />
+                  <DetailItem icon={Phone} label="Mobile Number" value={studentToView.mobileNumber} />
+                  <DetailItem icon={Phone} label="Emergency Contact" value={studentToView.emergencyContact} />
+                  <DetailItem icon={Briefcase} label="College/University" value={studentToView.collegeUniversityName} />
+                </div>
+              </div>
+              <Separator />
+              {/* Academic & Study Preferences */}
+              <div className="space-y-4">
+                 <h3 className="font-semibold text-lg text-primary">Academic & Study Preferences</h3>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <DetailItem icon={GraduationCap} label="Last Completed Education" value={studentToView.lastCompletedEducation} />
+                    <DetailItem icon={Languages} label="English Proficiency Test" value={studentToView.englishProficiencyTest} />
+                    <DetailItem icon={Target} label="Preferred Study Destination" value={studentToView.preferredStudyDestination} />
+                 </div>
+                 <DetailItem icon={StickyNote} label="Additional Notes" value={studentToView.additionalNotes ? <p className="whitespace-pre-wrap">{studentToView.additionalNotes}</p> : 'N/A'} />
+              </div>
+               <Separator />
+              {/* Internal Records */}
+               <div className="space-y-4">
+                 <h3 className="font-semibold text-lg text-primary">Internal Records</h3>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <DetailItem icon={Users} label="Assigned To" value={studentToView.assignedTo} />
+                    <DetailItem icon={ShieldQuestion} label="Visa Status" value={<Badge variant={getVisaStatusBadgeVariant(studentToView.visaStatus)}>{studentToView.visaStatus}</Badge>} />
+                    {studentToView.visaStatusUpdateDate && <DetailItem icon={CalendarDays} label="Visa Status Date" value={format(studentToView.visaStatusUpdateDate.toDate(), 'PPP')} />}
+                    <DetailItem icon={CircleDollarSign} label="Service Fee Status" value={<Badge variant={studentToView.serviceFeeStatus === 'Paid' ? 'default' : studentToView.serviceFeeStatus === 'Partial' ? 'secondary' : 'outline'}>{studentToView.serviceFeeStatus}</Badge>} />
+                    {studentToView.serviceFeePaidDate && <DetailItem icon={CalendarDays} label="Fee Paid Date" value={format(studentToView.serviceFeePaidDate.toDate(), 'PPP')} />}
+                    <DetailItem icon={CalendarDays} label="Date Added" value={studentToView.timestamp ? format(studentToView.timestamp.toDate(), 'PPP, p') : 'N/A'} />
+                 </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+      
+      {/* Student Edit Form Dialog */}
       <StudentForm 
         isOpen={isFormOpen} 
         onOpenChange={setIsFormOpen} 
         student={selectedStudent} 
       />
+
+      {/* Delete Confirmation Dialog */}
       <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -366,3 +466,4 @@ export function DataTable() {
     </div>
   );
 }
+
