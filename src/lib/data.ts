@@ -48,13 +48,19 @@ export interface Student {
   visaStatus: 'Pending' | 'Approved' | 'Rejected' | 'Not Applied';
   serviceFeeStatus: 'Paid' | 'Unpaid' | 'Partial';
   assignedTo: string;
-  // Add optional fields from the contact form
+  // Optional fields from contact form and admin panel
   lastCompletedEducation?: string;
   englishProficiencyTest?: string;
   preferredStudyDestination?: string;
   additionalNotes?: string;
+  // New fields for admin panel
+  serviceFeePaidDate?: Timestamp | null;
+  visaStatusUpdateDate?: Timestamp | null;
+  emergencyContact?: string;
+  collegeUniversityName?: string;
 }
 
+export const counselorNames = ['Pradeep Sir', 'Mujal Sir', 'Sabina Mam', 'Pawan Sir', 'Shyam Sir', 'Mamta Miss'];
 
 export interface Testimonial {
   id: string;
@@ -719,4 +725,3 @@ export const socialPlatforms = [
   { name: 'YouTube', icon: Youtube, url: 'https://www.youtube.com/@pixareducation', colorClass: 'hover:text-red-600', dataAiHint: 'youtube logo' },
   { name: 'Instagram', icon: Instagram, url: 'https://www.instagram.com/pixar.education?igsh=MXE5ZWJhZ2tmNTMybQ==', colorClass: 'hover:text-pink-500', dataAiHint: 'instagram logo' },
 ];
-

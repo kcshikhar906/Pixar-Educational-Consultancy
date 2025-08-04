@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -26,7 +27,6 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuCheckboxItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -44,13 +44,18 @@ import {
 import { StudentForm } from './student-form';
 import {
   ArrowUpDown,
-  MoreHorizontal,
   PlusCircle,
   ListFilter,
   FileDown,
+  Trash2,
+  FilePenLine,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 type SortConfig = {
   key: keyof Student;
@@ -63,6 +68,7 @@ export function DataTable() {
   const [filter, setFilter] = useState('');
   const [visaStatusFilter, setVisaStatusFilter] = useState<string>('all');
   const [sortConfig, setSortConfig] = useState<SortConfig | null>({ key: 'timestamp', direction: 'descending' });
+  const [showAllColumns, setShowAllColumns] = useState(false);
   
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
@@ -81,7 +87,7 @@ export function DataTable() {
         studentsData.push({ 
           id: doc.id,
           ...data,
-          timestamp: data.timestamp as Timestamp, // Cast to Timestamp
+          timestamp: data.timestamp as Timestamp,
         } as Student);
       });
       setStudents(studentsData);
@@ -104,9 +110,11 @@ export function DataTable() {
 
     // Filtering logic
     sortableStudents = sortableStudents.filter((student) => {
+      const name = student.fullName || '';
+      const email = student.email || '';
       const matchesText =
-        student.fullName.toLowerCase().includes(filter.toLowerCase()) ||
-        student.email.toLowerCase().includes(filter.toLowerCase());
+        name.toLowerCase().includes(filter.toLowerCase()) ||
+        email.toLowerCase().includes(filter.toLowerCase());
       const matchesVisaStatus =
         visaStatusFilter === 'all' || student.visaStatus === visaStatusFilter;
       return matchesText && matchesVisaStatus;
@@ -121,7 +129,6 @@ export function DataTable() {
         if (aValue === null || aValue === undefined) return 1;
         if (bValue === null || bValue === undefined) return -1;
         
-        // Handle Timestamp objects specifically
         if (aValue instanceof Timestamp && bValue instanceof Timestamp) {
             if (aValue.toMillis() < bValue.toMillis()) {
                 return sortConfig.direction === 'ascending' ? -1 : 1;
@@ -187,6 +194,15 @@ export function DataTable() {
     }
   };
 
+  const getVisaStatusBadgeVariant = (status: Student['visaStatus']) => {
+    switch (status) {
+      case 'Approved': return 'default'; // Or a custom 'success' variant
+      case 'Pending': return 'secondary';
+      case 'Rejected': return 'destructive';
+      case 'Not Applied': return 'outline';
+      default: return 'outline';
+    }
+  };
 
   return (
     <div>
@@ -239,6 +255,10 @@ export function DataTable() {
              </DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <Button variant="outline" onClick={() => setShowAllColumns(!showAllColumns)}>
+            {showAllColumns ? <EyeOff className="mr-2 h-4 w-4" /> : <Eye className="mr-2 h-4 w-4" />}
+            {showAllColumns ? 'Compact View' : 'Full View'}
+        </Button>
          <Button variant="outline">
             <FileDown className="mr-2 h-4 w-4" />
             Export
@@ -258,32 +278,44 @@ export function DataTable() {
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
-              <TableHead onClick={() => handleSort('email')}>
-                 <Button variant="ghost" className="pl-0">
-                    Email
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-              </TableHead>
-              <TableHead>Mobile</TableHead>
+              {showAllColumns && (
+                <TableHead onClick={() => handleSort('email')}>
+                   <Button variant="ghost" className="pl-0">
+                      Email
+                      <ArrowUpDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </TableHead>
+              )}
+               {showAllColumns && <TableHead>Mobile</TableHead>}
               <TableHead onClick={() => handleSort('assignedTo')}>
                  <Button variant="ghost" className="pl-0">
                     Assigned To
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
+               {showAllColumns && (
+                <>
+                  <TableHead onClick={() => handleSort('visaStatus')}>
+                    <Button variant="ghost" className="pl-0">Visa Status<ArrowUpDown className="ml-2 h-4 w-4" /></Button>
+                  </TableHead>
+                  <TableHead onClick={() => handleSort('serviceFeeStatus')}>
+                    <Button variant="ghost" className="pl-0">Fee Status<ArrowUpDown className="ml-2 h-4 w-4" /></Button>
+                  </TableHead>
+                </>
+              )}
               <TableHead onClick={() => handleSort('timestamp')}>
                  <Button variant="ghost" className="pl-0">
                     Date Added
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center">
+                <TableCell colSpan={showAllColumns ? 8 : 5} className="h-24 text-center">
                   Loading data...
                 </TableCell>
               </TableRow>
@@ -291,31 +323,43 @@ export function DataTable() {
               filteredAndSortedStudents.map((student) => (
                 <TableRow key={student.id}>
                   <TableCell className="font-medium">{student.fullName}</TableCell>
-                  <TableCell>{student.email}</TableCell>
-                  <TableCell>{student.mobileNumber}</TableCell>
+                   {showAllColumns && <TableCell>{student.email}</TableCell>}
+                   {showAllColumns && <TableCell>{student.mobileNumber}</TableCell>}
                   <TableCell>{student.assignedTo}</TableCell>
+                   {showAllColumns && (
+                    <>
+                      <TableCell>
+                        <Badge variant={getVisaStatusBadgeVariant(student.visaStatus)}>
+                          {student.visaStatus}
+                        </Badge>
+                      </TableCell>
+                       <TableCell>
+                         <Badge variant={student.serviceFeeStatus === 'Paid' ? 'default' : student.serviceFeeStatus === 'Partial' ? 'secondary' : 'outline'}>
+                            {student.serviceFeeStatus}
+                         </Badge>
+                       </TableCell>
+                    </>
+                  )}
                   <TableCell>
                     {student.timestamp ? format(student.timestamp.toDate(), 'PPP') : 'N/A'}
                   </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <span className="sr-only">Open menu</span>
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleEdit(student)}>Edit</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => openDeleteAlert(student)} className="text-red-600">Delete</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button variant="ghost" size="icon" onClick={() => handleEdit(student)}>
+                        <FilePenLine className="h-4 w-4" />
+                        <span className="sr-only">Edit</span>
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => openDeleteAlert(student)} className="text-red-600 hover:text-red-700">
+                        <Trash2 className="h-4 w-4" />
+                        <span className="sr-only">Delete</span>
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center">
+                <TableCell colSpan={showAllColumns ? 8 : 5} className="h-24 text-center">
                   No results found.
                 </TableCell>
               </TableRow>
@@ -338,7 +382,7 @@ export function DataTable() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setStudentToDelete(null)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>Continue</AlertDialogAction>
+            <AlertDialogAction onClick={handleDelete} className={buttonVariants({ variant: "destructive" })}>Continue</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
