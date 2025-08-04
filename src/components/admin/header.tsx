@@ -4,10 +4,14 @@ import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { LogOut } from 'lucide-react';
+import { LogOut, PlusCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-export default function AdminHeader() {
+interface AdminHeaderProps {
+  onAddNew: () => void;
+}
+
+export default function AdminHeader({ onAddNew }: AdminHeaderProps) {
   const router = useRouter();
   const { toast } = useToast();
 
@@ -25,7 +29,11 @@ export default function AdminHeader() {
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 py-4">
       <h1 className="text-2xl font-bold">Student Dashboard</h1>
-      <div className="ml-auto">
+      <div className="ml-auto flex items-center gap-4">
+         <Button onClick={onAddNew}>
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Add New Student
+        </Button>
         <Button variant="outline" onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />
           Logout

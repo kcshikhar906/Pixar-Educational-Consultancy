@@ -6,29 +6,34 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogClose,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Student, allEducationLevels, englishTestOptions, studyDestinationOptions, counselorNames } from '@/lib/data';
-import { collection, addDoc, updateDoc, doc, serverTimestamp, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, updateDoc, doc, serverTimestamp, Timestamp, deleteDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
-import { CalendarIcon, Loader2 } from 'lucide-react';
+import { CalendarIcon, Loader2, BookUser, Mail, Phone, GraduationCap, Languages, Target, StickyNote, Users, CalendarDays, CircleDollarSign, Briefcase, ShieldQuestion, FilePenLine, Trash2, X } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { Badge } from "../ui/badge";
+import { Separator } from "../ui/separator";
+
 
 const studentSchema = z.object({
   fullName: z.string().min(2, 'Full name must be at least 2 characters'),
@@ -41,7 +46,6 @@ const studentSchema = z.object({
   visaStatus: z.enum(['Pending', 'Approved', 'Rejected', 'Not Applied']),
   serviceFeeStatus: z.enum(['Paid', 'Unpaid', 'Partial']),
   assignedTo: z.string().min(2, 'Assigned to must be at least 2 characters'),
-  // New fields
   emergencyContact: z.string().optional(),
   collegeUniversityName: z.string().optional(),
   serviceFeePaidDate: z.date().optional(),
@@ -51,28 +55,34 @@ const studentSchema = z.object({
 type StudentFormValues = z.infer<typeof studentSchema>;
 
 interface StudentFormProps {
-  isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
-  student?: Student | null; // Student data for editing
+  student?: Student | null;
+  onFormClose: () => void;
+  onFormSubmitSuccess: () => void;
 }
 
-export function StudentForm({ isOpen, onOpenChange, student }: StudentFormProps) {
+const DetailItem = ({ icon: Icon, label, value }: { icon: React.ElementType, label: string, value: React.ReactNode }) => (
+  <div className="flex items-start space-x-3">
+    <Icon className="h-5 w-5 text-muted-foreground mt-1 flex-shrink-0" />
+    <div className="flex-grow">
+      <p className="text-sm font-medium text-muted-foreground">{label}</p>
+      <p className="text-md text-foreground">{value || 'N/A'}</p>
+    </div>
+  </div>
+);
+
+export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: StudentFormProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+
+  const isNewStudent = !student?.id;
 
   const defaultValues: Partial<StudentFormValues> = {
-    fullName: '',
-    email: '',
-    mobileNumber: '',
-    lastCompletedEducation: '',
-    englishProficiencyTest: '',
-    preferredStudyDestination: '',
-    additionalNotes: '',
-    visaStatus: 'Not Applied',
-    serviceFeeStatus: 'Unpaid',
-    assignedTo: 'Unassigned',
-    emergencyContact: '',
-    collegeUniversityName: '',
+    fullName: '', email: '', mobileNumber: '', lastCompletedEducation: '',
+    englishProficiencyTest: '', preferredStudyDestination: '', additionalNotes: '',
+    visaStatus: 'Not Applied', serviceFeeStatus: 'Unpaid', assignedTo: 'Unassigned',
+    emergencyContact: '', collegeUniversityName: '',
   };
 
   const form = useForm<StudentFormValues>({
@@ -84,18 +94,16 @@ export function StudentForm({ isOpen, onOpenChange, student }: StudentFormProps)
   const visaStatus = form.watch('visaStatus');
 
   React.useEffect(() => {
-    if (isOpen && student) {
+    if (student) {
       form.reset({
         ...defaultValues,
         ...student,
         serviceFeePaidDate: student.serviceFeePaidDate ? student.serviceFeePaidDate.toDate() : undefined,
         visaStatusUpdateDate: student.visaStatusUpdateDate ? student.visaStatusUpdateDate.toDate() : undefined,
       });
-    } else if (isOpen) {
-        form.reset(defaultValues);
+      setIsEditing(isNewStudent); // Automatically enter edit mode for new students
     }
-  }, [isOpen, student, form]);
-
+  }, [student, form, isNewStudent]);
 
   const onSubmit = async (data: StudentFormValues) => {
     setIsLoading(true);
@@ -112,89 +120,161 @@ export function StudentForm({ isOpen, onOpenChange, student }: StudentFormProps)
         visaStatusUpdateDate: data.visaStatusUpdateDate ? Timestamp.fromDate(data.visaStatusUpdateDate) : null,
       };
 
-      if (student) {
-        // Update existing student
+      if (!isNewStudent) {
         const studentRef = doc(db, 'students', student.id);
         await updateDoc(studentRef, submissionData);
         toast({ title: 'Student Updated', description: 'Student data has been successfully updated.' });
       } else {
-        // Add new student
-        await addDoc(collection(db, 'students'), {
-          ...submissionData,
-          timestamp: serverTimestamp(),
-        });
+        await addDoc(collection(db, 'students'), { ...submissionData, timestamp: serverTimestamp() });
         toast({ title: 'Student Added', description: 'New student has been successfully added.' });
       }
-      onOpenChange(false);
+      onFormSubmitSuccess();
+      setIsEditing(false); // Exit edit mode on success
     } catch (error) {
       console.error('Error saving student:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to save student data. Please try again.',
-        variant: 'destructive',
-      });
+      toast({ title: 'Error', description: 'Failed to save student data.', variant: 'destructive' });
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleDelete = async () => {
+    if (!student || isNewStudent) return;
+    setIsLoading(true);
+    try {
+      await deleteDoc(doc(db, 'students', student.id));
+      toast({ title: 'Student Deleted', description: `${student.fullName} has been removed.` });
+      onFormSubmitSuccess();
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to delete student.', variant: 'destructive' });
+    } finally {
+      setIsLoading(false);
+      setIsAlertOpen(false);
+    }
+  };
+  
+  const getVisaStatusBadgeVariant = (status: Student['visaStatus']) => {
+    switch (status) {
+      case 'Approved': return 'default'; case 'Pending': return 'secondary';
+      case 'Rejected': return 'destructive'; default: return 'outline';
+    }
+  };
+
+  if (isEditing) {
+     return (
+        <Card>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <CardHeader>
+                <CardTitle>{isNewStudent ? 'Add New Student' : `Edit: ${student.fullName}`}</CardTitle>
+                <CardDescription>
+                  {isNewStudent ? 'Fill in the details for a new student record.' : 'Update the details for this student.'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4 max-h-[65vh] overflow-y-auto pr-4">
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                     <FormField control={form.control} name="fullName" render={({ field }) => ( <FormItem> <FormLabel>Full Name</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
+                     <FormField control={form.control} name="email" render={({ field }) => ( <FormItem> <FormLabel>Email</FormLabel> <FormControl><Input type="email" {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
+                 </div>
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormField control={form.control} name="mobileNumber" render={({ field }) => ( <FormItem> <FormLabel>Mobile Number</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
+                    <FormField control={form.control} name="emergencyContact" render={({ field }) => ( <FormItem> <FormLabel>Emergency Contact</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
+                 </div>
+                 <FormField control={form.control} name="collegeUniversityName" render={({ field }) => ( <FormItem> <FormLabel>College/University Name</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormField control={form.control} name="lastCompletedEducation" render={({ field }) => ( <FormItem><FormLabel>Last Education</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select level" /></SelectTrigger></FormControl><SelectContent>{allEducationLevels.map(l => (<SelectItem key={l.value} value={l.value}>{l.name}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem> )}/>
+                    <FormField control={form.control} name="englishProficiencyTest" render={({ field }) => ( <FormItem><FormLabel>English Test</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger></FormControl><SelectContent>{englishTestOptions.map(o => (<SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem> )}/>
+                 </div>
+                 <FormField control={form.control} name="preferredStudyDestination" render={({ field }) => ( <FormItem><FormLabel>Destination</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select country" /></SelectTrigger></FormControl><SelectContent>{studyDestinationOptions.map(o => (<SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem> )}/>
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t pt-4">
+                    <FormField control={form.control} name="visaStatus" render={({ field }) => ( <FormItem><FormLabel>Visa Status</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger></FormControl><SelectContent>{['Not Applied', 'Pending', 'Approved', 'Rejected'].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem> )}/>
+                    {visaStatus && visaStatus !== 'Not Applied' && <FormField control={form.control} name="visaStatusUpdateDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Visa Status Date</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? format(field.value, "PPP") : <span>Pick date</span>}<CalendarIcon className="ml-auto h-4 w-4" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0"><Calendar mode="single" selected={field.value} onSelect={field.onChange} /></PopoverContent></Popover><FormMessage /></FormItem>)}/>}
+                 </div>
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                     <FormField control={form.control} name="serviceFeeStatus" render={({ field }) => ( <FormItem><FormLabel>Service Fee</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger></FormControl><SelectContent>{['Unpaid', 'Partial', 'Paid'].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem> )}/>
+                     {serviceFeeStatus === 'Paid' && <FormField control={form.control} name="serviceFeePaidDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Fee Paid Date</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? format(field.value, "PPP") : <span>Pick date</span>}<CalendarIcon className="ml-auto h-4 w-4" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0"><Calendar mode="single" selected={field.value} onSelect={field.onChange} /></PopoverContent></Popover><FormMessage /></FormItem>)}/>}
+                 </div>
+                 <FormField control={form.control} name="assignedTo" render={({ field }) => ( <FormItem><FormLabel>Assigned To</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select counselor" /></SelectTrigger></FormControl><SelectContent>{counselorNames.map(name => (<SelectItem key={name} value={name}>{name}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem>)}/>
+                 <FormField control={form.control} name="additionalNotes" render={({ field }) => ( <FormItem><FormLabel>Additional Notes</FormLabel><FormControl><Textarea rows={3} {...field} /></FormControl><FormMessage /></FormItem> )}/>
+              </CardContent>
+              <CardFooter className="flex justify-between">
+                <Button type="button" variant="outline" onClick={() => isNewStudent ? onFormClose() : setIsEditing(false)} disabled={isLoading}>Cancel</Button>
+                <Button type="submit" disabled={isLoading}>
+                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Save Changes
+                </Button>
+              </CardFooter>
+            </form>
+          </Form>
+        </Card>
+      );
+  }
+
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <DialogHeader>
-              <DialogTitle>{student ? 'Edit Student' : 'Add New Student'}</DialogTitle>
-              <DialogDescription>
-                {student ? `Update details for ${student.fullName}.` : 'Fill in the details for a new student record.'}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="py-4 space-y-4 max-h-[70vh] overflow-y-auto pr-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                 <FormField control={form.control} name="fullName" render={({ field }) => ( <FormItem> <FormLabel>Full Name</FormLabel> <FormControl><Input placeholder="e.g., John Doe" {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
-                 <FormField control={form.control} name="email" render={({ field }) => ( <FormItem> <FormLabel>Email</FormLabel> <FormControl><Input type="email" placeholder="student@example.com" {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <FormField control={form.control} name="mobileNumber" render={({ field }) => ( <FormItem> <FormLabel>Mobile Number</FormLabel> <FormControl><Input placeholder="+977..." {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
-                <FormField control={form.control} name="emergencyContact" render={({ field }) => ( <FormItem> <FormLabel>Emergency Contact</FormLabel> <FormControl><Input placeholder="e.g., +977..." {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
-              </div>
-               <FormField control={form.control} name="collegeUniversityName" render={({ field }) => ( <FormItem> <FormLabel>College/University Name</FormLabel> <FormControl><Input placeholder="e.g., University of Sydney" {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <FormField control={form.control} name="lastCompletedEducation" render={({ field }) => ( <FormItem><FormLabel>Last Education</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select education level" /></SelectTrigger></FormControl><SelectContent>{allEducationLevels.map(level => (<SelectItem key={level.value} value={level.value}>{level.name}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem> )}/>
-                <FormField control={form.control} name="englishProficiencyTest" render={({ field }) => ( <FormItem><FormLabel>English Test</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select test status" /></SelectTrigger></FormControl><SelectContent>{englishTestOptions.map(option => (<SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem> )}/>
-              </div>
-              <FormField control={form.control} name="preferredStudyDestination" render={({ field }) => ( <FormItem><FormLabel>Preferred Destination</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select destination" /></SelectTrigger></FormControl><SelectContent>{studyDestinationOptions.map(option => (<SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem> )}/>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t pt-4">
-                <FormField control={form.control} name="visaStatus" render={({ field }) => ( <FormItem><FormLabel>Visa Status</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Not Applied">Not Applied</SelectItem><SelectItem value="Pending">Pending</SelectItem><SelectItem value="Approved">Approved</SelectItem><SelectItem value="Rejected">Rejected</SelectItem></SelectContent></Select><FormMessage /></FormItem> )}/>
-                 {visaStatus && visaStatus !== 'Rejected' && (
-                    <FormField control={form.control} name="visaStatusUpdateDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Visa Status Date</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? format(field.value, "PPP") : <span>Pick a date</span>}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date > new Date()} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)}/>
-                 )}
-              </div>
-
-               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                 <FormField control={form.control} name="serviceFeeStatus" render={({ field }) => ( <FormItem><FormLabel>Service Fee</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Unpaid">Unpaid</SelectItem><SelectItem value="Partial">Partial</SelectItem><SelectItem value="Paid">Paid</SelectItem></SelectContent></Select><FormMessage /></FormItem> )}/>
-                 {serviceFeeStatus === 'Paid' && (
-                    <FormField control={form.control} name="serviceFeePaidDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Fee Paid Date</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? format(field.value, "PPP") : <span>Pick a date</span>}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date > new Date()} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)}/>
-                 )}
-               </div>
-               
-               <FormField control={form.control} name="assignedTo" render={({ field }) => ( <FormItem><FormLabel>Assigned To</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a counselor" /></SelectTrigger></FormControl><SelectContent>{counselorNames.map(name => (<SelectItem key={name} value={name}>{name}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem>)}/>
-
-              <FormField control={form.control} name="additionalNotes" render={({ field }) => ( <FormItem><FormLabel>Additional Notes</FormLabel><FormControl><Textarea placeholder="Any other details or specific questions..." rows={3} {...field} /></FormControl><FormMessage /></FormItem> )}/>
+    <Card>
+        <CardHeader>
+            <div className="flex justify-between items-center">
+                <div>
+                    <CardTitle className="flex items-center"><BookUser className="mr-2 h-6 w-6"/>{student?.fullName}</CardTitle>
+                    <CardDescription>Student Details</CardDescription>
+                </div>
+                 <div className="flex items-center gap-2">
+                    <Button variant="outline" size="icon" onClick={() => setIsEditing(true)}><FilePenLine className="h-4 w-4" /><span className="sr-only">Edit</span></Button>
+                    <Button variant="destructive" size="icon" onClick={() => setIsAlertOpen(true)}><Trash2 className="h-4 w-4" /><span className="sr-only">Delete</span></Button>
+                    <Button variant="ghost" size="icon" onClick={onFormClose}><X className="h-4 w-4" /></Button>
+                </div>
             </div>
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button type="button" variant="outline" disabled={isLoading}>Cancel</Button>
-              </DialogClose>
-              <Button type="submit" disabled={isLoading}>
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {student ? 'Save Changes' : 'Add Student'}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+        </CardHeader>
+        <CardContent className="space-y-6 max-h-[65vh] overflow-y-auto pr-4">
+             {/* Personal Details */}
+             <div className="space-y-4">
+                <h3 className="font-semibold text-lg text-primary">Personal & Contact Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <DetailItem icon={Mail} label="Email" value={student?.email} />
+                  <DetailItem icon={Phone} label="Mobile Number" value={student?.mobileNumber} />
+                  <DetailItem icon={Phone} label="Emergency Contact" value={student?.emergencyContact} />
+                  <DetailItem icon={Briefcase} label="College/University" value={student?.collegeUniversityName} />
+                </div>
+              </div>
+              <Separator />
+              {/* Academic & Study Preferences */}
+              <div className="space-y-4">
+                 <h3 className="font-semibold text-lg text-primary">Academic & Study Preferences</h3>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <DetailItem icon={GraduationCap} label="Last Completed Education" value={student?.lastCompletedEducation} />
+                    <DetailItem icon={Languages} label="English Proficiency Test" value={student?.englishProficiencyTest} />
+                    <DetailItem icon={Target} label="Preferred Study Destination" value={student?.preferredStudyDestination} />
+                 </div>
+                 <DetailItem icon={StickyNote} label="Additional Notes" value={student?.additionalNotes ? <p className="whitespace-pre-wrap">{student.additionalNotes}</p> : 'N/A'} />
+              </div>
+               <Separator />
+              {/* Internal Records */}
+               <div className="space-y-4">
+                 <h3 className="font-semibold text-lg text-primary">Internal Records</h3>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <DetailItem icon={Users} label="Assigned To" value={student?.assignedTo} />
+                    <DetailItem icon={ShieldQuestion} label="Visa Status" value={<Badge variant={getVisaStatusBadgeVariant(student?.visaStatus)}>{student?.visaStatus}</Badge>} />
+                    {student?.visaStatusUpdateDate && <DetailItem icon={CalendarDays} label="Visa Status Date" value={format(student.visaStatusUpdateDate.toDate(), 'PPP')} />}
+                    <DetailItem icon={CircleDollarSign} label="Service Fee Status" value={<Badge variant={student?.serviceFeeStatus === 'Paid' ? 'default' : student?.serviceFeeStatus === 'Partial' ? 'secondary' : 'outline'}>{student?.serviceFeeStatus}</Badge>} />
+                    {student?.serviceFeePaidDate && <DetailItem icon={CalendarDays} label="Fee Paid Date" value={format(student.serviceFeePaidDate.toDate(), 'PPP')} />}
+                    <DetailItem icon={CalendarDays} label="Date Added" value={student?.timestamp ? format(student.timestamp.toDate(), 'PPP, p') : 'N/A'} />
+                 </div>
+              </div>
+        </CardContent>
+         <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
+            <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the student record for {student?.fullName}.
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel onClick={() => setIsAlertOpen(false)}>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete} className={cn(buttonVariants({ variant: "destructive" }))}>Continue</AlertDialogAction>
+            </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    </Card>
   );
 }
