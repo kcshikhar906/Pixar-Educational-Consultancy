@@ -19,6 +19,6 @@ const firebaseConfig = {
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 // Connect to the specific 'pixareducation' database
-const db = getFirestore(app);
+const db = getFirestore(app, 'pixareducation');
 
 export { app, auth, db };
