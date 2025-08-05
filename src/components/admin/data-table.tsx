@@ -79,8 +79,7 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
   }, []);
   
   const filteredStudents = useMemo(() => {
-    // Start with filtering
-    const filtered = students.filter((student) => {
+    let tempStudents = students.filter((student) => {
       const name = student.fullName || '';
       const email = student.email || '';
       const matchesText =
@@ -97,16 +96,18 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
     });
 
     // Separate into unassigned and assigned groups
-    const unassignedStudents = filtered.filter(s => s.assignedTo === 'Unassigned');
-    const assignedStudents = filtered.filter(s => s.assignedTo !== 'Unassigned');
+    const unassignedStudents = tempStudents.filter(s => s.assignedTo === 'Unassigned');
+    const assignedStudents = tempStudents.filter(s => s.assignedTo !== 'Unassigned');
 
     // Sort the assigned group based on the user's selection
     if (sortBy === 'alphabetical') {
       assignedStudents.sort((a, b) => (a.fullName || '').localeCompare(b.fullName || ''));
-    } 
-    // The default order from Firestore is already 'latest', so no 'else' is needed for assigned students.
-
+    } else {
+      // 'latest' - Firestore query already sorts this way, so no action needed for assigned
+    }
+    
     // Unassigned students are already sorted by latest first from the Firestore query.
+
     // Combine the groups, with unassigned always at the top.
     return [...unassignedStudents, ...assignedStudents];
 
@@ -135,7 +136,7 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
             <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="flex-1">
                 <ListFilter className="mr-2 h-4 w-4" />
-                Assigned: {assignedToFilter}
+                Assigned: {assignedToFilter === 'all' ? 'All' : assignedToFilter}
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
@@ -203,7 +204,7 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
                     <div className="mt-1 flex items-center justify-between text-xs">
                        <span className="text-muted-foreground">{student.assignedTo || 'Unassigned'}</span>
                        <Badge variant={getFeeStatusBadgeVariant(student.serviceFeeStatus)} className="py-0.5 px-1.5 text-xs">
-                          {student.serviceFeeStatus}
+                          {student.serviceFeeStatus || 'N/A'}
                        </Badge>
                     </div>
                   </TableCell>
@@ -222,4 +223,3 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
     </div>
   );
 }
-
