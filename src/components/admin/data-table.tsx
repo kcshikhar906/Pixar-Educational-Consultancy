@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -64,15 +65,21 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
           timestamp: data.timestamp as Timestamp,
         } as Student);
       });
-      setStudents(studentsData);
+      // Explicitly sort here to ensure order is always correct after any update
+      const sortedStudents = studentsData.sort((a, b) => {
+        const timestampA = a.timestamp?.toDate()?.getTime() || 0;
+        const timestampB = b.timestamp?.toDate()?.getTime() || 0;
+        return timestampB - timestampA;
+      });
+      setStudents(sortedStudents);
       setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
   
-  const filteredAndSortedStudents = useMemo(() => {
-    let filteredStudents = students.filter((student) => {
+  const filteredStudents = useMemo(() => {
+    return students.filter((student) => {
       const name = student.fullName || '';
       const email = student.email || '';
       const matchesText =
@@ -84,14 +91,6 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
 
       return matchesText && matchesAssignedTo;
     });
-
-    // Ensure sorting by timestamp is always applied after filtering
-    return filteredStudents.sort((a, b) => {
-        const timestampA = a.timestamp?.toDate() || new Date(0);
-        const timestampB = b.timestamp?.toDate() || new Date(0);
-        return timestampB.getTime() - timestampA.getTime();
-    });
-
   }, [students, filter, assignedToFilter]);
 
   const getVisaStatusBadgeVariant = (status: Student['visaStatus']) => {
@@ -139,8 +138,8 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
                   Loading data...
                 </TableCell>
               </TableRow>
-            ) : filteredAndSortedStudents.length > 0 ? (
-              filteredAndSortedStudents.map((student) => (
+            ) : filteredStudents.length > 0 ? (
+              filteredStudents.map((student) => (
                 <TableRow 
                   key={student.id} 
                   onClick={() => onRowSelect(student)}
