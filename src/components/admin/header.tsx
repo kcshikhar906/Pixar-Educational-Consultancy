@@ -5,10 +5,10 @@ import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { LogOut, PlusCircle, LayoutDashboard, List, Database } from 'lucide-react';
+import { LogOut, PlusCircle, LayoutDashboard, List } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 interface AdminHeaderProps {
   onAddNew: () => void;
@@ -33,13 +33,15 @@ export default function AdminHeader({ onAddNew }: AdminHeaderProps) {
   const navItems = [
     { href: '/admin', label: 'Analytics', icon: LayoutDashboard },
     { href: '/admin/students', label: 'Student Management', icon: List },
-    { href: '/admin/full-data', label: 'Full Data View', icon: Database },
   ];
 
   return (
     <header className="sticky top-0 z-30 flex h-auto flex-col sm:flex-row items-center gap-4 border-b bg-background px-4 sm:px-6 py-4">
       <div className="flex w-full sm:w-auto items-center justify-between">
-          <h1 className="text-2xl font-bold">Admin Panel</h1>
+        <Link href="/admin" className="flex items-center space-x-2">
+            <Image src="/logo.png" alt="Pixar Edu Logo" width={28} height={28} />
+            <h1 className="text-2xl font-bold">Admin Panel</h1>
+        </Link>
       </div>
       
       <nav className="flex-grow flex items-center justify-center gap-2">
