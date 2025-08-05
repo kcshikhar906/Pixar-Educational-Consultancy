@@ -106,8 +106,13 @@ async function importStudents() {
           
           // Robust timestamp handling
           const timestampValue = record['Timestamp'] || record['timestamp'];
-          const date = timestampValue ? new Date(timestampValue) : new Date();
-          const timestamp = !isNaN(date.getTime()) ? date : new Date();
+          let timestamp = new Date(); // Default to now
+          if (timestampValue) {
+            const parsedDate = new Date(timestampValue);
+            if (!isNaN(parsedDate.getTime())) {
+              timestamp = parsedDate;
+            }
+          }
 
           const studentData = {
             // Match the keys exactly as they appear in your CSV headers
@@ -117,7 +122,7 @@ async function importStudents() {
             lastCompletedEducation: record['Last Completed Education'] || record['lastCompletedEducation'] || '',
             englishProficiencyTest: record['English Proficiency Test'] || record['englishProficiencyTest'] || '',
             preferredStudyDestination: record['Preferred Study Destination'] || record['preferredStudyDestination'] || '',
-            additionalNotes: record['Additional Notes / Specific Questions'] || record['additionalNotes'] || '',
+            additionalNotes: record['Additional Notes'] || record['additionalNotes'] || '',
             timestamp: timestamp,
             // Set default values for fields not in the form, but allow CSV to override if present
             visaStatus: record['Visa Status'] || record['visaStatus'] || 'Not Applied',
