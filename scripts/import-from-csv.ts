@@ -57,15 +57,7 @@ const db = getFirestore();
 const studentsCollection = db.collection('students');
 
 interface StudentCSVRecord {
-  'Timestamp': string;
-  'Email Address': string;
-  'Full Name': string;
-  'Mobile Number': string;
-  'Last Completed Education': string;
-  'English Proficiency Test': string;
-  'Preferred Study Destination': string;
-  'Additional Notes / Specific Questions': string;
-  [key: string]: any; // Allow other columns
+  [key: string]: string; // Allow any string keys for headers
 }
 
 async function importStudents() {
@@ -82,8 +74,10 @@ async function importStudents() {
   fs.createReadStream(CSV_FILE_PATH)
     .pipe(csv())
     .on('data', (data: StudentCSVRecord) => {
-      // Basic validation to skip empty rows
-      if (data['Full Name'] && data['Email Address']) {
+      // Get the headers from the first row of data
+      const headers = Object.keys(data);
+      // More robust check: ensure the row is not empty and the first two columns (likely name and email) have values.
+      if (headers.length >= 2 && data[headers[1]] && data[headers[2]]) {
         records.push(data);
       }
     })
@@ -91,7 +85,7 @@ async function importStudents() {
       console.log(`✅ CSV file successfully processed. Found ${records.length} valid records to import.`);
       
       if (records.length === 0) {
-        console.log("🔵 No records to import. Exiting.");
+        console.log("🔵 No records to import. Please check that your CSV file is not empty and that the columns for 'Full Name' and 'Email Address' are populated.");
         return;
       }
 
@@ -109,14 +103,15 @@ async function importStudents() {
           const docRef = studentsCollection.doc(); // Auto-generate document ID
           
           const studentData = {
-            fullName: record['Full Name'] || '',
-            email: record['Email Address'] || '',
-            mobileNumber: record['Mobile Number'] || '',
-            lastCompletedEducation: record['Last Completed Education'] || '',
-            englishProficiencyTest: record['English Proficiency Test'] || '',
-            preferredStudyDestination: record['Preferred Study Destination'] || '',
-            additionalNotes: record['Additional Notes / Specific Questions'] || '',
-            timestamp: new Date(record['Timestamp']),
+            // Match the keys exactly as they appear in your CSV headers
+            fullName: record['Full Name'] || record['fullName'] || '',
+            email: record['Email Address'] || record['email'] || '',
+            mobileNumber: record['Mobile Number'] || record['mobileNumber'] || '',
+            lastCompletedEducation: record['Last Completed Education'] || record['lastCompletedEducation'] || '',
+            englishProficiencyTest: record['English Proficiency Test'] || record['englishProficiencyTest'] || '',
+            preferredStudyDestination: record['Preferred Study Destination'] || record['preferredStudyDestination'] || '',
+            additionalNotes: record['Additional Notes / Specific Questions'] || record['additionalNotes'] || '',
+            timestamp: new Date(record['Timestamp'] || record['timestamp']),
             // Set default values for fields not in the form
             visaStatus: 'Not Applied',
             serviceFeeStatus: 'Unpaid',
