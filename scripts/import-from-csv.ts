@@ -25,6 +25,7 @@ import csv from 'csv-parser';
 const BATCH_SIZE = 250; // Firestore batch writes are limited to 500 operations.
 const CSV_FILE_PATH = path.join(__dirname, 'students.csv'); // Assumes students.csv is in the same directory.
 const SERVICE_ACCOUNT_PATH = path.join(process.cwd(), 'firebase-service-account.json');
+const DATABASE_ID = 'pixareducation'; // The ID of the database to import into.
 // --- End Configuration ---
 
 // Initialize Firebase Admin SDK
@@ -53,7 +54,8 @@ try {
 }
 
 
-const db = getFirestore();
+const db = getFirestore(DATABASE_ID); // Connect to the specific database
+console.log(`✅ Connected to Firestore database: ${DATABASE_ID}`);
 const studentsCollection = db.collection('students');
 
 interface StudentCSVRecord {
@@ -105,7 +107,7 @@ async function importStudents() {
           // Robust timestamp handling
           const timestampValue = record['Timestamp'] || record['timestamp'];
           const date = timestampValue ? new Date(timestampValue) : new Date();
-          const timestamp = date.toString() !== 'Invalid Date' ? date : new Date();
+          const timestamp = !isNaN(date.getTime()) ? date : new Date();
 
           const studentData = {
             // Match the keys exactly as they appear in your CSV headers
