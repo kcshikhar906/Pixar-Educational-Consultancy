@@ -1,7 +1,7 @@
 
 'use client';
 
-import { collection, onSnapshot, query } from 'firebase/firestore';
+import { collection, onSnapshot, query, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Student, studyDestinationOptions, counselorNames } from '@/lib/data';
 import { useEffect, useState } from 'react';
@@ -29,20 +29,24 @@ export default function AdminAnalyticsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const q = query(collection(db, 'students'));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const studentsData: Student[] = [];
-      querySnapshot.forEach((doc) => {
-        studentsData.push({ id: doc.id, ...doc.data() } as Student);
-      });
-      setStudents(studentsData);
-      setLoading(false);
-    }, (error) => {
-      console.error("Error fetching students: ", error);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
+    const fetchStudents = async () => {
+        setLoading(true);
+        try {
+            const q = query(collection(db, 'students'));
+            const querySnapshot = await getDocs(q);
+            const studentsData: Student[] = [];
+            querySnapshot.forEach((doc) => {
+                studentsData.push({ id: doc.id, ...doc.data() } as Student);
+            });
+            setStudents(studentsData);
+        } catch (error) {
+            console.error("Error fetching students: ", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+    fetchStudents();
   }, []);
 
   const totalStudents = students.length;
