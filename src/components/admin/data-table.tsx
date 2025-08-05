@@ -31,7 +31,6 @@ import {
 
 import { ListFilter, SlidersHorizontal } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 
 interface DataTableProps {
   onRowSelect: (student: Student) => void;
@@ -69,7 +68,6 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
           timestamp: data.timestamp as Timestamp,
         } as Student);
       });
-       // Snapshot listener already provides sorted data, so we can just set it.
       setStudents(studentsData);
       setLoading(false);
     }, (error) => {
@@ -81,7 +79,8 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
   }, []);
   
   const filteredStudents = useMemo(() => {
-    let processedStudents = students.filter((student) => {
+    // Start with filtering
+    const filtered = students.filter((student) => {
       const name = student.fullName || '';
       const email = student.email || '';
       const matchesText =
@@ -97,15 +96,20 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
       return matchesText && matchesAssignedTo && matchesFeeStatus;
     });
 
-    // We only need to apply the alphabetical sort, as the default from Firestore is already 'latest'.
+    // Separate into unassigned and assigned groups
+    const unassignedStudents = filtered.filter(s => s.assignedTo === 'Unassigned');
+    const assignedStudents = filtered.filter(s => s.assignedTo !== 'Unassigned');
+
+    // Sort the assigned group based on the user's selection
     if (sortBy === 'alphabetical') {
-      processedStudents.sort((a, b) => {
-        return (a.fullName || '').localeCompare(b.fullName || '');
-      });
-    }
+      assignedStudents.sort((a, b) => (a.fullName || '').localeCompare(b.fullName || ''));
+    } 
+    // The default order from Firestore is already 'latest', so no 'else' is needed for assigned students.
 
+    // Unassigned students are already sorted by latest first from the Firestore query.
+    // Combine the groups, with unassigned always at the top.
+    return [...unassignedStudents, ...assignedStudents];
 
-    return processedStudents;
   }, [students, filter, assignedToFilter, feeStatusFilter, sortBy]);
 
   const getFeeStatusBadgeVariant = (status: Student['serviceFeeStatus']) => {
@@ -218,3 +222,4 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
     </div>
   );
 }
+
