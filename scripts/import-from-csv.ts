@@ -102,6 +102,11 @@ async function importStudents() {
         chunk.forEach(record => {
           const docRef = studentsCollection.doc(); // Auto-generate document ID
           
+          // Robust timestamp handling
+          const timestampValue = record['Timestamp'] || record['timestamp'];
+          const date = timestampValue ? new Date(timestampValue) : new Date();
+          const timestamp = date.toString() !== 'Invalid Date' ? date : new Date();
+
           const studentData = {
             // Match the keys exactly as they appear in your CSV headers
             fullName: record['Full Name'] || record['fullName'] || '',
@@ -111,7 +116,7 @@ async function importStudents() {
             englishProficiencyTest: record['English Proficiency Test'] || record['englishProficiencyTest'] || '',
             preferredStudyDestination: record['Preferred Study Destination'] || record['preferredStudyDestination'] || '',
             additionalNotes: record['Additional Notes / Specific Questions'] || record['additionalNotes'] || '',
-            timestamp: new Date(record['Timestamp'] || record['timestamp']),
+            timestamp: timestamp,
             // Set default values for fields not in the form
             visaStatus: 'Not Applied',
             serviceFeeStatus: 'Unpaid',
