@@ -24,26 +24,31 @@ import csv from 'csv-parser';
 // --- Configuration ---
 const BATCH_SIZE = 250; // Firestore batch writes are limited to 500 operations.
 const CSV_FILE_PATH = path.join(__dirname, 'students.csv'); // Assumes students.csv is in the same directory.
+const SERVICE_ACCOUNT_PATH = path.join(process.cwd(), 'firebase-service-account.json');
 // --- End Configuration ---
 
 // Initialize Firebase Admin SDK
-// IMPORTANT: Ensure 'firebase-service-account.json' is in your project's root directory.
 try {
+  if (!fs.existsSync(SERVICE_ACCOUNT_PATH)) {
+    throw new Error(`Service account key not found at: ${SERVICE_ACCOUNT_PATH}\nPlease follow the setup instructions in the script file.`);
+  }
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const serviceAccount = require(path.join(process.cwd(), 'firebase-service-account.json'));
+  const serviceAccount = require(SERVICE_ACCOUNT_PATH);
   
   initializeApp({
     credential: cert(serviceAccount),
     databaseURL: `https://${serviceAccount.project_id}.firebaseio.com`,
   });
 
-  console.log('Firebase Admin SDK initialized successfully.');
+  console.log('✅ Firebase Admin SDK initialized successfully.');
 
 } catch (error) {
   console.error(
-    "Error initializing Firebase Admin SDK. Did you create 'firebase-service-account.json' in the root of your project?"
+    "❌ Error initializing Firebase Admin SDK. Please check the following:"
   );
-  console.error(error);
+  console.error("1. Have you created 'firebase-service-account.json' and placed it in the root of your project?");
+  console.error("2. Is the JSON file correctly formatted?");
+  console.error("Detailed Error:", error);
   process.exit(1);
 }
 
@@ -67,12 +72,12 @@ async function importStudents() {
   const records: StudentCSVRecord[] = [];
 
   if (!fs.existsSync(CSV_FILE_PATH)) {
-    console.error(`Error: CSV file not found at ${CSV_FILE_PATH}`);
+    console.error(`❌ Error: CSV file not found at ${CSV_FILE_PATH}`);
     console.error("Please make sure your 'students.csv' file is inside the 'scripts' folder.");
     return;
   }
 
-  console.log(`Reading CSV file from: ${CSV_FILE_PATH}`);
+  console.log(`🔵 Reading CSV file from: ${CSV_FILE_PATH}`);
 
   fs.createReadStream(CSV_FILE_PATH)
     .pipe(csv())
@@ -83,10 +88,10 @@ async function importStudents() {
       }
     })
     .on('end', async () => {
-      console.log(`CSV file successfully processed. Found ${records.length} valid records.`);
+      console.log(`✅ CSV file successfully processed. Found ${records.length} valid records to import.`);
       
       if (records.length === 0) {
-        console.log("No records to import. Exiting.");
+        console.log("🔵 No records to import. Exiting.");
         return;
       }
 
@@ -94,8 +99,11 @@ async function importStudents() {
       for (let i = 0; i < records.length; i += BATCH_SIZE) {
         const batch = db.batch();
         const chunk = records.slice(i, i + BATCH_SIZE);
+        const batchNumber = Math.floor(i / BATCH_SIZE) + 1;
+        const totalBatches = Math.ceil(records.length / BATCH_SIZE);
 
-        console.log(`Processing batch ${Math.floor(i / BATCH_SIZE) + 1} of ${Math.ceil(records.length / BATCH_SIZE)}...`);
+        console.log(`- - - - - - - - - - - - - - - - - - - -`);
+        console.log(`🔵 Processing Batch ${batchNumber} of ${totalBatches}...`);
 
         chunk.forEach(record => {
           const docRef = studentsCollection.doc(); // Auto-generate document ID
@@ -125,18 +133,18 @@ async function importStudents() {
         try {
           await batch.commit();
           totalImported += chunk.length;
-          console.log(`Successfully imported ${chunk.length} records in this batch.`);
+          console.log(`✅ Successfully imported ${chunk.length} records in this batch.`);
         } catch (error) {
-          console.error('Error committing batch:', error);
+          console.error(`❌ Error committing Batch ${batchNumber}:`, error);
         }
       }
       
-      console.log(`--------------------------------------------------`);
-      console.log(`Import complete. Total records imported: ${totalImported}`);
-      console.log(`--------------------------------------------------`);
+      console.log(`- - - - - - - - - - - - - - - - - - - -`);
+      console.log(`🔵 Import complete. Total records imported: ${totalImported}`);
+      console.log(`- - - - - - - - - - - - - - - - - - - -`);
     });
 }
 
 importStudents().catch(error => {
-  console.error("An unexpected error occurred during the import process:", error);
+  console.error("❌ An unexpected error occurred during the import process:", error);
 });
