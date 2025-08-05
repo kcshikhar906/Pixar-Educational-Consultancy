@@ -33,6 +33,7 @@ export default function AdminHeader({ onAddNew }: AdminHeaderProps) {
   const navItems = [
     { href: '/admin', label: 'Analytics', icon: LayoutDashboard },
     { href: '/admin/students', label: 'Student Management', icon: List },
+    { href: '/admin/full-data', label: 'Full Data View', icon: Database },
   ];
 
   return (
