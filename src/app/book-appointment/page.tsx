@@ -185,7 +185,7 @@ const approximateConversions: Record<string, Record<string, (score: number) => s
      toefl: (s) => { // Duolingo to TOEFL
       if (s >= 155) return "118-120"; if (s >= 150) return "115-117"; if (s >= 140) return "110-114";
       if (s >= 130) return "102-109"; if (s >= 120) return "94-101"; if (s >= 110) return "79-93";
-      if (s >= 100) return "60-78"; if (s >= 90) return "46-59"; return "<46";
+      if (s >= 60) return "60-78"; if (s >= 90) return "46-59"; return "<46";
     },
     pte: (s) => { // Duolingo to PTE
       if (s >= 155) return "89-90"; if (s >= 150) return "83-85"; if (s >= 140) return "76-82";
@@ -221,7 +221,7 @@ export default function EnglishTestGuidePage() {
     if (fromTest && toTest === fromTest) {
       setToTest('');
     }
-  }, [fromTest]);
+  }, [fromTest, toTest]);
 
 
   const handleConvertScore = () => {
@@ -479,4 +479,3 @@ export default function EnglishTestGuidePage() {
     </div>
   );
 }
-

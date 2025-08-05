@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import SectionTitle from '@/components/ui/section-title';
 import { Mail, MapPin, Phone, MessageSquare, Send, Loader2, BookUser, StickyNote, Target, Languages, GraduationCap, CalendarIcon as CalendarIconLucide, Users, BookCopy, NotebookPen, ExternalLink } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { cn } from '@/lib/utils';
 import { allEducationLevels, englishTestOptions, studyDestinationOptions, testPreparationOptions } from '@/lib/data.tsx';
@@ -157,6 +157,11 @@ export default function ContactPage() {
   const { toast } = useToast();
   const [isGeneralSubmitting, setIsGeneralSubmitting] = useState(false);
   const [isPrepClassSubmitting, setIsPrepClassSubmitting] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const [titleSectionRef, isTitleSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true });
   const [formTabsRef, isFormTabsVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
@@ -305,7 +310,9 @@ export default function ContactPage() {
                                 </FormControl>
                               </PopoverTrigger>
                               <PopoverContent className="w-auto p-0" align="start">
+                                {isClient && (
                                 <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1 )) } initialFocus />
+                                )}
                               </PopoverContent>
                             </Popover>
                             <FormMessage />
