@@ -1,8 +1,7 @@
-
 'use client';
 
 import * as React from "react";
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
@@ -48,8 +47,8 @@ const studentSchema = z.object({
   assignedTo: z.string().min(2, 'Assigned to must be at least 2 characters'),
   emergencyContact: z.string().optional(),
   collegeUniversityName: z.string().optional(),
-  serviceFeePaidDate: z.date().optional(),
-  visaStatusUpdateDate: z.date().optional(),
+  serviceFeePaidDate: z.date().optional().nullable(),
+  visaStatusUpdateDate: z.date().optional().nullable(),
 });
 
 type StudentFormValues = z.infer<typeof studentSchema>;
@@ -82,7 +81,7 @@ export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: Stude
     fullName: '', email: '', mobileNumber: '', lastCompletedEducation: '',
     englishProficiencyTest: '', preferredStudyDestination: '', additionalNotes: '',
     visaStatus: 'Not Applied', serviceFeeStatus: 'Unpaid', assignedTo: 'Unassigned',
-    emergencyContact: '', collegeUniversityName: '',
+    emergencyContact: '', collegeUniversityName: '', serviceFeePaidDate: null, visaStatusUpdateDate: null
   };
 
   const form = useForm<StudentFormValues>({
@@ -98,8 +97,8 @@ export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: Stude
       form.reset({
         ...defaultValues,
         ...student,
-        serviceFeePaidDate: student.serviceFeePaidDate ? student.serviceFeePaidDate.toDate() : undefined,
-        visaStatusUpdateDate: student.visaStatusUpdateDate ? student.visaStatusUpdateDate.toDate() : undefined,
+        serviceFeePaidDate: student.serviceFeePaidDate ? student.serviceFeePaidDate.toDate() : null,
+        visaStatusUpdateDate: student.visaStatusUpdateDate ? student.visaStatusUpdateDate.toDate() : null,
       });
       setIsEditing(isNewStudent); // Automatically enter edit mode for new students
     }
@@ -129,7 +128,7 @@ export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: Stude
         toast({ title: 'Student Added', description: 'New student has been successfully added.' });
       }
       onFormSubmitSuccess();
-      setIsEditing(false); // Exit edit mode on success
+      setIsEditing(false);
     } catch (error) {
       console.error('Error saving student:', error);
       toast({ title: 'Error', description: 'Failed to save student data.', variant: 'destructive' });
@@ -153,12 +152,41 @@ export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: Stude
     }
   };
   
-  const getVisaStatusBadgeVariant = (status: Student['visaStatus']) => {
+  const getVisaStatusBadgeVariant = (status?: Student['visaStatus']) => {
     switch (status) {
       case 'Approved': return 'default'; case 'Pending': return 'secondary';
       case 'Rejected': return 'destructive'; default: return 'outline';
     }
   };
+
+  const formContent = (
+    <CardContent className="space-y-4 flex-grow overflow-y-auto p-4 sm:p-6 pr-2 sm:pr-4">
+       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+           <FormField control={form.control} name="fullName" render={({ field }) => ( <FormItem> <FormLabel>Full Name</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
+           <FormField control={form.control} name="email" render={({ field }) => ( <FormItem> <FormLabel>Email</FormLabel> <FormControl><Input type="email" {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
+       </div>
+       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <FormField control={form.control} name="mobileNumber" render={({ field }) => ( <FormItem> <FormLabel>Mobile Number</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
+          <FormField control={form.control} name="emergencyContact" render={({ field }) => ( <FormItem> <FormLabel>Emergency Contact</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
+       </div>
+       <FormField control={form.control} name="collegeUniversityName" render={({ field }) => ( <FormItem> <FormLabel>College/University Name</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
+       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <FormField control={form.control} name="lastCompletedEducation" render={({ field }) => ( <FormItem><FormLabel>Last Education</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select level" /></SelectTrigger></FormControl><SelectContent>{allEducationLevels.map(l => (<SelectItem key={l.value} value={l.value}>{l.name}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem> )}/>
+          <FormField control={form.control} name="englishProficiencyTest" render={({ field }) => ( <FormItem><FormLabel>English Test</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger></FormControl><SelectContent>{englishTestOptions.map(o => (<SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem> )}/>
+       </div>
+       <FormField control={form.control} name="preferredStudyDestination" render={({ field }) => ( <FormItem><FormLabel>Destination</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select country" /></SelectTrigger></FormControl><SelectContent>{studyDestinationOptions.map(o => (<SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem> )}/>
+       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t pt-4">
+          <FormField control={form.control} name="visaStatus" render={({ field }) => ( <FormItem><FormLabel>Visa Status</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger></FormControl><SelectContent>{['Not Applied', 'Pending', 'Approved', 'Rejected'].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem> )}/>
+          {visaStatus && visaStatus !== 'Not Applied' && <FormField control={form.control} name="visaStatusUpdateDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Visa Status Date</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? format(field.value, "PPP") : <span>Pick date</span>}<CalendarIcon className="ml-auto h-4 w-4" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0"><Calendar mode="single" selected={field.value || undefined} onSelect={field.onChange} /></PopoverContent></Popover><FormMessage /></FormItem>)}/>}
+       </div>
+       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+           <FormField control={form.control} name="serviceFeeStatus" render={({ field }) => ( <FormItem><FormLabel>Service Fee</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger></FormControl><SelectContent>{['Unpaid', 'Partial', 'Paid'].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem> )}/>
+           {serviceFeeStatus === 'Paid' && <FormField control={form.control} name="serviceFeePaidDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Fee Paid Date</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? format(field.value, "PPP") : <span>Pick date</span>}<CalendarIcon className="ml-auto h-4 w-4" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0"><Calendar mode="single" selected={field.value || undefined} onSelect={field.onChange} /></PopoverContent></Popover><FormMessage /></FormItem>)}/>}
+       </div>
+       <FormField control={form.control} name="assignedTo" render={({ field }) => ( <FormItem><FormLabel>Assigned To</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select counselor" /></SelectTrigger></FormControl><SelectContent>{counselorNames.map(name => (<SelectItem key={name} value={name}>{name}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem>)}/>
+       <FormField control={form.control} name="additionalNotes" render={({ field }) => ( <FormItem><FormLabel>Additional Notes</FormLabel><FormControl><Textarea rows={3} {...field} /></FormControl><FormMessage /></FormItem> )}/>
+    </CardContent>
+  );
 
   if (isEditing) {
      return (
@@ -166,42 +194,24 @@ export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: Stude
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
               <CardHeader>
-                <CardTitle>{isNewStudent ? 'Add New Student' : `Edit: ${student.fullName}`}</CardTitle>
-                <CardDescription>
-                  {isNewStudent ? 'Fill in the details for a new student record.' : 'Update the details for this student.'}
-                </CardDescription>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle>{isNewStudent ? 'Add New Student' : `Edit: ${student.fullName}`}</CardTitle>
+                    <CardDescription>
+                      {isNewStudent ? 'Fill in the details for a new student record.' : 'Update the details for this student.'}
+                    </CardDescription>
+                  </div>
+                   <Button type="button" variant="ghost" size="icon" onClick={() => isNewStudent ? onFormClose() : setIsEditing(false)} disabled={isLoading}>
+                      <X className="h-4 w-4" />
+                   </Button>
+                </div>
               </CardHeader>
-              <CardContent className="space-y-4 flex-grow overflow-y-auto pr-4">
-                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                     <FormField control={form.control} name="fullName" render={({ field }) => ( <FormItem> <FormLabel>Full Name</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
-                     <FormField control={form.control} name="email" render={({ field }) => ( <FormItem> <FormLabel>Email</FormLabel> <FormControl><Input type="email" {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
-                 </div>
-                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FormField control={form.control} name="mobileNumber" render={({ field }) => ( <FormItem> <FormLabel>Mobile Number</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
-                    <FormField control={form.control} name="emergencyContact" render={({ field }) => ( <FormItem> <FormLabel>Emergency Contact</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
-                 </div>
-                 <FormField control={form.control} name="collegeUniversityName" render={({ field }) => ( <FormItem> <FormLabel>College/University Name</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
-                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FormField control={form.control} name="lastCompletedEducation" render={({ field }) => ( <FormItem><FormLabel>Last Education</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select level" /></SelectTrigger></FormControl><SelectContent>{allEducationLevels.map(l => (<SelectItem key={l.value} value={l.value}>{l.name}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem> )}/>
-                    <FormField control={form.control} name="englishProficiencyTest" render={({ field }) => ( <FormItem><FormLabel>English Test</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger></FormControl><SelectContent>{englishTestOptions.map(o => (<SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem> )}/>
-                 </div>
-                 <FormField control={form.control} name="preferredStudyDestination" render={({ field }) => ( <FormItem><FormLabel>Destination</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select country" /></SelectTrigger></FormControl><SelectContent>{studyDestinationOptions.map(o => (<SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem> )}/>
-                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t pt-4">
-                    <FormField control={form.control} name="visaStatus" render={({ field }) => ( <FormItem><FormLabel>Visa Status</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger></FormControl><SelectContent>{['Not Applied', 'Pending', 'Approved', 'Rejected'].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem> )}/>
-                    {visaStatus && visaStatus !== 'Not Applied' && <FormField control={form.control} name="visaStatusUpdateDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Visa Status Date</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? format(field.value, "PPP") : <span>Pick date</span>}<CalendarIcon className="ml-auto h-4 w-4" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0"><Calendar mode="single" selected={field.value} onSelect={field.onChange} /></PopoverContent></Popover><FormMessage /></FormItem>)}/>}
-                 </div>
-                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                     <FormField control={form.control} name="serviceFeeStatus" render={({ field }) => ( <FormItem><FormLabel>Service Fee</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger></FormControl><SelectContent>{['Unpaid', 'Partial', 'Paid'].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem> )}/>
-                     {serviceFeeStatus === 'Paid' && <FormField control={form.control} name="serviceFeePaidDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Fee Paid Date</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? format(field.value, "PPP") : <span>Pick date</span>}<CalendarIcon className="ml-auto h-4 w-4" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0"><Calendar mode="single" selected={field.value} onSelect={field.onChange} /></PopoverContent></Popover><FormMessage /></FormItem>)}/>}
-                 </div>
-                 <FormField control={form.control} name="assignedTo" render={({ field }) => ( <FormItem><FormLabel>Assigned To</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select counselor" /></SelectTrigger></FormControl><SelectContent>{counselorNames.map(name => (<SelectItem key={name} value={name}>{name}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem>)}/>
-                 <FormField control={form.control} name="additionalNotes" render={({ field }) => ( <FormItem><FormLabel>Additional Notes</FormLabel><FormControl><Textarea rows={3} {...field} /></FormControl><FormMessage /></FormItem> )}/>
-              </CardContent>
-              <CardFooter className="flex justify-between mt-auto">
+              {formContent}
+              <CardFooter className="flex justify-between mt-auto bg-background/95 sticky bottom-0 py-3">
                 <Button type="button" variant="outline" onClick={() => isNewStudent ? onFormClose() : setIsEditing(false)} disabled={isLoading}>Cancel</Button>
                 <Button type="submit" disabled={isLoading}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Save Changes
+                  {isNewStudent ? 'Add Student' : 'Save Changes'}
                 </Button>
               </CardFooter>
             </form>
@@ -213,10 +223,10 @@ export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: Stude
   return (
     <Card className="h-full flex flex-col">
         <CardHeader>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-start">
                 <div>
-                    <CardTitle className="flex items-center"><BookUser className="mr-2 h-6 w-6"/>{student?.fullName}</CardTitle>
-                    <CardDescription>Student Details</CardDescription>
+                    <CardTitle className="flex items-center"><BookUser className="mr-2 h-6 w-6 text-primary"/>{student?.fullName}</CardTitle>
+                    <CardDescription>Student Details Overview</CardDescription>
                 </div>
                  <div className="flex items-center gap-2">
                     <Button variant="outline" size="icon" onClick={() => setIsEditing(true)}><FilePenLine className="h-4 w-4" /><span className="sr-only">Edit</span></Button>
@@ -225,8 +235,7 @@ export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: Stude
                 </div>
             </div>
         </CardHeader>
-        <CardContent className="space-y-6 flex-grow overflow-y-auto pr-4">
-             {/* Personal Details */}
+        <CardContent className="space-y-6 flex-grow overflow-y-auto p-4 sm:p-6 pr-2 sm:pr-4">
              <div className="space-y-4">
                 <h3 className="font-semibold text-lg text-primary">Personal & Contact Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -237,7 +246,6 @@ export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: Stude
                 </div>
               </div>
               <Separator />
-              {/* Academic & Study Preferences */}
               <div className="space-y-4">
                  <h3 className="font-semibold text-lg text-primary">Academic & Study Preferences</h3>
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -245,10 +253,9 @@ export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: Stude
                     <DetailItem icon={Languages} label="English Proficiency Test" value={student?.englishProficiencyTest} />
                     <DetailItem icon={Target} label="Preferred Study Destination" value={student?.preferredStudyDestination} />
                  </div>
-                 <DetailItem icon={StickyNote} label="Additional Notes" value={student?.additionalNotes} valueClassName="whitespace-pre-wrap" />
+                 <DetailItem icon={StickyNote} label="Additional Notes" value={student?.additionalNotes} valueClassName="whitespace-pre-wrap text-sm" />
               </div>
                <Separator />
-              {/* Internal Records */}
                <div className="space-y-4">
                  <h3 className="font-semibold text-lg text-primary">Internal Records</h3>
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
