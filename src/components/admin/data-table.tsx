@@ -72,10 +72,7 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
   }, []);
   
   const filteredAndSortedStudents = useMemo(() => {
-    let sortableStudents = [...students];
-
-    // Filtering logic
-    sortableStudents = sortableStudents.filter((student) => {
+    let filteredStudents = students.filter((student) => {
       const name = student.fullName || '';
       const email = student.email || '';
       const matchesText =
@@ -88,7 +85,13 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
       return matchesText && matchesAssignedTo;
     });
 
-    return sortableStudents;
+    // Ensure sorting by timestamp is always applied after filtering
+    return filteredStudents.sort((a, b) => {
+        const timestampA = a.timestamp?.toDate() || new Date(0);
+        const timestampB = b.timestamp?.toDate() || new Date(0);
+        return timestampB.getTime() - timestampA.getTime();
+    });
+
   }, [students, filter, assignedToFilter]);
 
   const getVisaStatusBadgeVariant = (status: Student['visaStatus']) => {
