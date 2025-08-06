@@ -1,3 +1,4 @@
+
 // src/lib/dashboard-metrics.ts
 import { doc, runTransaction, collection, getDocs } from 'firebase/firestore';
 import { db } from './firebase';
@@ -12,8 +13,7 @@ export interface DashboardMetrics {
   studentsByDestination: Record<string, number>;
 }
 
-// This function is for a full recalculation. It's heavy and should be used sparingly,
-// perhaps via a manual trigger in a future admin tool.
+// This function is for a full recalculation.
 export async function recalculateAllMetrics(): Promise<DashboardMetrics> {
   const studentsSnapshot = await getDocs(collection(db, 'students'));
   const allStudents = studentsSnapshot.docs.map(doc => doc.data() as Student);
@@ -45,10 +45,11 @@ export async function recalculateAllMetrics(): Promise<DashboardMetrics> {
   }
 
   const metricsRef = doc(db, 'metrics', 'dashboard');
+  // This write is happening outside the original transaction of the caller, which is fine for a full recalculation.
   await runTransaction(db, async (transaction) => {
     transaction.set(metricsRef, newMetrics);
   });
-
+  
   return newMetrics;
 }
 
@@ -57,19 +58,21 @@ export async function recalculateAllMetrics(): Promise<DashboardMetrics> {
 export async function updateDashboardMetricsOnCreate(newData: Partial<Student>) {
   const metricsRef = doc(db, 'metrics', 'dashboard');
   try {
-    await runTransaction(db, async (transaction) => {
-      const metricsDoc = await transaction.get(metricsRef);
-      let newMetrics: DashboardMetrics;
+    const metricsDoc = await getDoc(metricsRef);
 
-      if (!metricsDoc.exists()) {
-        // If it doesn't exist, we must do a full recalculation
-        newMetrics = await recalculateAllMetrics();
-        // The recalculate function already sets the doc, so we just log and return.
-        console.log("Metrics doc did not exist. Recalculated all metrics.");
-        return;
-      } else {
-         newMetrics = metricsDoc.data() as DashboardMetrics;
-      }
+    if (!metricsDoc.exists()) {
+      // If the doc doesn't exist, trigger a full recalculation.
+      // This is now done outside the transaction to avoid issues.
+      await recalculateAllMetrics();
+      console.log("Metrics doc did not exist. Recalculated all metrics.");
+      return;
+    }
+
+    // If it exists, run a normal transaction to update it.
+    await runTransaction(db, async (transaction) => {
+      const freshMetricsDoc = await transaction.get(metricsRef);
+      if (!freshMetricsDoc.exists()) return; // Should not happen given the check above, but for safety.
+      const newMetrics = freshMetricsDoc.data() as DashboardMetrics;
 
       // Increment total students
       newMetrics.totalStudents = (newMetrics.totalStudents || 0) + 1;
@@ -102,13 +105,18 @@ export async function updateDashboardMetricsOnCreate(newData: Partial<Student>) 
 export async function updateDashboardMetricsOnUpdate(oldData: Student, newData: Partial<Student>) {
   const metricsRef = doc(db, 'metrics', 'dashboard');
   try {
-    await runTransaction(db, async (transaction) => {
-      const metricsDoc = await transaction.get(metricsRef);
+     const metricsDoc = await getDoc(metricsRef);
       if (!metricsDoc.exists()) {
-        await recalculateAllMetrics(); // Recalculate if metrics are missing
+        await recalculateAllMetrics();
+        console.log("Metrics doc did not exist during update. Recalculated all metrics.");
         return;
       }
-      const newMetrics = metricsDoc.data() as DashboardMetrics;
+    
+    await runTransaction(db, async (transaction) => {
+      const freshMetricsDoc = await transaction.get(metricsRef);
+      if (!freshMetricsDoc.exists()) return;
+
+      const newMetrics = freshMetricsDoc.data() as DashboardMetrics;
 
       // Update visa status if it changed
       if (oldData.visaStatus !== newData.visaStatus) {
@@ -149,13 +157,16 @@ export async function updateDashboardMetricsOnUpdate(oldData: Student, newData: 
 export async function updateDashboardMetricsOnDelete(deletedData: Student) {
   const metricsRef = doc(db, 'metrics', 'dashboard');
   try {
-    await runTransaction(db, async (transaction) => {
-      const metricsDoc = await transaction.get(metricsRef);
-      if (!metricsDoc.exists()) {
-        await recalculateAllMetrics(); // Recalculate if metrics are missing
+    const metricsDoc = await getDoc(metricsRef);
+    if (!metricsDoc.exists()) {
+        await recalculateAllMetrics();
         return;
-      }
-      const newMetrics = metricsDoc.data() as DashboardMetrics;
+    }
+    
+    await runTransaction(db, async (transaction) => {
+      const freshMetricsDoc = await transaction.get(metricsRef);
+      if (!freshMetricsDoc.exists()) return;
+      const newMetrics = freshMetricsDoc.data() as DashboardMetrics;
       
       // Decrement total students
       newMetrics.totalStudents = (newMetrics.totalStudents || 1) - 1;
