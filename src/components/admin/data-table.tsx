@@ -19,13 +19,12 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface DataTableProps {
   onRowSelect: (student: Student) => void;
   selectedStudentId?: string | null;
 }
-
-const INITIAL_DISPLAY_LIMIT = 15;
 
 export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
   const [students, setStudents] = useState<Student[]>([]);
@@ -34,6 +33,8 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
   const [assignedToFilter, setAssignedToFilter] = useState('all');
 
   useEffect(() => {
+    // This real-time listener is restored to ensure the student list is always up-to-date.
+    // It's a trade-off for functionality until a more advanced pagination/caching system is built.
     const q = query(collection(db, 'students'), orderBy('timestamp', 'desc'));
     const unsubscribe = onSnapshot(
       q,
@@ -54,9 +55,26 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
     return () => unsubscribe();
   }, []);
 
-  const sortedStudents = useMemo(() => {
-    return [...students].sort((a, b) => {
-      // Prioritize "Unassigned"
+  const filteredAndSortedStudents = useMemo(() => {
+    // Start with a copy of the students array
+    let filteredStudents = [...students];
+
+    // Apply search filter
+    if (searchTerm) {
+      filteredStudents = filteredStudents.filter(student =>
+        student.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.email.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Apply counselor filter
+    if (assignedToFilter !== 'all') {
+      filteredStudents = filteredStudents.filter(student => student.assignedTo === assignedToFilter);
+    }
+    
+    // Sort the final list
+    return filteredStudents.sort((a, b) => {
+      // Prioritize "Unassigned" students first
       if (a.assignedTo === 'Unassigned' && b.assignedTo !== 'Unassigned') return -1;
       if (a.assignedTo !== 'Unassigned' && b.assignedTo === 'Unassigned') return 1;
       // Then sort by timestamp descending (newest first)
@@ -64,27 +82,8 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
       const dateB = b.timestamp?.toDate() ?? new Date(0);
       return dateB.getTime() - dateA.getTime();
     });
-  }, [students]);
 
-  const displayedStudents = useMemo(() => {
-    const filtered = sortedStudents.filter(student => {
-      const matchesSearch = searchTerm === '' ||
-                            student.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            student.email.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesFilter = assignedToFilter === 'all' || student.assignedTo === assignedToFilter;
-      return matchesSearch && matchesFilter;
-    });
-
-    // If searching or filtering, show all results. Otherwise, show the initial limited list.
-    if (searchTerm || assignedToFilter !== 'all') {
-      return filtered;
-    }
-    
-    // Default view: Prioritize unassigned and limit to 15
-    const unassigned = sortedStudents.filter(s => s.assignedTo === 'Unassigned');
-    return unassigned.slice(0, INITIAL_DISPLAY_LIMIT);
-
-  }, [sortedStudents, searchTerm, assignedToFilter]);
+  }, [students, searchTerm, assignedToFilter]);
   
   const getFeeStatusBadgeVariant = (status: Student['serviceFeeStatus']) => {
     switch (status) {
@@ -105,13 +104,13 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
                 className="w-full"
             />
             <div className="flex items-center space-x-2">
-                <label className="text-sm font-medium">Assigned:</label>
+                <label className="text-sm font-medium shrink-0">Assigned To:</label>
                 <Select value={assignedToFilter} onValueChange={setAssignedToFilter}>
-                    <SelectTrigger className="w-[180px]">
+                    <SelectTrigger className="w-full">
                         <SelectValue placeholder="Filter by counselor" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="all">All</SelectItem>
+                        <SelectItem value="all">All Counselors</SelectItem>
                         {counselorNames.map(name => (
                             <SelectItem key={name} value={name}>{name}</SelectItem>
                         ))}
@@ -123,13 +122,16 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
         <Table>
           <TableBody>
             {loading ? (
-              <TableRow>
-                <TableCell className="h-24 text-center">
-                  Loading data...
-                </TableCell>
-              </TableRow>
-            ) : displayedStudents.length > 0 ? (
-              displayedStudents.map((student) => (
+              [...Array(10)].map((_, i) => (
+                <TableRow key={i}>
+                  <TableCell className="p-3">
+                    <Skeleton className="h-5 w-3/4 mb-1" />
+                    <Skeleton className="h-4 w-1/2" />
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : filteredAndSortedStudents.length > 0 ? (
+              filteredAndSortedStudents.map((student) => (
                 <TableRow 
                   key={student.id} 
                   onClick={() => onRowSelect(student)}

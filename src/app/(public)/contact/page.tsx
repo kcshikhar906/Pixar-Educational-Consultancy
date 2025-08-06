@@ -11,12 +11,12 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import SectionTitle from '@/components/ui/section-title';
-import { Mail, MapPin, Phone, MessageSquare, Send, Loader2, BookUser, StickyNote, Target, Languages, GraduationCap, CalendarIcon as CalendarIconLucide, Users, BookCopy, NotebookPen, ExternalLink } from 'lucide-react';
+import { Mail, MapPin, Phone, Send, Loader2, BookUser, StickyNote, Target, Languages, GraduationCap, CalendarIcon as CalendarIconLucide, Users, BookCopy, NotebookPen, ExternalLink } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from 'react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { cn } from '@/lib/utils';
-import { allEducationLevels, englishTestOptions, studyDestinationOptions, testPreparationOptions } from '@/lib/data.tsx';
+import { allEducationLevels, englishTestOptions, studyDestinationOptions, testPreparationOptions } from '@/lib/data';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
@@ -24,7 +24,6 @@ import { format } from 'date-fns';
 import { Separator } from '@/components/ui/separator';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { updateDashboardMetricsOnCreate } from '@/lib/dashboard-metrics';
 
 
 // Schema for General Contact Form
@@ -57,11 +56,14 @@ async function submitToStudentsCollection(data: GeneralContactFormValues): Promi
       serviceFeeStatus: 'Unpaid' as const,
       assignedTo: 'Unassigned',
       timestamp: serverTimestamp(),
+      // Explicitly null for date fields not in this form
+      serviceFeePaidDate: null,
+      visaStatusUpdateDate: null,
+      emergencyContact: '',
+      collegeUniversityName: '',
     };
 
     await addDoc(collection(db, 'students'), studentData);
-    // After successfully adding the student, update the dashboard metrics.
-    await updateDashboardMetricsOnCreate(studentData);
     
     return { success: true, message: "Your message has been sent successfully! We'll get back to you soon." };
   } catch (error) {
