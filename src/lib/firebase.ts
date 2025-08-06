@@ -1,3 +1,4 @@
+
 // This file is being created to centralize Firebase initialization and exports.
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
@@ -18,7 +19,7 @@ const firebaseConfig = {
 // Initialize Firebase App (Singleton Pattern)
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
-// Connect to the specific 'pixareducation' database
-const db = getFirestore(app, 'pixareducation');
+// Connect to the default firestore database
+const db = getFirestore(app);
 
 export { app, auth, db };
