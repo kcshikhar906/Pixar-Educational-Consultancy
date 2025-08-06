@@ -1,5 +1,6 @@
 
 import admin from 'firebase-admin';
+import { getFirestore } from 'firebase-admin/firestore';
 
 // Your web app's Firebase configuration is used for client-side initialization.
 // For the backend (server actions), we use the Firebase Admin SDK.
@@ -14,10 +15,9 @@ const serviceAccount = {
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseId: 'pixareducation',
   });
 }
 
-const db = admin.firestore();
+const db = getFirestore(admin.app(), 'pixareducation');
 
 export { admin, db };
