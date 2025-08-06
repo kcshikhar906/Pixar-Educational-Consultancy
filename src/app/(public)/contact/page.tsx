@@ -220,20 +220,20 @@ export default function ContactPage() {
       <div ref={titleSectionRef} className={cn("transition-all duration-700 ease-out", isTitleSectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")}>
         <SectionTitle
           title="Get in Touch"
-          subtitle="We're here to help! Fill out our counselling form or book a preparation class."
+          subtitle="We're here to help! Reach out for face-to-face or online counselling to start your journey."
         />
       </div>
 
       <div className="grid md:grid-cols-2 gap-12 items-start">
         <div ref={formTabsRef} className={cn("transition-all duration-700 ease-out", isFormTabsVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")}>
-          <Tabs defaultValue="general-inquiry" className="w-full">
+          <Tabs defaultValue="counselling-form" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="general-inquiry"><BookUser className="mr-2 h-4 w-4"/>Counselling Form</TabsTrigger>
+              <TabsTrigger value="counselling-form"><BookUser className="mr-2 h-4 w-4"/>Counselling Form</TabsTrigger>
               <TabsTrigger value="prep-class-booking"><BookCopy className="mr-2 h-4 w-4"/>Book Prep Class</TabsTrigger>
             </TabsList>
             
             {/* General Inquiry Tab Content */}
-            <TabsContent value="general-inquiry">
+            <TabsContent value="counselling-form">
               <Card className="shadow-xl bg-card">
                 <CardHeader>
                   <CardTitle className="font-headline text-primary flex items-center"><BookUser className="mr-2 h-6 w-6" /> Student Counselling Form</CardTitle>
