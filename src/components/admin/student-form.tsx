@@ -33,7 +33,6 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Badge } from "../ui/badge";
 import { Separator } from "../ui/separator";
-import { updateDashboardMetricsOnCreate, updateDashboardMetricsOnDelete, updateDashboardMetricsOnUpdate } from '@/lib/dashboard-metrics';
 
 
 const studentSchema = z.object({
@@ -123,15 +122,11 @@ export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: Stude
 
       if (!isNewStudent) {
         const studentRef = doc(db, 'students', student.id);
-        const oldDataSnap = await getDoc(studentRef);
-        const oldData = oldDataSnap.data() as Student;
         await updateDoc(studentRef, submissionData);
-        await updateDashboardMetricsOnUpdate(oldData, submissionData);
-        toast({ title: 'Student Updated', description: 'Student data and dashboard metrics have been successfully updated.' });
+        toast({ title: 'Student Updated', description: 'Student data has been successfully updated.' });
       } else {
         await addDoc(collection(db, 'students'), { ...submissionData, timestamp: serverTimestamp() });
-        await updateDashboardMetricsOnCreate(submissionData);
-        toast({ title: 'Student Added', description: 'New student has been successfully added and dashboard metrics updated.' });
+        toast({ title: 'Student Added', description: 'New student has been successfully added.' });
       }
       onFormSubmitSuccess();
       setIsEditing(false);
@@ -148,10 +143,8 @@ export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: Stude
     setIsLoading(true);
     try {
       const studentRef = doc(db, 'students', student.id);
-      const studentData = (await getDoc(studentRef)).data() as Student;
       await deleteDoc(studentRef);
-      await updateDashboardMetricsOnDelete(studentData);
-      toast({ title: 'Student Deleted', description: `${student.fullName} has been removed and dashboard metrics updated.` });
+      toast({ title: 'Student Deleted', description: `${student.fullName} has been removed.` });
       onFormSubmitSuccess();
     } catch (error) {
       toast({ title: 'Error', description: 'Failed to delete student.', variant: 'destructive' });
