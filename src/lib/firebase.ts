@@ -13,13 +13,14 @@ const firebaseConfig = {
   storageBucket: "pixar-educational-consultancy.firebasestorage.app",
   messagingSenderId: "286970299360",
   appId: "1:286970299360:web:3d0f098ee47b6dd282a185",
-  measurementId: "G-8W0E04NQFZ"
+  measurementId: "G-8W0E04NQFZ",
+  databaseId: "pixareducation", // Explicitly specify the database ID
 };
 
 // Initialize Firebase App (Singleton Pattern)
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
-// Connect to the default firestore database
-const db = getFirestore(app, 'pixareducation');
+// Connect to the specific firestore database by passing the config
+const db = getFirestore(app, firebaseConfig.databaseId);
 
 export { app, auth, db };
