@@ -1,6 +1,6 @@
 
 // src/lib/dashboard-metrics.ts
-import { doc, runTransaction, collection, getDocs } from 'firebase/firestore';
+import { doc, runTransaction, collection, getDocs, getDoc, setDoc, updateDoc, increment } from 'firebase/firestore';
 import { db } from './firebase';
 import { counselorNames, studyDestinationOptions } from './data';
 import type { Student } from './data';
@@ -36,152 +36,143 @@ export async function recalculateAllMetrics(): Promise<DashboardMetrics> {
     const assignedTo = student.assignedTo || 'Unassigned';
     const destination = student.preferredStudyDestination || 'Unknown';
 
-    newMetrics.visaStatusCounts[visaStatus] = (newMetrics.visaStatusCounts[visaStatus] || 0) + 1;
-    newMetrics.feeStatusCounts[feeStatus] = (newMetrics.feeStatusCounts[feeStatus] || 0) + 1;
-    newMetrics.studentsByCounselor[assignedTo] = (newMetrics.studentsByCounselor[assignedTo] || 0) + 1;
+    if (newMetrics.visaStatusCounts.hasOwnProperty(visaStatus)) {
+      newMetrics.visaStatusCounts[visaStatus]++;
+    }
+    if (newMetrics.feeStatusCounts.hasOwnProperty(feeStatus)) {
+      newMetrics.feeStatusCounts[feeStatus]++;
+    }
+     if (newMetrics.studentsByCounselor.hasOwnProperty(assignedTo)) {
+      newMetrics.studentsByCounselor[assignedTo]++;
+    }
     if (newMetrics.studentsByDestination.hasOwnProperty(destination)) {
         newMetrics.studentsByDestination[destination]++;
     }
   }
 
   const metricsRef = doc(db, 'metrics', 'dashboard');
-  // This write is happening outside the original transaction of the caller, which is fine for a full recalculation.
-  await runTransaction(db, async (transaction) => {
-    transaction.set(metricsRef, newMetrics);
-  });
+  await setDoc(metricsRef, newMetrics);
   
   return newMetrics;
 }
 
 
+async function ensureMetricsExist() {
+  const metricsRef = doc(db, 'metrics', 'dashboard');
+  const metricsSnap = await getDoc(metricsRef);
+  if (!metricsSnap.exists()) {
+    console.log("Metrics document not found. Triggering full recalculation...");
+    await recalculateAllMetrics();
+    console.log("Full recalculation complete.");
+    return true; // Indicates that a recalculation was performed
+  }
+  return false; // Indicates that the doc already existed
+}
+
+
 // Transactional update for a single student creation
 export async function updateDashboardMetricsOnCreate(newData: Partial<Student>) {
+  // First, ensure the metrics document exists, creating it if necessary.
+  const wasRecalculated = await ensureMetricsExist();
+  // If a full recalculation was just done, it already includes the new student.
+  // So we can stop here to avoid double-counting.
+  if (wasRecalculated) return;
+
   const metricsRef = doc(db, 'metrics', 'dashboard');
   try {
-    const metricsDoc = await getDoc(metricsRef);
+     const updates: {[key: string]: any} = {
+        totalStudents: increment(1)
+     };
 
-    if (!metricsDoc.exists()) {
-      // If the doc doesn't exist, trigger a full recalculation.
-      // This is now done outside the transaction to avoid issues.
-      await recalculateAllMetrics();
-      console.log("Metrics doc did not exist. Recalculated all metrics.");
-      return;
-    }
+     const visaStatus = newData.visaStatus || 'Not Applied';
+     updates[`visaStatusCounts.${visaStatus}`] = increment(1);
 
-    // If it exists, run a normal transaction to update it.
-    await runTransaction(db, async (transaction) => {
-      const freshMetricsDoc = await transaction.get(metricsRef);
-      if (!freshMetricsDoc.exists()) return; // Should not happen given the check above, but for safety.
-      const newMetrics = freshMetricsDoc.data() as DashboardMetrics;
+     const feeStatus = newData.serviceFeeStatus || 'Unpaid';
+     updates[`feeStatusCounts.${feeStatus}`] = increment(1);
 
-      // Increment total students
-      newMetrics.totalStudents = (newMetrics.totalStudents || 0) + 1;
+     const assignedTo = newData.assignedTo || 'Unassigned';
+     updates[`studentsByCounselor.${assignedTo}`] = increment(1);
+     
+     if (newData.preferredStudyDestination) {
+        updates[`studentsByDestination.${newData.preferredStudyDestination}`] = increment(1);
+     }
+     
+     await updateDoc(metricsRef, updates);
 
-      // Update visa status counts
-      const visaStatus = newData.visaStatus || 'Not Applied';
-      newMetrics.visaStatusCounts[visaStatus] = (newMetrics.visaStatusCounts[visaStatus] || 0) + 1;
-
-      // Update fee status counts
-      const feeStatus = newData.serviceFeeStatus || 'Unpaid';
-      newMetrics.feeStatusCounts[feeStatus] = (newMetrics.feeStatusCounts[feeStatus] || 0) + 1;
-
-      // Update counselor counts
-      const assignedTo = newData.assignedTo || 'Unassigned';
-      newMetrics.studentsByCounselor[assignedTo] = (newMetrics.studentsByCounselor[assignedTo] || 0) + 1;
-
-      // Update destination counts
-      if (newData.preferredStudyDestination && newMetrics.studentsByDestination.hasOwnProperty(newData.preferredStudyDestination)) {
-          newMetrics.studentsByDestination[newData.preferredStudyDestination]++;
-      }
-      
-      transaction.set(metricsRef, newMetrics);
-    });
   } catch (e) {
-    console.error("Transaction failed: ", e);
+    console.error("Failed to update metrics on create: ", e);
   }
 }
 
 // Transactional update for a single student update
 export async function updateDashboardMetricsOnUpdate(oldData: Student, newData: Partial<Student>) {
+  const wasRecalculated = await ensureMetricsExist();
+  if (wasRecalculated) return; // Full recalc already has the latest state
+
   const metricsRef = doc(db, 'metrics', 'dashboard');
   try {
-     const metricsDoc = await getDoc(metricsRef);
-      if (!metricsDoc.exists()) {
-        await recalculateAllMetrics();
-        console.log("Metrics doc did not exist during update. Recalculated all metrics.");
-        return;
-      }
-    
-    await runTransaction(db, async (transaction) => {
-      const freshMetricsDoc = await transaction.get(metricsRef);
-      if (!freshMetricsDoc.exists()) return;
+     const updates: {[key: string]: any} = {};
 
-      const newMetrics = freshMetricsDoc.data() as DashboardMetrics;
-
-      // Update visa status if it changed
       if (oldData.visaStatus !== newData.visaStatus) {
-        newMetrics.visaStatusCounts[oldData.visaStatus] = (newMetrics.visaStatusCounts[oldData.visaStatus] || 1) - 1;
-        newMetrics.visaStatusCounts[newData.visaStatus!] = (newMetrics.visaStatusCounts[newData.visaStatus!] || 0) + 1;
+        updates[`visaStatusCounts.${oldData.visaStatus}`] = increment(-1);
+        updates[`visaStatusCounts.${newData.visaStatus!}`] = increment(1);
       }
 
-      // Update fee status if it changed
       if (oldData.serviceFeeStatus !== newData.serviceFeeStatus) {
-        newMetrics.feeStatusCounts[oldData.serviceFeeStatus] = (newMetrics.feeStatusCounts[oldData.serviceFeeStatus] || 1) - 1;
-        newMetrics.feeStatusCounts[newData.serviceFeeStatus!] = (newMetrics.feeStatusCounts[newData.serviceFeeStatus!] || 0) + 1;
+        updates[`feeStatusCounts.${oldData.serviceFeeStatus}`] = increment(-1);
+        updates[`feeStatusCounts.${newData.serviceFeeStatus!}`] = increment(1);
       }
       
-      // Update counselor assignment if it changed
       if (oldData.assignedTo !== newData.assignedTo) {
-          newMetrics.studentsByCounselor[oldData.assignedTo] = (newMetrics.studentsByCounselor[oldData.assignedTo] || 1) - 1;
-          newMetrics.studentsByCounselor[newData.assignedTo!] = (newMetrics.studentsByCounselor[newData.assignedTo!] || 0) + 1;
+          updates[`studentsByCounselor.${oldData.assignedTo}`] = increment(-1);
+          updates[`studentsByCounselor.${newData.assignedTo!}`] = increment(1);
       }
 
-      // Update destination if it changed
       if (oldData.preferredStudyDestination !== newData.preferredStudyDestination) {
-          if (oldData.preferredStudyDestination && newMetrics.studentsByDestination.hasOwnProperty(oldData.preferredStudyDestination)) {
-              newMetrics.studentsByDestination[oldData.preferredStudyDestination]--;
+          if (oldData.preferredStudyDestination) {
+            updates[`studentsByDestination.${oldData.preferredStudyDestination}`] = increment(-1);
           }
-           if (newData.preferredStudyDestination && newMetrics.studentsByDestination.hasOwnProperty(newData.preferredStudyDestination)) {
-              newMetrics.studentsByDestination[newData.preferredStudyDestination]++;
+           if (newData.preferredStudyDestination) {
+             updates[`studentsByDestination.${newData.preferredStudyDestination}`] = increment(1);
           }
       }
 
-      transaction.set(metricsRef, newMetrics);
-    });
+      if (Object.keys(updates).length > 0) {
+        await updateDoc(metricsRef, updates);
+      }
+
   } catch (e) {
-    console.error("Transaction failed: ", e);
+    console.error("Failed to update metrics on update: ", e);
   }
 }
 
 // Transactional update for a single student deletion
 export async function updateDashboardMetricsOnDelete(deletedData: Student) {
+  const wasRecalculated = await ensureMetricsExist();
+  if (wasRecalculated) return; // Full recalc accounts for the deletion.
+
   const metricsRef = doc(db, 'metrics', 'dashboard');
   try {
-    const metricsDoc = await getDoc(metricsRef);
-    if (!metricsDoc.exists()) {
-        await recalculateAllMetrics();
-        return;
-    }
-    
-    await runTransaction(db, async (transaction) => {
-      const freshMetricsDoc = await transaction.get(metricsRef);
-      if (!freshMetricsDoc.exists()) return;
-      const newMetrics = freshMetricsDoc.data() as DashboardMetrics;
-      
-      // Decrement total students
-      newMetrics.totalStudents = (newMetrics.totalStudents || 1) - 1;
-      
-      // Decrement counts
-      newMetrics.visaStatusCounts[deletedData.visaStatus] = (newMetrics.visaStatusCounts[deletedData.visaStatus] || 1) - 1;
-      newMetrics.feeStatusCounts[deletedData.serviceFeeStatus] = (newMetrics.feeStatusCounts[deletedData.serviceFeeStatus] || 1) - 1;
-      newMetrics.studentsByCounselor[deletedData.assignedTo] = (newMetrics.studentsByCounselor[deletedData.assignedTo] || 1) - 1;
-      if (deletedData.preferredStudyDestination && newMetrics.studentsByDestination.hasOwnProperty(deletedData.preferredStudyDestination)) {
-          newMetrics.studentsByDestination[deletedData.preferredStudyDestination]--;
-      }
+    const updates: {[key: string]: any} = {
+        totalStudents: increment(-1)
+     };
 
-      transaction.set(metricsRef, newMetrics);
-    });
+     const visaStatus = deletedData.visaStatus || 'Not Applied';
+     updates[`visaStatusCounts.${visaStatus}`] = increment(-1);
+
+     const feeStatus = deletedData.serviceFeeStatus || 'Unpaid';
+     updates[`feeStatusCounts.${feeStatus}`] = increment(-1);
+
+     const assignedTo = deletedData.assignedTo || 'Unassigned';
+     updates[`studentsByCounselor.${assignedTo}`] = increment(-1);
+     
+     if (deletedData.preferredStudyDestination) {
+        updates[`studentsByDestination.${deletedData.preferredStudyDestination}`] = increment(-1);
+     }
+     
+    await updateDoc(metricsRef, updates);
+
   } catch (e) {
-    console.error("Transaction failed: ", e);
+    console.error("Failed to update metrics on delete: ", e);
   }
 }

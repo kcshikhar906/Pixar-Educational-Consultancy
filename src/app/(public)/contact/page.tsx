@@ -24,6 +24,7 @@ import { format } from 'date-fns';
 import { Separator } from '@/components/ui/separator';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { updateDashboardMetricsOnCreate } from '@/lib/dashboard-metrics';
 
 
 // Schema for General Contact Form
@@ -59,6 +60,9 @@ async function submitToStudentsCollection(data: GeneralContactFormValues): Promi
     };
 
     await addDoc(collection(db, 'students'), studentData);
+    // After successfully adding the student, update the dashboard metrics.
+    await updateDashboardMetricsOnCreate(studentData);
+    
     return { success: true, message: "Your message has been sent successfully! We'll get back to you soon." };
   } catch (error) {
     console.error('Error writing to Firestore students collection:', error);
