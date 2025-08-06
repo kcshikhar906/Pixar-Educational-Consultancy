@@ -1,9 +1,9 @@
 
 'use client';
 
-import { collection, onSnapshot, query, getDocs } from 'firebase/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { Student, studyDestinationOptions, counselorNames } from '@/lib/data';
+import type { DashboardMetrics } from '@/lib/dashboard-metrics';
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
@@ -25,64 +25,60 @@ const FEE_COLORS: { [key: string]: string } = {
 
 
 export default function AdminAnalyticsPage() {
-  const [students, setStudents] = useState<Student[]>([]);
+  const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchStudents = async () => {
-        setLoading(true);
-        try {
-            const q = query(collection(db, 'students'));
-            const querySnapshot = await getDocs(q);
-            const studentsData: Student[] = [];
-            querySnapshot.forEach((doc) => {
-                studentsData.push({ id: doc.id, ...doc.data() } as Student);
-            });
-            setStudents(studentsData);
-        } catch (error) {
-            console.error("Error fetching students: ", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-    
-    fetchStudents();
+    const metricsRef = doc(db, 'metrics', 'dashboard');
+    const unsubscribe = onSnapshot(metricsRef, (doc) => {
+      if (doc.exists()) {
+        setMetrics(doc.data() as DashboardMetrics);
+      } else {
+        // Handle case where metrics doc doesn't exist yet
+        console.log("Metrics document does not exist. Please create or update a student to generate it.");
+        setMetrics(null);
+      }
+      setLoading(false);
+    }, (error) => {
+      console.error("Error fetching metrics: ", error);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
-
-  const totalStudents = students.length;
-  const unassignedStudents = students.filter(s => s.assignedTo === 'Unassigned').length;
-
-  const studentsByDestination = studyDestinationOptions.map(dest => ({
-    name: dest.label,
-    count: students.filter(s => s.preferredStudyDestination === dest.value).length,
-  })).filter(item => item.count > 0);
-
-  const studentsByCounselor = counselorNames
-    .filter(name => name !== 'Unassigned')
-    .map(counselor => ({
-        name: counselor,
-        count: students.filter(s => s.assignedTo === counselor).length,
-    })).filter(item => item.count > 0);
-
-  const visaStatusCounts = students.reduce((acc, student) => {
-    const status = student.visaStatus || 'Not Applied';
-    acc[status] = (acc[status] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
-  const visaStatusData = Object.entries(visaStatusCounts).map(([name, value]) => ({ name, value, fill: STATUS_COLORS[name] || '#ccc' }));
-
-  const feeStatusCounts = students.reduce((acc, student) => {
-    const status = student.serviceFeeStatus || 'Unpaid';
-    acc[status] = (acc[status] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
   
-  const feeStatusData = Object.entries(feeStatusCounts).map(([name, value]) => ({ name, value, fill: FEE_COLORS[name] || '#ccc' }));
+  const studentsByDestination = metrics ? Object.entries(metrics.studentsByDestination || {}).map(([name, count]) => ({ name, count })).filter(item => item.count > 0) : [];
+
+  const studentsByCounselor = metrics ? Object.entries(metrics.studentsByCounselor || {}).map(([name, count]) => ({ name, count })).filter(item => item.count > 0 && item.name !== 'Unassigned') : [];
+
+  const visaStatusData = metrics ? Object.entries(metrics.visaStatusCounts || {}).map(([name, value]) => ({ name, value, fill: STATUS_COLORS[name] || '#ccc' })) : [];
+  
+  const feeStatusData = metrics ? Object.entries(metrics.feeStatusCounts || {}).map(([name, value]) => ({ name, value, fill: FEE_COLORS[name] || '#ccc' })) : [];
+
 
   if (loading) {
     return <div className="text-center py-10">Loading dashboard...</div>;
   }
+  
+  if (!metrics) {
+    return (
+        <div className="flex min-h-screen w-full flex-col bg-muted/40">
+             <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
+                <SectionTitle title="Analytics Dashboard" subtitle="An overview of your consultancy's performance and student data." />
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Metrics Not Available</CardTitle>
+                        <CardDescription>The dashboard analytics data has not been generated yet.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <p>Please add, edit, or delete a student record to trigger the initial data aggregation. This will create the necessary summary document for the dashboard.</p>
+                    </CardContent>
+                </Card>
+            </main>
+        </div>
+    );
+  }
+
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -97,7 +93,7 @@ export default function AdminAnalyticsPage() {
                     <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">{totalStudents}</div>
+                    <div className="text-2xl font-bold">{metrics.totalStudents || 0}</div>
                     <p className="text-xs text-muted-foreground">Total student records in the system</p>
                 </CardContent>
             </Card>
@@ -107,7 +103,7 @@ export default function AdminAnalyticsPage() {
                     <Clock className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">{unassignedStudents}</div>
+                    <div className="text-2xl font-bold">{metrics.studentsByCounselor?.Unassigned || 0}</div>
                     <p className="text-xs text-muted-foreground">New leads waiting for assignment</p>
                 </CardContent>
             </Card>
@@ -117,7 +113,7 @@ export default function AdminAnalyticsPage() {
                     <CheckCircle className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold text-green-600">{visaStatusCounts['Approved'] || 0}</div>
+                    <div className="text-2xl font-bold text-green-600">{metrics.visaStatusCounts?.Approved || 0}</div>
                      <p className="text-xs text-muted-foreground">Successfully approved student visas</p>
                 </CardContent>
             </Card>
@@ -127,7 +123,7 @@ export default function AdminAnalyticsPage() {
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold text-green-600">{feeStatusCounts['Paid'] || 0}</div>
+                    <div className="text-2xl font-bold text-green-600">{metrics.feeStatusCounts?.Paid || 0}</div>
                     <p className="text-xs text-muted-foreground">Students who have fully paid service fees</p>
                 </CardContent>
             </Card>

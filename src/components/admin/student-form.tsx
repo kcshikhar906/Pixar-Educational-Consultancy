@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from "react";
@@ -21,7 +22,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Student, allEducationLevels, englishTestOptions, studyDestinationOptions, counselorNames } from '@/lib/data';
-import { collection, addDoc, updateDoc, doc, serverTimestamp, Timestamp, deleteDoc } from 'firebase/firestore';
+import { collection, addDoc, updateDoc, doc, serverTimestamp, Timestamp, deleteDoc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
@@ -32,6 +33,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Badge } from "../ui/badge";
 import { Separator } from "../ui/separator";
+import { updateDashboardMetricsOnCreate, updateDashboardMetricsOnDelete, updateDashboardMetricsOnUpdate } from '@/lib/dashboard-metrics';
 
 
 const studentSchema = z.object({
@@ -121,11 +123,15 @@ export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: Stude
 
       if (!isNewStudent) {
         const studentRef = doc(db, 'students', student.id);
+        const oldDataSnap = await getDoc(studentRef);
+        const oldData = oldDataSnap.data() as Student;
         await updateDoc(studentRef, submissionData);
-        toast({ title: 'Student Updated', description: 'Student data has been successfully updated.' });
+        await updateDashboardMetricsOnUpdate(oldData, submissionData);
+        toast({ title: 'Student Updated', description: 'Student data and dashboard metrics have been successfully updated.' });
       } else {
         await addDoc(collection(db, 'students'), { ...submissionData, timestamp: serverTimestamp() });
-        toast({ title: 'Student Added', description: 'New student has been successfully added.' });
+        await updateDashboardMetricsOnCreate(submissionData);
+        toast({ title: 'Student Added', description: 'New student has been successfully added and dashboard metrics updated.' });
       }
       onFormSubmitSuccess();
       setIsEditing(false);
@@ -141,8 +147,11 @@ export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: Stude
     if (!student || isNewStudent) return;
     setIsLoading(true);
     try {
-      await deleteDoc(doc(db, 'students', student.id));
-      toast({ title: 'Student Deleted', description: `${student.fullName} has been removed.` });
+      const studentRef = doc(db, 'students', student.id);
+      const studentData = (await getDoc(studentRef)).data() as Student;
+      await deleteDoc(studentRef);
+      await updateDashboardMetricsOnDelete(studentData);
+      toast({ title: 'Student Deleted', description: `${student.fullName} has been removed and dashboard metrics updated.` });
       onFormSubmitSuccess();
     } catch (error) {
       toast({ title: 'Error', description: 'Failed to delete student.', variant: 'destructive' });
