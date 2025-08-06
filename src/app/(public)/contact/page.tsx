@@ -220,7 +220,7 @@ export default function ContactPage() {
       <div ref={titleSectionRef} className={cn("transition-all duration-700 ease-out", isTitleSectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")}>
         <SectionTitle
           title="Get in Touch"
-          subtitle="We're here to help! Reach out with your questions or book a preparation class."
+          subtitle="We're here to help! Fill out our counselling form or book a preparation class."
         />
       </div>
 
@@ -228,7 +228,7 @@ export default function ContactPage() {
         <div ref={formTabsRef} className={cn("transition-all duration-700 ease-out", isFormTabsVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")}>
           <Tabs defaultValue="general-inquiry" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="general-inquiry"><Mail className="mr-2 h-4 w-4"/>General Inquiry</TabsTrigger>
+              <TabsTrigger value="general-inquiry"><BookUser className="mr-2 h-4 w-4"/>Counselling Form</TabsTrigger>
               <TabsTrigger value="prep-class-booking"><BookCopy className="mr-2 h-4 w-4"/>Book Prep Class</TabsTrigger>
             </TabsList>
             
@@ -236,8 +236,8 @@ export default function ContactPage() {
             <TabsContent value="general-inquiry">
               <Card className="shadow-xl bg-card">
                 <CardHeader>
-                  <CardTitle className="font-headline text-primary flex items-center"><Mail className="mr-2 h-6 w-6" /> Send Us a Message</CardTitle>
-                  <CardDescription>Fill out the form below for general questions or consultancy services.</CardDescription>
+                  <CardTitle className="font-headline text-primary flex items-center"><BookUser className="mr-2 h-6 w-6" /> Student Counselling Form</CardTitle>
+                  <CardDescription>This is the first step to begin your study abroad journey. Fill this out to register with us for counselling.</CardDescription>
                 </CardHeader>
                 <Form {...generalContactForm}>
                   <form onSubmit={generalContactForm.handleSubmit(onGeneralContactSubmit)}>
@@ -271,7 +271,7 @@ export default function ContactPage() {
                     <CardFooter>
                       <Button type="submit" disabled={isGeneralSubmitting} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
                         {isGeneralSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
-                        Send Message
+                        Submit for Counselling
                       </Button>
                     </CardFooter>
                   </form>
