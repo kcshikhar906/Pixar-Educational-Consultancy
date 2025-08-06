@@ -189,7 +189,7 @@ const approximateConversions: Record<string, Record<string, (score: number) => s
     },
     pte: (s) => { // Duolingo to PTE
       if (s >= 155) return "89-90"; if (s >= 150) return "83-85"; if (s >= 140) return "76-82";
-      if (s >= 130) return "66-75"; if (s >= 120) return "59-65"; if (s >= 110) return "51-58";
+      if (s >= 130) return "66-75"; if (s >= 59) return "120-125"; if (s >= 110) return "51-58";
       if (s >= 100) return "43-50"; if (s >= 90) return "35-42"; return "<35";
     },
   },
@@ -219,6 +219,13 @@ export default function EnglishTestGuidePage() {
     // If 'fromTest' changes and it happens to be the same as 'toTest',
     // then 'toTest' should be cleared because a test cannot be converted to itself.
     if (fromTest && toTest === fromTest) {
+      setToTest('');
+    }
+  }, [fromTest]);
+
+  // This second useEffect handles clearing toTest if fromTest becomes equal to it.
+  useEffect(() => {
+    if (fromTest && fromTest === toTest) {
       setToTest('');
     }
   }, [fromTest, toTest]);
