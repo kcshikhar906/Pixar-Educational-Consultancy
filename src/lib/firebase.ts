@@ -11,15 +11,12 @@ const firebaseConfig = {
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
-  // This was missing and is crucial for connecting to the correct database on the client-side.
-  databaseId: 'pixareducation', 
 };
 
 // Initialize Firebase App (Singleton Pattern)
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
-// Explicitly pass the entire config, including databaseId, to getFirestore.
-// While initializeApp takes it, being explicit with getFirestore ensures clarity and correctness.
-const db = getFirestore(app);
+// Explicitly get the Firestore instance for the 'pixareducation' database
+const db = getFirestore(app, 'pixareducation');
 
 export { app, auth, db };
