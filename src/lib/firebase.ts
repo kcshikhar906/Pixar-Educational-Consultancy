@@ -17,12 +17,11 @@ const firebaseConfig = {
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
-  databaseId: "pixareducation",
 };
 
 // Initialize Firebase App (Singleton Pattern)
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
-const db = getFirestore(app, 'pixareducation');
+const db = getFirestore(app); // No need to specify databaseId on client if it's the default or configured elsewhere
 
 export { app, auth, db };

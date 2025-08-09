@@ -53,7 +53,7 @@ export interface Student {
   englishProficiencyTest?: string;
   preferredStudyDestination?: string;
   additionalNotes?: string;
-  // New fields for admin panel
+  // New fields from admin panel
   serviceFeePaidDate?: Timestamp | null;
   visaStatusUpdateDate?: Timestamp | null;
   emergencyContact?: string;

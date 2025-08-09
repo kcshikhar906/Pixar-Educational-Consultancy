@@ -15,15 +15,12 @@ const serviceAccount = {
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    // databaseURL is not needed for Firestore, but good practice if using RTDB
+    // Correctly specify the database URL for the project
+    databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}.firebaseio.com`,
   });
 }
 
-const db = getFirestore(admin.app()); // Get default Firestore instance
-// Note: When using the Admin SDK in a server environment like Next.js Server Actions or Cloud Functions,
-// it often has broad access to the project's resources. Explicitly naming the database
-// like `getFirestore(admin.app(), 'pixareducation')` is not the standard way and can cause issues
-// if the default instance is assumed. The correct way is to use the default instance,
-// and your security rules will manage access. The client-side config correctly points to the DB.
+// Get the specific 'pixareducation' database instance.
+const db = getFirestore(admin.app(), 'pixareducation');
 
 export { admin, db };

@@ -26,7 +26,9 @@ const db = getFirestore();
 // Function to safely handle increments on nested map fields
 function updateNestedField(batch: FirebaseFirestore.WriteBatch, ref: FirebaseFirestore.DocumentReference, fieldName: string, key: string | undefined | null, value: number) {
   if (key && typeof key === 'string' && key.trim() !== '') {
-    batch.set(ref, { [fieldName]: { [key]: FieldValue.increment(value) } }, { merge: true });
+    // Sanitize key to be Firestore field path compliant
+    const sanitizedKey = key.replace(/[.`[\]*]/g, '_');
+    batch.set(ref, { [fieldName]: { [sanitizedKey]: FieldValue.increment(value) } }, { merge: true });
   }
 }
 
@@ -40,7 +42,7 @@ export const aggregateStudentMetrics = onDocumentWritten('students/{studentId}',
   // Handle document creation
   if (!event.data?.before.exists && event.data?.after.exists) {
     batch.set(metricsRef, { totalStudents: FieldValue.increment(1) }, { merge: true });
-
+    
     if (dataAfter?.visaStatus === 'Approved') {
       batch.set(metricsRef, { visaGranted: FieldValue.increment(1) }, { merge: true });
     } else if (['Pending', 'Rejected', 'Not Applied'].includes(dataAfter?.visaStatus)) {
@@ -48,7 +50,7 @@ export const aggregateStudentMetrics = onDocumentWritten('students/{studentId}',
     }
     
     if (dataAfter?.serviceFeeStatus === 'Paid') {
-        batch.set(metricsRef, { serviceFeePaid: FieldValue.increment(1) }, { merge: true });
+      batch.set(metricsRef, { serviceFeePaid: FieldValue.increment(1) }, { merge: true });
     }
 
     updateNestedField(batch, metricsRef, 'byDestination', dataAfter?.preferredStudyDestination, 1);
@@ -68,7 +70,7 @@ export const aggregateStudentMetrics = onDocumentWritten('students/{studentId}',
     }
 
     if (dataBefore?.serviceFeeStatus === 'Paid') {
-        batch.set(metricsRef, { serviceFeePaid: FieldValue.increment(-1) }, { merge: true });
+      batch.set(metricsRef, { serviceFeePaid: FieldValue.increment(-1) }, { merge: true });
     }
 
     updateNestedField(batch, metricsRef, 'byDestination', dataBefore?.preferredStudyDestination, -1);
@@ -97,16 +99,16 @@ export const aggregateStudentMetrics = onDocumentWritten('students/{studentId}',
 
     // Service Fee Status Change
     if (dataBefore?.serviceFeeStatus !== dataAfter?.serviceFeeStatus) {
-        if(dataBefore?.serviceFeeStatus === 'Paid') {
-            batch.set(metricsRef, { serviceFeePaid: FieldValue.increment(-1) }, { merge: true });
-        }
-        if(dataAfter?.serviceFeeStatus === 'Paid') {
-            batch.set(metricsRef, { serviceFeePaid: FieldValue.increment(1) }, { merge: true });
-        }
+      if(dataBefore?.serviceFeeStatus === 'Paid') {
+        batch.set(metricsRef, { serviceFeePaid: FieldValue.increment(-1) }, { merge: true });
+      }
+      if(dataAfter?.serviceFeeStatus === 'Paid') {
+        batch.set(metricsRef, { serviceFeePaid: FieldValue.increment(1) }, { merge: true });
+      }
     }
     
     // Categorical Field Changes
-    const fields = ['preferredStudyDestination', 'lastCompletedEducation', 'assignedTo', 'englishProficiencyTest'];
+    const fieldsToCompare: (keyof typeof dataBefore)[] = ['preferredStudyDestination', 'lastCompletedEducation', 'assignedTo', 'englishProficiencyTest'];
     const fieldMap: Record<string, string> = {
         preferredStudyDestination: 'byDestination',
         lastCompletedEducation: 'byEducation',
@@ -114,7 +116,7 @@ export const aggregateStudentMetrics = onDocumentWritten('students/{studentId}',
         englishProficiencyTest: 'byEnglishTest'
     };
 
-    for(const field of fields) {
+    for(const field of fieldsToCompare) {
         if(dataBefore?.[field] !== dataAfter?.[field]) {
             updateNestedField(batch, metricsRef, fieldMap[field], dataBefore?.[field], -1);
             updateNestedField(batch, metricsRef, fieldMap[field], dataAfter?.[field], 1);
