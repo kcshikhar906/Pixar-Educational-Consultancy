@@ -1,19 +1,27 @@
-
 rules_version = '2';
 
+// Specify the database ID to apply these rules to.
+// Note: In the emulator, this may need to be commented out or adjusted.
+// For production deployment, this ensures rules only apply to your 'pixareducation' database.
 service cloud.firestore {
   match /databases/pixareducation/documents {
+    
+    // Default deny all reads and writes unless explicitly allowed.
+    // This is a security best practice.
+    match /{document=**} {
+      allow read, write: if false;
+    }
 
-    // Rules for the 'students' collection
-    // Allow authenticated users (admins) to read and write student documents.
+    // Allow authenticated users (admins) to read and write to the 'students' collection.
+    // This is necessary for the Student Management page to function.
     match /students/{studentId} {
       allow read, write: if request.auth != null;
     }
-
-    // Rules for the 'metrics' collection
-    // Allow authenticated users (admins) to read the dashboard metrics.
-    // Disallow client-side writes to ensure data is only aggregated by the backend function.
-    match /metrics/{docId} {
+    
+    // Allow authenticated users (admins) to READ the metrics document for the dashboard.
+    // Write access is denied from the client-side to ensure data integrity; only the
+    // backend cloud function can write to it.
+    match /metrics/dashboard {
       allow read: if request.auth != null;
       allow write: if false;
     }
