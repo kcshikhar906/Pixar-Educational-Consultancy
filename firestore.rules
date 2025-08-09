@@ -1,22 +1,21 @@
+
 rules_version = '2';
 
 service cloud.firestore {
-  match /databases/{database}/documents {
-    // Default deny all reads and writes
-    match /{document=**} {
-      allow read, write: if false;
-    }
+  match /databases/pixareducation/documents {
 
-    // Allow authenticated users to manage the 'students' collection
+    // Rules for the 'students' collection
+    // Allow authenticated users (admins) to read and write student documents.
     match /students/{studentId} {
       allow read, write: if request.auth != null;
     }
 
-    // Allow anyone to create (submit) a document in the generalInquiries collection.
-    // They cannot read, update, or delete entries.
-    match /generalInquiries/{inquiryId} {
-      allow create: if true;
-      allow read, update, delete: if false;
+    // Rules for the 'metrics' collection
+    // Allow authenticated users (admins) to read the dashboard metrics.
+    // Disallow client-side writes to ensure data is only aggregated by the backend function.
+    match /metrics/{docId} {
+      allow read: if request.auth != null;
+      allow write: if false;
     }
   }
 }
