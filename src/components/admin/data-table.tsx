@@ -66,7 +66,6 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
       q = query(
         collection(db, 'students'),
         orderBy('searchableName'),
-        orderBy('timestamp', 'desc'),
         startAt(searchLower),
         endAt(searchLower + '\uf8ff')
       );
