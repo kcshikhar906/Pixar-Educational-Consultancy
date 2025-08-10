@@ -64,9 +64,9 @@ async function addSearchableNames() {
 
     const batches = [];
     let currentBatch = db.batch();
-    let currentBatchSize = 0;
+    let recordsToUpdateCount = 0;
 
-    snapshot.forEach(doc => {
+    snapshot.forEach((doc, index) => {
       const studentData = doc.data();
       // Process only if fullName exists and searchableName doesn't
       if (studentData.fullName && typeof studentData.fullName === 'string' && !studentData.searchableName) {
@@ -74,27 +74,21 @@ async function addSearchableNames() {
         const docRef = studentsCollection.doc(doc.id);
         const newSearchableName = studentData.fullName.toLowerCase();
         currentBatch.update(docRef, { searchableName: newSearchableName });
-        currentBatchSize++;
+        recordsToUpdateCount++;
       }
 
-      if (currentBatchSize === BATCH_SIZE) {
+      if (recordsToUpdateCount > 0 && (recordsToUpdateCount % BATCH_SIZE === 0 || index === snapshot.size - 1)) {
         batches.push(currentBatch);
         currentBatch = db.batch();
-        currentBatchSize = 0;
       }
     });
 
-    // Add the last batch if it has any operations
-    if (currentBatchSize > 0) {
-      batches.push(currentBatch);
-    }
-    
-    if (batches.length === 0) {
+    if (recordsToUpdateCount === 0) {
         console.log('✅ All student records already have the searchableName field. No updates needed.');
         return;
     }
 
-    console.log(`🔍 Found ${snapshot.size} total records. Preparing to update ${batches.reduce((acc, b) => acc + (b as any)._writes.length, 0)} records in ${batches.length} batch(es)...`);
+    console.log(`🔍 Found ${snapshot.size} total records. Preparing to update ${recordsToUpdateCount} records in ${batches.length} batch(es)...`);
 
     for (let i = 0; i < batches.length; i++) {
         console.log(`- - - - - - - - - - - - - - - - - - - -`);
