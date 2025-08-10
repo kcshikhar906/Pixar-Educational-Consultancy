@@ -104,15 +104,9 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
         console.error("Error with real-time listener: ", err);
         let userFriendlyError = "Failed to load student data. Please check your internet connection and Firestore permissions.";
         if (err.code === 'failed-precondition' || (err.message && err.message.includes("index"))) {
-            // NOTE: The project ID is dynamically fetched here if available, otherwise it's a placeholder.
-            // This is a best-effort attempt to create a helpful link for the user.
-            const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '[YOUR_PROJECT_ID]';
-            const indexCreationLink = `https://console.firebase.google.com/project/${projectId}/firestore/indexes?create_composite=EgtzdHVkZW50cxoQCg5zZWFyY2hhYmxlTmFtZRABGg0KCXRpbWVzdGFtcBACYAEaDAoIX19uYW1lX18QAg%3D%3D`;
-            userFriendlyError = `This search requires a Firestore index. Please click the following link to create it, then refresh the page: <a href="${indexCreationLink}" target="_blank" rel="noopener noreferrer" class="font-bold underline">Create Firestore Index</a>.`;
-             setError(userFriendlyError);
-        } else {
-           setError(userFriendlyError);
+            userFriendlyError = `A required database index is missing. Please contact support to create a composite index on the 'students' collection for the 'searchableName' and 'timestamp' fields.`;
         }
+        setError(userFriendlyError);
         setLoading(false);
       }
     );

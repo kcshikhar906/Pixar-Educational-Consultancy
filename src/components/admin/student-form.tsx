@@ -74,10 +74,22 @@ const DetailItem = ({ icon: Icon, label, value, valueClassName }: { icon: React.
 // It handles Firestore Timestamps, JS Date objects, and null/undefined values.
 const safeToDate = (dateValue: any): Date | null => {
   if (!dateValue) return null;
-  if (dateValue.toDate) return dateValue.toDate(); // It's a Firestore Timestamp
-  if (dateValue instanceof Date) return dateValue; // It's already a JS Date
+  // It's a Firestore Timestamp
+  if (typeof dateValue.toDate === 'function') {
+    return dateValue.toDate();
+  }
+  // It's already a JS Date
+  if (dateValue instanceof Date) {
+    return dateValue;
+  }
+  // It might be a string - try to parse it
+  const parsedDate = new Date(dateValue);
+  if (!isNaN(parsedDate.getTime())) {
+    return parsedDate;
+  }
   return null;
 };
+
 
 export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: StudentFormProps) {
   const { toast } = useToast();
