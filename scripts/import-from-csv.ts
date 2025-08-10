@@ -113,10 +113,13 @@ async function importStudents() {
               timestamp = parsedDate;
             }
           }
+          
+          const fullName = record['Full Name'] || record['fullName'] || '';
 
           const studentData = {
             // Match the keys exactly as they appear in your CSV headers
-            fullName: record['Full Name'] || record['fullName'] || '',
+            fullName: fullName,
+            searchableName: fullName.toLowerCase(),
             email: record['Email Address'] || record['email'] || '',
             mobileNumber: record['Mobile Number'] || record['mobileNumber'] || '',
             lastCompletedEducation: record['Last Completed Education'] || record['lastCompletedEducation'] || '',
