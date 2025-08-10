@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   collection,
   query,
@@ -9,7 +9,9 @@ import {
   onSnapshot,
   limit,
   where,
-  getDocs
+  getDocs,
+  Query,
+  DocumentData
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Student } from '@/lib/data';
@@ -23,105 +25,129 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Search } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import Link from 'next/link';
+import { useDebounce } from '@/hooks/use-debounce'; // A simple debounce hook
 
 interface DataTableProps {
   onRowSelect: (student: Student) => void;
   selectedStudentId?: string | null;
 }
 
+// A simple debounce hook to prevent firing search queries on every keystroke
+const useDebouncedValue = (value: string, delay: number) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+  return debouncedValue;
+};
+
+
 export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebouncedValue(searchTerm, 300); // 300ms delay
 
-  // Listener for the initial 20 newest students
+  // Real-time listener for the 20 newest students
   useEffect(() => {
-    setLoading(true);
-    setError(null);
-    const q = query(collection(db, 'students'), orderBy('timestamp', 'desc'), limit(20));
-    const unsubscribe = onSnapshot(
-      q,
-      (querySnapshot) => {
-        if (!searchTerm) {
+    // Only run this listener if there is no search term
+    if (!debouncedSearchTerm) {
+      setLoading(true);
+      setError(null);
+      const q = query(
+        collection(db, 'students'), 
+        orderBy('timestamp', 'desc'), 
+        limit(20)
+      );
+
+      const unsubscribe = onSnapshot(
+        q,
+        (querySnapshot) => {
           const studentsData: Student[] = [];
           querySnapshot.forEach((doc) => {
-            studentsData.push({ id: doc.id, ...doc.data() } as Student);
+            const data = doc.data();
+            studentsData.push({ 
+              id: doc.id,
+              ...data,
+              // Convert Firestore Timestamp to JS Date for consistent handling
+              timestamp: data.timestamp?.toDate() 
+            } as Student);
           });
           setStudents(studentsData);
           setLoading(false);
+        },
+        (err) => {
+          console.error("Error with real-time listener: ", err);
+          setError("Failed to load real-time student data. Check Firestore permissions and connectivity.");
+          setLoading(false);
         }
-      },
-      (err) => {
-        console.error("Error fetching initial students: ", err);
-        setError("Failed to load initial student list. Please check Firestore permissions.");
+      );
+
+      // Cleanup subscription on component unmount or when search term changes
+      return () => unsubscribe();
+    }
+  }, [debouncedSearchTerm]);
+
+
+  // Effect for handling search queries
+  useEffect(() => {
+    const handleSearch = async () => {
+      if (!debouncedSearchTerm.trim()) {
+        // If search term is cleared, the other useEffect will kick in to show latest students.
+        // We just need to clear the current list to avoid showing stale search results.
+        setStudents([]); 
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+      setStudents([]); // Clear previous results
+
+      try {
+        // We search on the `searchableName` field, which should be a lowercase version of fullName
+        const searchQuery = query(
+          collection(db, 'students'),
+          where('searchableName', '>=', debouncedSearchTerm.toLowerCase()),
+          where('searchableName', '<=', debouncedSearchTerm.toLowerCase() + '\uf8ff'),
+          orderBy('searchableName', 'asc'),
+          orderBy('timestamp', 'desc') // Also sort search results by newest
+        );
+        
+        const querySnapshot = await getDocs(searchQuery);
+        const studentsData: Student[] = [];
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          studentsData.push({ 
+            id: doc.id,
+            ...data,
+            timestamp: data.timestamp?.toDate()
+           } as Student);
+        });
+        setStudents(studentsData);
+
+        if (studentsData.length === 0) {
+            setError("No students found matching your search.");
+        }
+
+      } catch (err: any) {
+        console.error("Error searching students: ", err);
+        setError("Failed to perform search. The necessary database index might be missing.");
+      } finally {
         setLoading(false);
       }
-    );
-
-    return () => unsubscribe();
-  }, [searchTerm]);
-
-  const handleSearch = useCallback(async () => {
-    if (!searchTerm.trim()) {
-      return;
-    }
+    };
     
-    setIsSearching(true);
-    setError(null);
-    setLoading(true);
+    handleSearch();
 
-    try {
-      const q = query(
-        collection(db, 'students'), 
-        where('searchableName', '>=', searchTerm.toLowerCase()),
-        where('searchableName', '<=', searchTerm.toLowerCase() + '\uf8ff'),
-        orderBy('searchableName', 'asc'), // Required for range filtering
-        orderBy('timestamp', 'desc') // Sort results by newest
-      );
-      
-      const querySnapshot = await getDocs(q);
-      const studentsData: Student[] = [];
-      querySnapshot.forEach((doc) => {
-        studentsData.push({ id: doc.id, ...doc.data() } as Student);
-      });
-      setStudents(studentsData);
-    } catch (err: any) {
-      console.error("Error searching students: ", err);
-      // Check for the specific Firestore index error
-      if (err.code === 'failed-precondition') {
-        // Extract the index creation link from the error message
-        const urlMatch = err.message.match(/(https?:\/\/[^\s]+)/);
-        const indexCreationUrl = urlMatch ? urlMatch[0] : null;
-        
-        const friendlyError = (
-          <div>
-            <p className="mb-2">The search feature requires a database index that hasn't been created yet.</p>
-            {indexCreationUrl ? (
-              <Button asChild>
-                <Link href={indexCreationUrl} target="_blank" rel="noopener noreferrer">
-                  Click here to create the index in a new tab
-                </Link>
-              </Button>
-            ) : (
-              <p>Please go to your Firestore indexes panel and create a composite index for the 'students' collection.</p>
-            )}
-            <p className="mt-2 text-xs">After creating the index, it may take a few minutes to build. Then, please refresh the page and try searching again.</p>
-          </div>
-        );
-        setError(friendlyError as any);
-      } else {
-        setError("Failed to perform search. An unknown error occurred.");
-      }
-    } finally {
-      setIsSearching(false);
-      setLoading(false);
-    }
-  }, [searchTerm]);
+  }, [debouncedSearchTerm]);
 
   const getFeeStatusBadgeVariant = (status: Student['serviceFeeStatus']) => {
     switch (status) {
@@ -134,29 +160,28 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
 
   return (
     <div className="space-y-4">
-       <div className="px-4 pt-2 space-y-2">
-            <div className="flex items-center space-x-2">
-              <Input
-                  placeholder="Search full database by name..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }}
-                  className="w-full"
-              />
-              <Button onClick={handleSearch} disabled={isSearching || !searchTerm}>
-                {isSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Search'}
-              </Button>
-            </div>
-            <p className="text-xs text-muted-foreground px-1">
-              {searchTerm ? `Showing results for "${searchTerm}".` : 'Showing 20 newest students. Use search to find anyone.'}
-            </p>
-       </div>
-       <div className="max-h-[calc(100vh-350px)] overflow-auto">
-        {error && (
-            <Alert variant="destructive" className="m-4">
-                <AlertTitle>Action Required</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-            </Alert>
+      <div className="px-4 pt-2 space-y-2">
+        <div className="flex items-center space-x-2">
+          <div className="relative w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search by name..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10"
+            />
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground px-1">
+          {debouncedSearchTerm ? `Showing results for "${debouncedSearchTerm}"` : 'Showing 20 newest students.'}
+        </p>
+      </div>
+      <div className="max-h-[calc(100vh-350px)] overflow-auto">
+        {error && !loading && (
+          <Alert variant="destructive" className="m-4">
+            <AlertTitle>Notice</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
         )}
         <Table>
           <TableBody>
@@ -171,28 +196,30 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
               ))
             ) : students.length > 0 ? (
               students.map((student) => (
-                <TableRow 
-                  key={student.id} 
+                <TableRow
+                  key={student.id}
                   onClick={() => onRowSelect(student)}
                   className="cursor-pointer"
                   data-state={selectedStudentId === student.id ? 'selected' : 'unselected'}
                 >
                   <TableCell className="font-medium p-3">
                     <div className="flex items-center justify-between">
-                        <span className="font-semibold">{student.fullName}</span>
-                        {student.assignedTo === 'Unassigned' && <Badge className="py-0.5 px-1.5 text-xs bg-accent text-accent-foreground">New</Badge>}
+                      <span className="font-semibold">{student.fullName}</span>
+                      {student.assignedTo === 'Unassigned' && (
+                        <Badge className="py-0.5 px-1.5 text-xs bg-accent text-accent-foreground">New</Badge>
+                      )}
                     </div>
                     <div className="text-xs text-muted-foreground truncate">{student.email}</div>
                     <div className="mt-1 flex items-center justify-between text-xs">
-                       <span className="text-muted-foreground">{student.assignedTo || 'Unassigned'}</span>
-                       <Badge variant={getFeeStatusBadgeVariant(student.serviceFeeStatus)} className="py-0.5 px-1.5 text-xs">
-                          {student.serviceFeeStatus || 'N/A'}
-                       </Badge>
+                      <span className="text-muted-foreground">{student.assignedTo || 'Unassigned'}</span>
+                      <Badge variant={getFeeStatusBadgeVariant(student.serviceFeeStatus)} className="py-0.5 px-1.5 text-xs">
+                        {student.serviceFeeStatus || 'N/A'}
+                      </Badge>
                     </div>
                   </TableCell>
                 </TableRow>
               ))
-            ) : (
+            ) : !error && (
               <TableRow>
                 <TableCell className="h-24 text-center">
                   No students found.
