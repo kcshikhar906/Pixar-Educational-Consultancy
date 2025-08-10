@@ -8,11 +8,10 @@ import {
   orderBy,
   onSnapshot,
   limit,
-  where,
-  Query,
-  DocumentData,
   startAt,
   endAt,
+  Query,
+  DocumentData,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Student } from '@/lib/data';
@@ -25,7 +24,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Loader2, Search } from 'lucide-react';
+import { Loader2, Search, AlertTriangle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 // A simple debounce hook to prevent firing search queries on every keystroke
@@ -88,6 +87,7 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
           studentsData.push({ 
             id: doc.id,
             ...data,
+            // Convert Firestore Timestamp to JS Date object immediately
             timestamp: data.timestamp?.toDate() 
           } as Student);
         });
@@ -97,8 +97,8 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
         if (debouncedSearchTerm.trim()) {
             studentsData.sort((a, b) => {
                 if (!a.timestamp || !b.timestamp) return 0;
-                // Ensure timestamps are treated as numbers for correct sorting
-                return (b.timestamp as any).getTime() - (a.timestamp as any).getTime();
+                // Timestamps are now JS Date objects, so we can compare them directly
+                return b.timestamp.getTime() - a.timestamp.getTime();
             });
         }
         
@@ -112,13 +112,13 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
       },
       (err: any) => {
         console.error("Error with real-time listener: ", err);
-        if (err.code === 'failed-precondition') {
+        let userFriendlyError = "Failed to load student data. Please check your internet connection and Firestore permissions.";
+        if (err.code === 'failed-precondition' || (err.message && err.message.includes("index"))) {
             const indexCreationLink = `https://console.firebase.google.com/project/${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID}/database/firestore/indexes?create_composite=Eglyc3R1ZGVudHMiEAoOc2VhcmNoYWJsZU5hbWUQARoNCgl0aW1lc3RhbXAQAhoc`;
-            setError(`This search query requires a Firestore index. Please ask your developer to create it, or if you have access, create it here:`);
-            console.log("INDEX CREATION LINK (for developer): ", indexCreationLink);
-        } else {
-          setError("Failed to load student data. Check Firestore permissions and connectivity.");
+            userFriendlyError = 'This search query requires a specific Firestore index. Your developer can create it using the link logged in the browser console.';
+            console.log("REQUIRED FIRESTORE INDEX (for developer): ", indexCreationLink);
         }
+        setError(userFriendlyError);
         setLoading(false);
       }
     );
@@ -159,6 +159,7 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
       <div className="max-h-[calc(100vh-350px)] overflow-auto">
         {error && !loading && (
           <Alert variant="destructive" className="m-4">
+            <AlertTriangle className="h-4 w-4" />
             <AlertTitle>Notice</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
@@ -211,3 +212,4 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
       </div>
     </div>
   );
+}
