@@ -24,6 +24,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Loader2 } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import Link from 'next/link';
 
 interface DataTableProps {
   onRowSelect: (student: Student) => void;
@@ -35,16 +37,17 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearching, setIsSearching] = useState(false);
-  const [searchError, setSearchError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  // Listener for the initial 20 newest students, correctly sorted
+  // Listener for the initial 20 newest students
   useEffect(() => {
     setLoading(true);
+    setError(null);
     const q = query(collection(db, 'students'), orderBy('timestamp', 'desc'), limit(20));
     const unsubscribe = onSnapshot(
       q,
       (querySnapshot) => {
-        if (!searchTerm) { // Only update if not currently searching
+        if (!searchTerm) {
           const studentsData: Student[] = [];
           querySnapshot.forEach((doc) => {
             studentsData.push({ id: doc.id, ...doc.data() } as Student);
@@ -53,8 +56,9 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
           setLoading(false);
         }
       },
-      (error) => {
-        console.error("Error fetching initial students: ", error);
+      (err) => {
+        console.error("Error fetching initial students: ", err);
+        setError("Failed to load initial student list. Please check Firestore permissions.");
         setLoading(false);
       }
     );
@@ -62,24 +66,22 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
     return () => unsubscribe();
   }, [searchTerm]);
 
-  // Function to handle full database search
   const handleSearch = useCallback(async () => {
     if (!searchTerm.trim()) {
-      // If search term is cleared, the useEffect will handle reverting to the initial list
       return;
     }
     
     setIsSearching(true);
-    setSearchError(null);
+    setError(null);
     setLoading(true);
 
     try {
-      // Query by lowercase searchableName for case-insensitive search
-      // The 'searchableName' field should be created/updated in the StudentForm component
       const q = query(
         collection(db, 'students'), 
         where('searchableName', '>=', searchTerm.toLowerCase()),
-        where('searchableName', '<=', searchTerm.toLowerCase() + '\uf8ff')
+        where('searchableName', '<=', searchTerm.toLowerCase() + '\uf8ff'),
+        orderBy('searchableName', 'asc'), // Required for range filtering
+        orderBy('timestamp', 'desc') // Sort results by newest
       );
       
       const querySnapshot = await getDocs(q);
@@ -87,18 +89,34 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
       querySnapshot.forEach((doc) => {
         studentsData.push({ id: doc.id, ...doc.data() } as Student);
       });
-      // Sort search results by timestamp as well for consistency
-      studentsData.sort((a, b) => {
-        if (a.timestamp && b.timestamp) {
-            return b.timestamp.toMillis() - a.timestamp.toMillis();
-        }
-        return 0;
-      });
-
       setStudents(studentsData);
-    } catch (error) {
-      console.error("Error searching students: ", error);
-      setSearchError("Failed to perform search. Please try again.");
+    } catch (err: any) {
+      console.error("Error searching students: ", err);
+      // Check for the specific Firestore index error
+      if (err.code === 'failed-precondition') {
+        // Extract the index creation link from the error message
+        const urlMatch = err.message.match(/(https?:\/\/[^\s]+)/);
+        const indexCreationUrl = urlMatch ? urlMatch[0] : null;
+        
+        const friendlyError = (
+          <div>
+            <p className="mb-2">The search feature requires a database index that hasn't been created yet.</p>
+            {indexCreationUrl ? (
+              <Button asChild>
+                <Link href={indexCreationUrl} target="_blank" rel="noopener noreferrer">
+                  Click here to create the index in a new tab
+                </Link>
+              </Button>
+            ) : (
+              <p>Please go to your Firestore indexes panel and create a composite index for the 'students' collection.</p>
+            )}
+            <p className="mt-2 text-xs">After creating the index, it may take a few minutes to build. Then, please refresh the page and try searching again.</p>
+          </div>
+        );
+        setError(friendlyError as any);
+      } else {
+        setError("Failed to perform search. An unknown error occurred.");
+      }
     } finally {
       setIsSearching(false);
       setLoading(false);
@@ -134,7 +152,12 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
             </p>
        </div>
        <div className="max-h-[calc(100vh-350px)] overflow-auto">
-        {searchError && <p className="text-destructive text-center p-4">{searchError}</p>}
+        {error && (
+            <Alert variant="destructive" className="m-4">
+                <AlertTitle>Action Required</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+            </Alert>
+        )}
         <Table>
           <TableBody>
             {loading ? (
