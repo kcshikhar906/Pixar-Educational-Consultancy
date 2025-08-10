@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   collection,
   query,
@@ -12,7 +12,7 @@ import {
   getDocs
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { Student, counselorNames } from '@/lib/data';
+import { Student } from '@/lib/data';
 import {
   Table,
   TableBody,
@@ -39,6 +39,7 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
 
   // Listener for the initial 20 newest students
   useEffect(() => {
+    setLoading(true);
     const q = query(collection(db, 'students'), orderBy('timestamp', 'desc'), limit(20));
     const unsubscribe = onSnapshot(
       q,

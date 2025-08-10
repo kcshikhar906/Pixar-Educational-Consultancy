@@ -6,10 +6,9 @@ import { DataTable } from '@/components/admin/data-table';
 import { StudentForm } from '@/components/admin/student-form';
 import type { Student } from '@/lib/data';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Users, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { Users, AlertTriangle } from 'lucide-react';
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -116,7 +115,7 @@ export default function StudentManagementPage() {
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
+    <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
       {/* Welcome and Warning Section */}
       <Card className="bg-destructive/10 border-destructive/50">
         <CardHeader>
@@ -125,15 +124,15 @@ export default function StudentManagementPage() {
                 Important Usage Warning
             </CardTitle>
           <CardDescription className="text-destructive/90">
-             Welcome, <span className="font-bold">{adminName}</span>. This page loads all student data at once to enable searching.
+             Welcome, <span className="font-bold">{adminName}</span>. This page loads the 20 most recent students by default to save costs.
           </CardDescription>
         </CardHeader>
         <CardContent>
             <p className="text-lg font-bold text-destructive">
-               DO NOT REFRESH THIS PAGE UNNECESSARILY.
+               USE THE SEARCH BAR FOR OLDER RECORDS.
             </p>
             <p className="text-sm text-destructive/80">
-              Each page load reads all student records from the database, which consumes a large part of our daily free quota. Please use the components on the page to search and manage students without reloading.
+              To avoid unnecessary database reads, only the newest students are shown initially. Use the search to find any specific student in the entire database. Please avoid reloading the page frequently.
             </p>
         </CardContent>
       </Card>
@@ -146,7 +145,7 @@ export default function StudentManagementPage() {
               <CardHeader className="p-4">
                 <CardTitle>Student List</CardTitle>
                 <CardDescription>
-                  Showing new, unassigned students first. Use search to find any student.
+                  Showing 20 newest students. Use search to find any student.
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-0">
@@ -166,13 +165,12 @@ export default function StudentManagementPage() {
                 <div className="text-center text-muted-foreground p-8">
                    <Users className="h-16 w-16 mx-auto mb-4 text-gray-300 dark:text-gray-700" />
                   <p className="font-semibold text-lg">No Student Selected</p>
-                  <p className="text-sm">Please select a student from the list on the left to view their details.</p>
+                  <p className="text-sm">Please select a student from the list on the left to view their details or add a new student.</p>
                 </div>
               </Card>
             )}
           </div>
         </div>
-      </div>
+      </main>
   );
 }
-
