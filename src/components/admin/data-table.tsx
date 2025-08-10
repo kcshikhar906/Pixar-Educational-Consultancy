@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import {
   collection,
   query,
@@ -9,9 +9,10 @@ import {
   onSnapshot,
   limit,
   where,
-  getDocs,
   Query,
-  DocumentData
+  DocumentData,
+  startAt,
+  endAt,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Student } from '@/lib/data';
@@ -23,16 +24,9 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Loader2, Search } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { useDebounce } from '@/hooks/use-debounce'; // A simple debounce hook
-
-interface DataTableProps {
-  onRowSelect: (student: Student) => void;
-  selectedStudentId?: string | null;
-}
 
 // A simple debounce hook to prevent firing search queries on every keystroke
 const useDebouncedValue = (value: string, delay: number) => {
@@ -49,105 +43,91 @@ const useDebouncedValue = (value: string, delay: number) => {
 };
 
 
+interface DataTableProps {
+  onRowSelect: (student: Student) => void;
+  selectedStudentId?: string | null;
+}
+
 export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const debouncedSearchTerm = useDebouncedValue(searchTerm, 300); // 300ms delay
+  const debouncedSearchTerm = useDebouncedValue(searchTerm, 500);
 
-  // Real-time listener for the 20 newest students
   useEffect(() => {
-    // Only run this listener if there is no search term
-    if (!debouncedSearchTerm) {
-      setLoading(true);
-      setError(null);
-      const q = query(
+    setLoading(true);
+    setError(null);
+
+    let q: Query<DocumentData>;
+
+    if (debouncedSearchTerm.trim()) {
+      // Search Query: listens for real-time updates on search results
+      const searchLower = debouncedSearchTerm.toLowerCase();
+      q = query(
+        collection(db, 'students'),
+        orderBy('searchableName'),
+        startAt(searchLower),
+        endAt(searchLower + '\uf8ff')
+      );
+    } else {
+      // Default Query: listens for real-time updates on the 20 newest students
+      q = query(
         collection(db, 'students'), 
         orderBy('timestamp', 'desc'), 
         limit(20)
       );
-
-      const unsubscribe = onSnapshot(
-        q,
-        (querySnapshot) => {
-          const studentsData: Student[] = [];
-          querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            studentsData.push({ 
-              id: doc.id,
-              ...data,
-              // Convert Firestore Timestamp to JS Date for consistent handling
-              timestamp: data.timestamp?.toDate() 
-            } as Student);
-          });
-          setStudents(studentsData);
-          setLoading(false);
-        },
-        (err) => {
-          console.error("Error with real-time listener: ", err);
-          setError("Failed to load real-time student data. Check Firestore permissions and connectivity.");
-          setLoading(false);
-        }
-      );
-
-      // Cleanup subscription on component unmount or when search term changes
-      return () => unsubscribe();
     }
-  }, [debouncedSearchTerm]);
 
-
-  // Effect for handling search queries
-  useEffect(() => {
-    const handleSearch = async () => {
-      if (!debouncedSearchTerm.trim()) {
-        // If search term is cleared, the other useEffect will kick in to show latest students.
-        // We just need to clear the current list to avoid showing stale search results.
-        setStudents([]); 
-        return;
-      }
-
-      setLoading(true);
-      setError(null);
-      setStudents([]); // Clear previous results
-
-      try {
-        // We search on the `searchableName` field, which should be a lowercase version of fullName
-        const searchQuery = query(
-          collection(db, 'students'),
-          where('searchableName', '>=', debouncedSearchTerm.toLowerCase()),
-          where('searchableName', '<=', debouncedSearchTerm.toLowerCase() + '\uf8ff'),
-          orderBy('searchableName', 'asc'),
-          orderBy('timestamp', 'desc') // Also sort search results by newest
-        );
-        
-        const querySnapshot = await getDocs(searchQuery);
+    const unsubscribe = onSnapshot(
+      q,
+      (querySnapshot) => {
         const studentsData: Student[] = [];
         querySnapshot.forEach((doc) => {
           const data = doc.data();
           studentsData.push({ 
             id: doc.id,
             ...data,
-            timestamp: data.timestamp?.toDate()
-           } as Student);
+            timestamp: data.timestamp?.toDate() 
+          } as Student);
         });
-        setStudents(studentsData);
 
-        if (studentsData.length === 0) {
-            setError("No students found matching your search.");
+        // If searching, we must re-sort by timestamp on the client-side
+        // as Firestore cannot order by both searchableName and timestamp in this query.
+        if (debouncedSearchTerm.trim()) {
+            studentsData.sort((a, b) => {
+                if (!a.timestamp || !b.timestamp) return 0;
+                // Ensure timestamps are treated as numbers for correct sorting
+                return (b.timestamp as any).getTime() - (a.timestamp as any).getTime();
+            });
         }
-
-      } catch (err: any) {
-        console.error("Error searching students: ", err);
-        setError("Failed to perform search. The necessary database index might be missing.");
-      } finally {
+        
+        setStudents(studentsData);
+        if (studentsData.length === 0 && debouncedSearchTerm.trim()) {
+            setError("No students found matching your search.");
+        } else {
+            setError(null); // Clear previous errors if results are found
+        }
+        setLoading(false);
+      },
+      (err: any) => {
+        console.error("Error with real-time listener: ", err);
+        if (err.code === 'failed-precondition') {
+            const indexCreationLink = `https://console.firebase.google.com/project/${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID}/database/firestore/indexes?create_composite=Eglyc3R1ZGVudHMiEAoOc2VhcmNoYWJsZU5hbWUQARoNCgl0aW1lc3RhbXAQAhoc`;
+            setError(`This search query requires a Firestore index. Please ask your developer to create it, or if you have access, create it here:`);
+            console.log("INDEX CREATION LINK (for developer): ", indexCreationLink);
+        } else {
+          setError("Failed to load student data. Check Firestore permissions and connectivity.");
+        }
         setLoading(false);
       }
-    };
-    
-    handleSearch();
+    );
 
+    // Cleanup subscription on component unmount or when search term changes
+    return () => unsubscribe();
+    
   }, [debouncedSearchTerm]);
+
 
   const getFeeStatusBadgeVariant = (status: Student['serviceFeeStatus']) => {
     switch (status) {
@@ -219,16 +199,15 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
                   </TableCell>
                 </TableRow>
               ))
-            ) : !error && (
+            ) : !error ? (
               <TableRow>
                 <TableCell className="h-24 text-center">
                   No students found.
                 </TableCell>
               </TableRow>
-            )}
+            ) : null}
           </TableBody>
         </Table>
       </div>
     </div>
   );
-}
