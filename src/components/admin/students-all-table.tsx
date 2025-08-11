@@ -7,7 +7,6 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
-  SortingState,
 } from "@tanstack/react-table"
 import {
   Table,
@@ -17,8 +16,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { ArrowUpDown } from "lucide-react"
 import type { Student } from "@/lib/data"
 import { Badge } from "@/components/ui/badge"
 import { format } from 'date-fns'
@@ -41,24 +38,24 @@ const getFeeStatusBadgeVariant = (status?: Student['serviceFeeStatus']) => {
   }
 };
 
+const formatDate = (date: Date | undefined | null) => {
+    return date ? format(date, "dd MMM yyyy") : 'N/A';
+};
+
 export const columns: ColumnDef<Student>[] = [
   {
     accessorKey: "fullName",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Name
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => <div>{row.getValue("fullName")}</div>,
+    header: "Name",
+    cell: ({ row }) => <div className="font-medium">{row.getValue("fullName")}</div>,
   },
   {
     accessorKey: "email",
     header: "Email",
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+    cell: ({ row }) => <div className="lowercase text-xs">{row.getValue("email")}</div>,
+  },
+  {
+    accessorKey: "mobileNumber",
+    header: "Phone",
   },
   {
     accessorKey: "preferredStudyDestination",
@@ -66,21 +63,18 @@ export const columns: ColumnDef<Student>[] = [
   },
   {
     accessorKey: "visaStatus",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Visa Status
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
+    header: "Visa Status",
     cell: ({ row }) => {
       const status = row.getValue("visaStatus") as Student['visaStatus'];
       return <Badge variant={getVisaStatusBadgeVariant(status)}>{status}</Badge>;
     },
   },
-    {
+  {
+    accessorKey: "visaStatusUpdateDate",
+    header: "Visa Date",
+    cell: ({ row }) => formatDate(row.getValue("visaStatusUpdateDate")),
+  },
+  {
     accessorKey: "serviceFeeStatus",
     header: "Fee Status",
     cell: ({ row }) => {
@@ -89,62 +83,46 @@ export const columns: ColumnDef<Student>[] = [
     },
   },
   {
+    accessorKey: "serviceFeePaidDate",
+    header: "Fee Date",
+    cell: ({ row }) => formatDate(row.getValue("serviceFeePaidDate")),
+  },
+  {
     accessorKey: "assignedTo",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Assigned To
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
+    header: "Counselor",
+  },
+  {
+    accessorKey: "lastCompletedEducation",
+    header: "Education",
   },
   {
     accessorKey: "timestamp",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Date Added
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => {
-        const date = row.getValue("timestamp") as Date | undefined;
-        return date ? <div>{format(date, "PPP")}</div> : <div>N/A</div>;
-    },
+    header: "Date Added",
+    cell: ({ row }) => formatDate(row.getValue("timestamp")),
   },
-]
+];
 
 interface DataTableProps {
   data: Student[];
-  sorting: SortingState;
-  onSortChange: (sorting: SortingState) => void;
 }
 
-export function StudentsAllTable({ data, sorting, onSortChange }: DataTableProps) {
+export function StudentsAllTable({ data }: DataTableProps) {
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    onSortingChange: onSortChange,
-    state: {
-      sorting,
-    },
-    manualSorting: true,
+    manualSorting: true, // Sorting is handled by Firestore query
   })
 
   return (
     <div className="rounded-md border">
-      <Table>
+      <Table className="text-xs">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} className="p-2 h-10">
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -165,7 +143,7 @@ export function StudentsAllTable({ data, sorting, onSortChange }: DataTableProps
                 data-state={row.getIsSelected() && "selected"}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell key={cell.id} className="p-2">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -174,7 +152,7 @@ export function StudentsAllTable({ data, sorting, onSortChange }: DataTableProps
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
+                No results found for the selected filters.
               </TableCell>
             </TableRow>
           )}
@@ -183,3 +161,5 @@ export function StudentsAllTable({ data, sorting, onSortChange }: DataTableProps
     </div>
   )
 }
+
+    
