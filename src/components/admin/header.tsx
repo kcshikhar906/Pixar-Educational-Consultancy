@@ -5,7 +5,7 @@ import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { LogOut, PlusCircle, List } from 'lucide-react';
+import { LogOut, PlusCircle, List, BarChart3 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -33,13 +33,14 @@ export default function AdminHeader({ onAddNew }: AdminHeaderProps) {
   };
   
   const navItems = [
+    { href: '/admin/dashboard', label: 'Dashboard', icon: BarChart3 },
     { href: '/admin/students', label: 'Student Management', icon: List },
   ];
 
   return (
     <header className="sticky top-0 z-30 flex h-auto flex-col sm:flex-row items-center gap-4 border-b bg-background px-4 sm:px-6 py-4">
       <div className="flex w-full sm:w-auto items-center justify-between">
-        <Link href="/admin/students" className="flex items-center space-x-2">
+        <Link href="/admin/dashboard" className="flex items-center space-x-2">
             <Image src="/navbar.png" alt="Pixar Edu Logo" width={48} height={48} />
             <h1 className="text-2xl font-bold">Admin Panel</h1>
         </Link>
