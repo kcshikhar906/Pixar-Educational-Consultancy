@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -49,6 +50,18 @@ const StatCard = ({ title, value, icon: Icon, className, description }: StatCard
   </Card>
 );
 
+// Helper to aggregate data case-insensitively
+const aggregateCaseInsensitive = (data: { [key: string]: number } | undefined) => {
+    if (!data) return {};
+    const aggregated: { [key: string]: number } = {};
+    for (const key in data) {
+        // Simple title case for consistency, e.g., "usa" -> "Usa", "DUOLINGO" -> "Duolingo"
+        const normalizedKey = key.charAt(0).toUpperCase() + key.slice(1).toLowerCase();
+        aggregated[normalizedKey] = (aggregated[normalizedKey] || 0) + data[key];
+    }
+    return aggregated;
+};
+
 export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -82,6 +95,9 @@ export default function DashboardPage() {
   const dataMappers = useMemo(() => {
     if (!stats) return {};
 
+    const aggregatedDestinations = aggregateCaseInsensitive(stats.studentsByDestination);
+    const aggregatedEnglishTests = aggregateCaseInsensitive(stats.studentsByEnglishTest);
+
     const sortAndMap = (data: { [key: string]: number } | undefined, nameKey: string, valueKey: string) => {
         if (!data) return [];
         return Object.entries(data)
@@ -90,14 +106,14 @@ export default function DashboardPage() {
     };
     
     return {
-        destinationData: sortAndMap(stats.studentsByDestination, 'name', 'students'),
+        destinationData: sortAndMap(aggregatedDestinations, 'name', 'students'),
         visaStatusData: sortAndMap(stats.visaStatusCounts, 'name', 'value'),
         monthlyAdmissionsData: stats.monthlyAdmissions ? Object.entries(stats.monthlyAdmissions)
             .map(([month, value]) => ({ name: month, students: value }))
             .sort((a, b) => a.name.localeCompare(b.name)) : [],
         counselorData: sortAndMap(stats.studentsByCounselor, 'name', 'students'),
         educationData: sortAndMap(stats.studentsByEducation, 'name', 'students'),
-        englishTestData: sortAndMap(stats.studentsByEnglishTest, 'name', 'value'),
+        englishTestData: sortAndMap(aggregatedEnglishTests, 'name', 'value'),
     };
   }, [stats]);
 
@@ -341,3 +357,5 @@ export default function DashboardPage() {
       </div>
     </main>
   );
+
+    
