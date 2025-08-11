@@ -112,7 +112,7 @@ export default function DashboardPage() {
                                 npx tsx scripts/aggregate-stats.ts
                             </code>
                         </pre>
-                        <p className="mt-2">Run this command whenever you want to see the latest statistics. After the script finishes, refresh this page.</p>
+                        <p className="mt-2">Run this command whenever you want to see the latest statistics. After the script finishes, this page will update automatically.</p>
                     </AlertDescription>
                 </Alert>
              ) : (
@@ -311,5 +311,3 @@ export default function DashboardPage() {
     </main>
   );
 }
-
-    
