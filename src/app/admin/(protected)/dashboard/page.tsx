@@ -23,7 +23,7 @@ const PIE_CHART_COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var
 const BAR_CHART_COLOR = 'hsl(var(--chart-1))';
 
 // --- Data Processing Functions ---
-// These functions are used as a fallback if the /dashboard/stats document doesn't exist.
+// These functions are used as a fallback if the /metrics/dashboard document doesn't exist.
 const processStudentDataForStats = (students: Student[]): DashboardStats => {
   const studentsByCountry: { [country: string]: number } = {};
   const visaStatusCounts: { [status: string]: number } = { 'Approved': 0, 'Rejected': 0, 'Pending': 0, 'Not Applied': 0 };
@@ -66,8 +66,8 @@ export default function DashboardPage() {
   const [isUsingFallback, setIsUsingFallback] = useState(false);
 
   useEffect(() => {
-    // First, try to listen to the efficient summary document
-    const statsDocRef = doc(db, 'dashboard', 'stats');
+    // Listen to the efficient summary document at /metrics/dashboard
+    const statsDocRef = doc(db, 'metrics', 'dashboard');
     const unsubscribe = onSnapshot(statsDocRef, (doc) => {
       if (doc.exists()) {
         setIsUsingFallback(false);
@@ -146,26 +146,15 @@ export default function DashboardPage() {
                 <AlertTitle>Action Required: Firestore Permissions</AlertTitle>
                 <AlertDescription>
                     <p className="font-semibold">The dashboard failed to load due to missing Firestore security rules.</p>
-                    <p>To fix this, please go to your Firebase Console, navigate to **Firestore Database &gt; Rules**, and add the following rule to allow admins to read the dashboard data:</p>
+                    <p>To fix this, please go to your Firebase Console, navigate to **Firestore Database &gt; Rules**, and ensure your rules allow authenticated users to read the `/metrics/dashboard` document. Your rules should include a block similar to this:</p>
                     <pre className="mt-2 p-2 bg-black/80 text-white rounded-md text-xs overflow-x-auto">
                         <code>
-{`rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    // Allow admin users to read/write all student data
-    match /students/{studentId} {
-      allow read, write: if request.auth != null;
-    }
-    
-    // ADD THIS RULE: Allow admins to read dashboard stats
-    match /dashboard/{statId} {
+{`    match /metrics/dashboard {
       allow read: if request.auth != null;
-    }
-  }
-}`}
+    }`}
                         </code>
                     </pre>
-                    <p className="mt-2">After adding this rule and publishing the changes, please refresh this page.</p>
+                    <p className="mt-2">After adding or confirming this rule and publishing the changes, please refresh this page.</p>
                 </AlertDescription>
             </Alert>
         </main>
@@ -191,7 +180,7 @@ service cloud.firestore {
                 <AlertTriangle className="h-4 w-4" />
                 <AlertTitle>Performance Warning: Using Fallback Data</AlertTitle>
                 <AlertDescription>
-                The dashboard is currently calculating stats by reading ALL student records, which can be slow and costly. For optimal performance, a developer should set up a Cloud Function to aggregate data into a `/dashboard/stats` document.
+                The dashboard is currently calculating stats by reading ALL student records because the summary document at `/metrics/dashboard` was not found. This can be slow and costly. For optimal performance, a developer should set up a Cloud Function to aggregate data into this document.
                 </AlertDescription>
             </Alert>
         )}
@@ -289,5 +278,3 @@ service cloud.firestore {
     </main>
   );
 }
-
-    
