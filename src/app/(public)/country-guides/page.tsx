@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -11,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { countryData } from '@/lib/data.tsx';
 import type { CountryInfo, University } from '@/lib/data.tsx';
 import { cn } from '@/lib/utils';
-import { ExternalLink, DollarSign, Clock, FileSpreadsheet, UserCheck, KeyRound, GitCompareArrows } from 'lucide-react';
+import { ExternalLink, DollarSign, Clock, FileSpreadsheet, UserCheck, KeyRound, GitCompareArrows, TrendingUp } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
