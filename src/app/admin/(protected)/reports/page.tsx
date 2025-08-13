@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useCallback } from 'react';
@@ -88,17 +87,14 @@ export default function ReportsPage() {
 
     try {
       const fromTimestamp = Timestamp.fromDate(dateRange.from);
-      const toTimestamp = Timestamp.fromDate(dateRange.to);
+      const toTimestamp = Timestamp.fromDate(new Date(dateRange.to.setHours(23, 59, 59, 999))); // Include end of day
 
       const studentsRef = collection(db, 'students');
 
-      // Specific queries for actions within the date range
-      const newlyAssignedQuery = query(studentsRef, where('assignedTo', '==', counselor), where('timestamp', '>=', fromTimestamp), where('timestamp', '<=', toTimestamp), orderBy('timestamp', 'desc'));
+      constNewlyAssignedQuery = query(studentsRef, where('assignedTo', '==', counselor), where('timestamp', '>=', fromTimestamp), where('timestamp', '<=', toTimestamp), orderBy('timestamp', 'desc'));
       const visasApprovedQuery = query(studentsRef, where('assignedTo', '==', counselor), where('visaStatus', '==', 'Approved'), where('visaStatusUpdateDate', '>=', fromTimestamp), where('visaStatusUpdateDate', '<=', toTimestamp), orderBy('visaStatusUpdateDate', 'desc'));
       const visasRejectedQuery = query(studentsRef, where('assignedTo', '==', counselor), where('visaStatus', '==', 'Rejected'), where('visaStatusUpdateDate', '>=', fromTimestamp), where('visaStatusUpdateDate', '<=', toTimestamp), orderBy('visaStatusUpdateDate', 'desc'));
       const feesPaidInPeriodQuery = query(studentsRef, where('assignedTo', '==', counselor), where('serviceFeeStatus', '==', 'Paid'), where('serviceFeePaidDate', '>=', fromTimestamp), where('serviceFeePaidDate', '<=', toTimestamp), orderBy('serviceFeePaidDate', 'desc'));
-
-      // Query for the total count of paid fees for the counselor, regardless of date
       const totalFeesPaidQuery = query(studentsRef, where('assignedTo', '==', counselor), where('serviceFeeStatus', '==', 'Paid'));
 
       const [newlyAssignedSnap, visasApprovedSnap, visasRejectedSnap, feesPaidInPeriodSnap, totalFeesPaidSnap] = await Promise.all([
@@ -137,8 +133,10 @@ export default function ReportsPage() {
 
   const feeConversionRate = reportData ?
     (reportData.newlyAssigned.length > 0 ?
-      ((reportData.feesPaidInPeriod.length / reportData.newlyAssigned.length) * 100).toFixed(1) : '0.0')
+      ((reportData.newlyAssigned.filter(s => s.serviceFeeStatus === 'Paid').length / reportData.newlyAssigned.length) * 100).toFixed(1) : '0.0')
     : '0.0';
+
+  const totalPaidInNew cohort = reportData?.newlyAssigned.filter(s => s.serviceFeeStatus === 'Paid').length || 0;
 
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
@@ -249,7 +247,7 @@ export default function ReportsPage() {
                         <CardContent>
                             <div className="text-2xl font-bold">{feeConversionRate}%</div>
                             <p className="text-xs text-muted-foreground">
-                                Based on {reportData.newlyAssigned.length} new students and {reportData.feesPaidInPeriod.length} fees paid in this period.
+                                Of the {reportData.newlyAssigned.length} new students in this period, {totalPaidInNew cohort} have paid their fees.
                             </p>
                         </CardContent>
                     </Card>
@@ -279,3 +277,4 @@ export default function ReportsPage() {
     </main>
   );
 }
+
