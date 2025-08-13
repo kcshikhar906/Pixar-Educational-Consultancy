@@ -38,7 +38,7 @@ const updateMetrics = (
 };
 
 const increment = (currentValue: number | undefined) => {
-  return admin.firestore.FieldValue.increment(currentValue === undefined ? 1 : 1);
+  return admin.firestore.FieldValue.increment(currentValue === undefined ? 1: 1);
 };
 
 const decrement = (currentValue: number | undefined) => {
@@ -56,41 +56,82 @@ export const onStudentChange = onDocumentWritten("students/{studentId}",
       // --- Handle Deletes ---
       if (!after) {
         if (!before) return data; // Should not happen
-        data.totalStudents = decrement(data.totalStudents);
         const dest = toTitleCase(before.preferredStudyDestination);
-        data.studentsByDestination = {...data.studentsByDestination, [dest]: decrement(data.studentsByDestination?.[dest])};
         const visa = toTitleCase(before.visaStatus);
-        data.visaStatusCounts = {...data.visaStatusCounts, [visa]: decrement(data.visaStatusCounts?.[visa])};
         const coun = toTitleCase(before.assignedTo);
-        data.studentsByCounselor = {...data.studentsByCounselor, [coun]: decrement(data.studentsByCounselor?.[coun])};
         const fee = toTitleCase(before.serviceFeeStatus);
-        data.serviceFeeStatusCounts = {...data.serviceFeeStatusCounts, [fee]: decrement(data.serviceFeeStatusCounts?.[fee])};
         const edu = toTitleCase(before.lastCompletedEducation);
-        data.studentsByEducation = {...data.studentsByEducation, [edu]: decrement(data.studentsByEducation?.[edu])};
         const test = toTitleCase(before.englishProficiencyTest);
-        data.studentsByEnglishTest = {...data.studentsByEnglishTest, [test]: decrement(data.studentsByEnglishTest?.[test])};
+
+        data.totalStudents = decrement(data.totalStudents);
+        data.studentsByDestination = {
+          ...data.studentsByDestination,
+          [dest]: decrement(data.studentsByDestination?.[dest]),
+        };
+        data.visaStatusCounts = {
+          ...data.visaStatusCounts,
+          [visa]: decrement(data.visaStatusCounts?.[visa]),
+        };
+        data.studentsByCounselor = {
+          ...data.studentsByCounselor,
+          [coun]: decrement(data.studentsByCounselor?.[coun]),
+        };
+        data.serviceFeeStatusCounts = {
+          ...data.serviceFeeStatusCounts,
+          [fee]: decrement(data.serviceFeeStatusCounts?.[fee]),
+        };
+        data.studentsByEducation = {
+          ...data.studentsByEducation,
+          [edu]: decrement(data.studentsByEducation?.[edu]),
+        };
+        data.studentsByEnglishTest = {
+          ...data.studentsByEnglishTest,
+          [test]: decrement(data.studentsByEnglishTest?.[test]),
+        };
         return data;
       }
 
       // --- Handle Creates ---
       if (!before) {
-        data.totalStudents = increment(data.totalStudents);
         const dest = toTitleCase(after.preferredStudyDestination);
-        data.studentsByDestination = {...data.studentsByDestination, [dest]: increment(data.studentsByDestination?.[dest])};
         const visa = toTitleCase(after.visaStatus);
-        data.visaStatusCounts = {...data.visaStatusCounts, [visa]: increment(data.visaStatusCounts?.[visa])};
         const coun = toTitleCase(after.assignedTo);
-        data.studentsByCounselor = {...data.studentsByCounselor, [coun]: increment(data.studentsByCounselor?.[coun])};
         const fee = toTitleCase(after.serviceFeeStatus);
-        data.serviceFeeStatusCounts = {...data.serviceFeeStatusCounts, [fee]: increment(data.serviceFeeStatusCounts?.[fee])};
         const edu = toTitleCase(after.lastCompletedEducation);
-        data.studentsByEducation = {...data.studentsByEducation, [edu]: increment(data.studentsByEducation?.[edu])};
         const test = toTitleCase(after.englishProficiencyTest);
-        data.studentsByEnglishTest = {...data.studentsByEnglishTest, [test]: increment(data.studentsByEnglishTest?.[test])};
-
         const date = after.timestamp.toDate();
-        const monthYear = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-        data.monthlyAdmissions = {...data.monthlyAdmissions, [monthYear]: increment(data.monthlyAdmissions?.[monthYear])};
+        const monthYear =
+          `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+
+        data.totalStudents = increment(data.totalStudents);
+        data.studentsByDestination = {
+          ...data.studentsByDestination,
+          [dest]: increment(data.studentsByDestination?.[dest]),
+        };
+        data.visaStatusCounts = {
+          ...data.visaStatusCounts,
+          [visa]: increment(data.visaStatusCounts?.[visa]),
+        };
+        data.studentsByCounselor = {
+          ...data.studentsByCounselor,
+          [coun]: increment(data.studentsByCounselor?.[coun]),
+        };
+        data.serviceFeeStatusCounts = {
+          ...data.serviceFeeStatusCounts,
+          [fee]: increment(data.serviceFeeStatusCounts?.[fee]),
+        };
+        data.studentsByEducation = {
+          ...data.studentsByEducation,
+          [edu]: increment(data.studentsByEducation?.[edu]),
+        };
+        data.studentsByEnglishTest = {
+          ...data.studentsByEnglishTest,
+          [test]: increment(data.studentsByEnglishTest?.[test]),
+        };
+        data.monthlyAdmissions = {
+          ...data.monthlyAdmissions,
+          [monthYear]: increment(data.monthlyAdmissions?.[monthYear]),
+        };
         return data;
       }
 
@@ -100,32 +141,56 @@ export const onStudentChange = onDocumentWritten("students/{studentId}",
       if (changed("preferredStudyDestination")) {
         const oldVal = toTitleCase(before.preferredStudyDestination);
         const newVal = toTitleCase(after.preferredStudyDestination);
-        data.studentsByDestination = {...data.studentsByDestination, [oldVal]: decrement(data.studentsByDestination?.[oldVal]), [newVal]: increment(data.studentsByDestination?.[newVal])};
+        data.studentsByDestination = {
+          ...data.studentsByDestination,
+          [oldVal]: decrement(data.studentsByDestination?.[oldVal]),
+          [newVal]: increment(data.studentsByDestination?.[newVal]),
+        };
       }
       if (changed("visaStatus")) {
         const oldVal = toTitleCase(before.visaStatus);
         const newVal = toTitleCase(after.visaStatus);
-        data.visaStatusCounts = {...data.visaStatusCounts, [oldVal]: decrement(data.visaStatusCounts?.[oldVal]), [newVal]: increment(data.visaStatusCounts?.[newVal])};
+        data.visaStatusCounts = {
+          ...data.visaStatusCounts,
+          [oldVal]: decrement(data.visaStatusCounts?.[oldVal]),
+          [newVal]: increment(data.visaStatusCounts?.[newVal]),
+        };
       }
       if (changed("assignedTo")) {
         const oldVal = toTitleCase(before.assignedTo);
         const newVal = toTitleCase(after.assignedTo);
-        data.studentsByCounselor = {...data.studentsByCounselor, [oldVal]: decrement(data.studentsByCounselor?.[oldVal]), [newVal]: increment(data.studentsByCounselor?.[newVal])};
+        data.studentsByCounselor = {
+          ...data.studentsByCounselor,
+          [oldVal]: decrement(data.studentsByCounselor?.[oldVal]),
+          [newVal]: increment(data.studentsByCounselor?.[newVal]),
+        };
       }
       if (changed("serviceFeeStatus")) {
         const oldVal = toTitleCase(before.serviceFeeStatus);
         const newVal = toTitleCase(after.serviceFeeStatus);
-        data.serviceFeeStatusCounts = {...data.serviceFeeStatusCounts, [oldVal]: decrement(data.serviceFeeStatusCounts?.[oldVal]), [newVal]: increment(data.serviceFeeStatusCounts?.[newVal])};
+        data.serviceFeeStatusCounts = {
+          ...data.serviceFeeStatusCounts,
+          [oldVal]: decrement(data.serviceFeeStatusCounts?.[oldVal]),
+          [newVal]: increment(data.serviceFeeStatusCounts?.[newVal]),
+        };
       }
       if (changed("lastCompletedEducation")) {
         const oldVal = toTitleCase(before.lastCompletedEducation);
         const newVal = toTitleCase(after.lastCompletedEducation);
-        data.studentsByEducation = {...data.studentsByEducation, [oldVal]: decrement(data.studentsByEducation?.[oldVal]), [newVal]: increment(data.studentsByEducation?.[newVal])};
+        data.studentsByEducation = {
+          ...data.studentsByEducation,
+          [oldVal]: decrement(data.studentsByEducation?.[oldVal]),
+          [newVal]: increment(data.studentsByEducation?.[newVal]),
+        };
       }
       if (changed("englishProficiencyTest")) {
         const oldVal = toTitleCase(before.englishProficiencyTest);
         const newVal = toTitleCase(after.englishProficiencyTest);
-        data.studentsByEnglishTest = {...data.studentsByEnglishTest, [oldVal]: decrement(data.studentsByEnglishTest?.[oldVal]), [newVal]: increment(data.studentsByEnglishTest?.[newVal])};
+        data.studentsByEnglishTest = {
+          ...data.studentsByEnglishTest,
+          [oldVal]: decrement(data.studentsByEnglishTest?.[oldVal]),
+          [newVal]: increment(data.studentsByEnglishTest?.[newVal]),
+        };
       }
       return data;
     });
