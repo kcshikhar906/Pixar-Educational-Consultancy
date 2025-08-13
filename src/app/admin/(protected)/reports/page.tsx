@@ -91,7 +91,7 @@ export default function ReportsPage() {
 
       const studentsRef = collection(db, 'students');
 
-      constNewlyAssignedQuery = query(studentsRef, where('assignedTo', '==', counselor), where('timestamp', '>=', fromTimestamp), where('timestamp', '<=', toTimestamp), orderBy('timestamp', 'desc'));
+      const newlyAssignedQuery = query(studentsRef, where('assignedTo', '==', counselor), where('timestamp', '>=', fromTimestamp), where('timestamp', '<=', toTimestamp), orderBy('timestamp', 'desc'));
       const visasApprovedQuery = query(studentsRef, where('assignedTo', '==', counselor), where('visaStatus', '==', 'Approved'), where('visaStatusUpdateDate', '>=', fromTimestamp), where('visaStatusUpdateDate', '<=', toTimestamp), orderBy('visaStatusUpdateDate', 'desc'));
       const visasRejectedQuery = query(studentsRef, where('assignedTo', '==', counselor), where('visaStatus', '==', 'Rejected'), where('visaStatusUpdateDate', '>=', fromTimestamp), where('visaStatusUpdateDate', '<=', toTimestamp), orderBy('visaStatusUpdateDate', 'desc'));
       const feesPaidInPeriodQuery = query(studentsRef, where('assignedTo', '==', counselor), where('serviceFeeStatus', '==', 'Paid'), where('serviceFeePaidDate', '>=', fromTimestamp), where('serviceFeePaidDate', '<=', toTimestamp), orderBy('serviceFeePaidDate', 'desc'));
@@ -126,17 +126,17 @@ export default function ReportsPage() {
     }
   }, [counselor, dateRange, toast]);
 
-  const visaApprovalRate = reportData ? 
-    (reportData.visasApproved.length + reportData.visasRejected.length > 0 ? 
-      ((reportData.visasApproved.length / (reportData.visasApproved.length + reportData.visasRejected.length)) * 100).toFixed(1) : '0.0') 
+  const visaApprovalRate = reportData ?
+    (reportData.visasApproved.length + reportData.visasRejected.length > 0 ?
+      ((reportData.visasApproved.length / (reportData.visasApproved.length + reportData.visasRejected.length)) * 100).toFixed(1) : '0.0')
     : '0.0';
+
+  const totalPaidInNewCohort = reportData?.newlyAssigned.filter(s => s.serviceFeeStatus === 'Paid').length || 0;
 
   const feeConversionRate = reportData ?
     (reportData.newlyAssigned.length > 0 ?
-      ((reportData.newlyAssigned.filter(s => s.serviceFeeStatus === 'Paid').length / reportData.newlyAssigned.length) * 100).toFixed(1) : '0.0')
+      ((totalPaidInNewCohort / reportData.newlyAssigned.length) * 100).toFixed(1) : '0.0')
     : '0.0';
-
-  const totalPaidInNew cohort = reportData?.newlyAssigned.filter(s => s.serviceFeeStatus === 'Paid').length || 0;
 
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
@@ -247,7 +247,7 @@ export default function ReportsPage() {
                         <CardContent>
                             <div className="text-2xl font-bold">{feeConversionRate}%</div>
                             <p className="text-xs text-muted-foreground">
-                                Of the {reportData.newlyAssigned.length} new students in this period, {totalPaidInNew cohort} have paid their fees.
+                                Of the {reportData.newlyAssigned.length} new students in this period, {totalPaidInNewCohort} have paid their fees.
                             </p>
                         </CardContent>
                     </Card>
@@ -278,3 +278,4 @@ export default function ReportsPage() {
   );
 }
 
+    
