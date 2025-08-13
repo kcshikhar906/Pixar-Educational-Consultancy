@@ -5,7 +5,7 @@ import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { LogOut, PlusCircle, List, BarChart3, Database } from 'lucide-react';
+import { LogOut, PlusCircle, List, BarChart3, Database, ClipboardList } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -36,6 +36,7 @@ export default function AdminHeader({ onAddNew }: AdminHeaderProps) {
     { href: '/admin/dashboard', label: 'Dashboard', icon: BarChart3 },
     { href: '/admin/students', label: 'Student Management', icon: List },
     { href: '/admin/students-all', label: 'Full Data', icon: Database },
+    { href: '/admin/reports', label: 'Reports', icon: ClipboardList },
   ];
 
   return (
