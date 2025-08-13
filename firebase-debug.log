@@ -1,0 +1,730 @@
+[debug] [2025-08-13T03:28:32.739Z] ----------------------------------------------------------------------
+[debug] [2025-08-13T03:28:32.742Z] Command:       /nix/store/ws50yvm6vzlzf7jzz6n7xh4szddrack1-nodejs-20.19.1/bin/node /home/user/.global_modules/bin/firebase deploy --only functions
+[debug] [2025-08-13T03:28:32.742Z] CLI Version:   14.12.0
+[debug] [2025-08-13T03:28:32.743Z] Platform:      linux
+[debug] [2025-08-13T03:28:32.743Z] Node Version:  v20.19.1
+[debug] [2025-08-13T03:28:32.743Z] Time:          Wed Aug 13 2025 03:28:32 GMT+0000 (Coordinated Universal Time)
+[debug] [2025-08-13T03:28:32.743Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-08-13T03:28:33.183Z] No OAuth tokens found
+[debug] [2025-08-13T03:28:33.184Z] No OAuth tokens found
+[error] Failed to fetch Firebase Project from current Studio Workspace: Unable to refresh auth: not yet authenticated.
+[debug] [2025-08-13T03:28:33.189Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:28:33.189Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:28:33.190Z] [iam] checking project pixar-educational-consultancy for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2025-08-13T03:28:33.190Z] No OAuth tokens found
+[debug] [2025-08-13T03:28:33.190Z] No OAuth tokens found
+[debug] [2025-08-13T03:28:33.191Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:28:33.191Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:28:33.192Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy:testIamPermissions [none]
+[debug] [2025-08-13T03:28:33.192Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy:testIamPermissions x-goog-quota-user=projects/pixar-educational-consultancy
+[debug] [2025-08-13T03:28:33.192Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2025-08-13T03:28:34.057Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy:testIamPermissions 200
+[debug] [2025-08-13T03:28:34.058Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2025-08-13T03:28:34.061Z] No OAuth tokens found
+[debug] [2025-08-13T03:28:34.061Z] No OAuth tokens found
+[debug] [2025-08-13T03:28:34.061Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:28:34.062Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:28:34.062Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/pixar-educational-consultancy/serviceAccounts/pixar-educational-consultancy@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2025-08-13T03:28:34.062Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/pixar-educational-consultancy/serviceAccounts/pixar-educational-consultancy@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2025-08-13T03:28:35.081Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/pixar-educational-consultancy/serviceAccounts/pixar-educational-consultancy@appspot.gserviceaccount.com:testIamPermissions 404
+[debug] [2025-08-13T03:28:35.081Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/pixar-educational-consultancy/serviceAccounts/pixar-educational-consultancy@appspot.gserviceaccount.com:testIamPermissions {"error":{"code":404,"message":"Unknown service account","status":"NOT_FOUND"}}
+[debug] [2025-08-13T03:28:35.083Z] [functions] service account IAM check errored, deploy may fail: Request to https://iam.googleapis.com/v1/projects/pixar-educational-consultancy/serviceAccounts/pixar-educational-consultancy@appspot.gserviceaccount.com:testIamPermissions had HTTP Error: 404, Unknown service account {"name":"FirebaseError","children":[],"context":{"body":{"error":{"code":404,"message":"Unknown service account","status":"NOT_FOUND"}},"response":{"statusCode":404}},"exit":1,"message":"Request to https://iam.googleapis.com/v1/projects/pixar-educational-consultancy/serviceAccounts/pixar-educational-consultancy@appspot.gserviceaccount.com:testIamPermissions had HTTP Error: 404, Unknown service account","status":404}
+[info] 
+[info] === Deploying to 'pixar-educational-consultancy'...
+[info] 
+[info] i  deploying functions 
+[info] Running command: npm --prefix "$RESOURCE_DIR" run lint
+[info] Running command: npm --prefix "$RESOURCE_DIR" run build
+[info] ✔  functions: Finished running predeploy script. 
+[debug] [2025-08-13T03:29:07.136Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:07.137Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:07.137Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:29:07.137Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:29:07.141Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy [none]
+[debug] [2025-08-13T03:29:07.971Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy 200
+[debug] [2025-08-13T03:29:07.971Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy {"projectNumber":"286970299360","projectId":"pixar-educational-consultancy","lifecycleState":"ACTIVE","name":"Pixar Educational Consultancy","labels":{"monospace-workspace-id":"studio-7226754057","firebase":"enabled","firebase-core":"disabled"},"createTime":"2025-06-10T03:29:17.277042Z"}
+[info] i  functions: preparing codebase metrics for deployment 
+[info] i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+[info] i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+[info] i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[debug] [2025-08-13T03:29:07.974Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:07.979Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:07.979Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:29:07.979Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:29:07.979Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/pixar-educational-consultancy/adminSdkConfig [none]
+[debug] [2025-08-13T03:29:08.687Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/pixar-educational-consultancy/adminSdkConfig 200
+[debug] [2025-08-13T03:29:08.688Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/pixar-educational-consultancy/adminSdkConfig {"projectId":"pixar-educational-consultancy","storageBucket":"pixar-educational-consultancy.firebasestorage.app"}
+[debug] [2025-08-13T03:29:08.690Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:08.690Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:08.690Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:29:08.690Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:29:08.690Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/pixar-educational-consultancy/configs [none]
+[debug] [2025-08-13T03:29:09.515Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/pixar-educational-consultancy/configs 200
+[debug] [2025-08-13T03:29:09.516Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/pixar-educational-consultancy/configs {}
+[debug] [2025-08-13T03:29:09.523Z] Validating nodejs source
+[debug] [2025-08-13T03:29:10.085Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint --ext .js,.ts .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.1.1",
+    "firebase-functions": "^5.0.1"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^5.7.3"
+  },
+  "private": true
+}
+[debug] [2025-08-13T03:29:10.085Z] Building nodejs source
+[info] i  functions: Loading and analyzing source code for codebase metrics to determine what to deploy 
+[debug] [2025-08-13T03:29:10.087Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-08-13T03:29:10.097Z] Found firebase-functions binary at '/home/user/studio/dashboard/node_modules/.bin/firebase-functions'
+[info] Serving at port 8027
+
+[debug] [2025-08-13T03:29:10.500Z] Got response from /__/functions.yaml {"endpoints":{"onStudentChange":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.written","eventFilters":{"database":"(default)","namespace":"(default)"},"eventFilterPathPatterns":{"document":"students/{studentId}"},"retry":false},"entryPoint":"onStudentChange"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] i  extensions: ensuring required API firebaseextensions.googleapis.com is enabled... 
+[debug] [2025-08-13T03:29:14.637Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:29:14.637Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:29:14.642Z] [iam] checking project pixar-educational-consultancy for permissions ["firebase.projects.get","firebaseextensions.instances.list"]
+[debug] [2025-08-13T03:29:14.643Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:14.643Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:14.643Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:29:14.648Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:29:14.649Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy:testIamPermissions [none]
+[debug] [2025-08-13T03:29:14.649Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy:testIamPermissions x-goog-quota-user=projects/pixar-educational-consultancy
+[debug] [2025-08-13T03:29:14.649Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy:testIamPermissions {"permissions":["firebase.projects.get","firebaseextensions.instances.list"]}
+[debug] [2025-08-13T03:29:15.408Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy:testIamPermissions 200
+[debug] [2025-08-13T03:29:15.410Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy:testIamPermissions {"permissions":["firebase.projects.get","firebaseextensions.instances.list"]}
+[debug] [2025-08-13T03:29:15.411Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:15.411Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:15.411Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:29:15.411Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:29:15.412Z] >>> [apiv2][query] GET https://firebaseextensions.googleapis.com/v1beta/projects/pixar-educational-consultancy/instances pageSize=100&pageToken=
+[debug] [2025-08-13T03:29:16.336Z] <<< [apiv2][status] GET https://firebaseextensions.googleapis.com/v1beta/projects/pixar-educational-consultancy/instances 200
+[debug] [2025-08-13T03:29:16.336Z] <<< [apiv2][body] GET https://firebaseextensions.googleapis.com/v1beta/projects/pixar-educational-consultancy/instances {}
+[info] i  functions: preparing dashboard directory for uploading... 
+[info] i  functions: packaged /home/user/studio/dashboard (100.78 KB) for uploading 
+[debug] [2025-08-13T03:29:16.448Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:16.448Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:16.448Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:29:16.449Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:29:16.449Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/projects/pixar-educational-consultancy/locations/-/functions [none]
+[debug] [2025-08-13T03:29:17.187Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/projects/pixar-educational-consultancy/locations/-/functions 200
+[debug] [2025-08-13T03:29:17.188Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/projects/pixar-educational-consultancy/locations/-/functions {}
+[debug] [2025-08-13T03:29:17.190Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:17.191Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:17.191Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:29:17.191Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:29:17.191Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/-/functions filter=environment%3D%22GEN_2%22
+[debug] [2025-08-13T03:29:18.434Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/-/functions 200
+[debug] [2025-08-13T03:29:18.434Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/-/functions {}
+[debug] [2025-08-13T03:29:18.437Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:18.437Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:18.437Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:29:18.438Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:29:18.438Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/pixar-educational-consultancy/databases/(default) [none]
+[debug] [2025-08-13T03:29:19.584Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/pixar-educational-consultancy/databases/(default) 200
+[debug] [2025-08-13T03:29:19.585Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/pixar-educational-consultancy/databases/(default) {"name":"projects/pixar-educational-consultancy/databases/(default)","uid":"2497220c-4454-492f-998e-d477e902b62d","createTime":"2025-08-04T11:10:37.576365Z","updateTime":"2025-08-04T11:10:37.576365Z","locationId":"us-central1","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2025-08-13T02:29:19.505755Z","appEngineIntegrationMode":"DISABLED","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","databaseEdition":"STANDARD","freeTier":false,"etag":"IPrt7Jjsho8DMIPxxLSw8o4D"}
+[info] i  functions: ensuring required API run.googleapis.com is enabled... 
+[info] i  functions: ensuring required API eventarc.googleapis.com is enabled... 
+[info] i  functions: ensuring required API pubsub.googleapis.com is enabled... 
+[info] i  functions: ensuring required API storage.googleapis.com is enabled... 
+[info] i  functions: generating the service identity for pubsub.googleapis.com... 
+[debug] [2025-08-13T03:29:19.595Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:19.595Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:19.596Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:29:19.596Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[info] i  functions: generating the service identity for eventarc.googleapis.com... 
+[debug] [2025-08-13T03:29:19.596Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:19.597Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:19.597Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:29:19.597Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:29:19.597Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1beta1/projects/286970299360/services/pubsub.googleapis.com:generateServiceIdentity [none]
+[debug] [2025-08-13T03:29:19.597Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1beta1/projects/286970299360/services/pubsub.googleapis.com:generateServiceIdentity x-goog-quota-user=projects/286970299360
+[debug] [2025-08-13T03:29:19.597Z] >>> [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/286970299360/services/pubsub.googleapis.com:generateServiceIdentity {}
+[debug] [2025-08-13T03:29:19.599Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1beta1/projects/286970299360/services/eventarc.googleapis.com:generateServiceIdentity [none]
+[debug] [2025-08-13T03:29:19.599Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1beta1/projects/286970299360/services/eventarc.googleapis.com:generateServiceIdentity x-goog-quota-user=projects/286970299360
+[debug] [2025-08-13T03:29:19.599Z] >>> [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/286970299360/services/eventarc.googleapis.com:generateServiceIdentity {}
+[debug] [2025-08-13T03:29:20.708Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1beta1/projects/286970299360/services/eventarc.googleapis.com:generateServiceIdentity 200
+[debug] [2025-08-13T03:29:20.708Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/286970299360/services/eventarc.googleapis.com:generateServiceIdentity {"name":"operations/finished.DONE_OPERATION","done":true,"response":{"@type":"type.googleapis.com/google.api.serviceusage.v1beta1.ServiceIdentity","email":"service-286970299360@gcp-sa-eventarc.iam.gserviceaccount.com","uniqueId":"115193459468135310900"}}
+[debug] [2025-08-13T03:29:20.772Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1beta1/projects/286970299360/services/pubsub.googleapis.com:generateServiceIdentity 200
+[debug] [2025-08-13T03:29:20.773Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/286970299360/services/pubsub.googleapis.com:generateServiceIdentity {"name":"operations/finished.DONE_OPERATION","done":true,"response":{"@type":"type.googleapis.com/google.api.serviceusage.v1beta1.ServiceIdentity","email":"service-286970299360@gcp-sa-pubsub.iam.gserviceaccount.com","uniqueId":"103386849890502960612"}}
+[debug] [2025-08-13T03:29:20.782Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:20.782Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:20.782Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:29:20.784Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:29:20.784Z] >>> [apiv2][query] GET https://compute.googleapis.com/compute/v1/projects/286970299360 [none]
+[debug] [2025-08-13T03:29:20.996Z] <<< [apiv2][status] GET https://compute.googleapis.com/compute/v1/projects/286970299360 403
+[debug] [2025-08-13T03:29:20.997Z] <<< [apiv2][body] GET https://compute.googleapis.com/compute/v1/projects/286970299360 {"error":{"code":403,"message":"Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","errors":[{"message":"Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","domain":"usageLimits","reason":"accessNotConfigured","extendedHelp":"https://console.developers.google.com"}],"status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"activationUrl":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360","consumer":"projects/286970299360","service":"compute.googleapis.com","serviceTitle":"Compute Engine API","containerInfo":"286970299360"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360"}]}]}}
+[debug] [2025-08-13T03:29:20.998Z] unable to look up default compute service account. Falling back to 286970299360-compute@developer.gserviceaccount.com. Error: {"name":"FirebaseError","children":[],"context":{"body":{"error":{"code":403,"message":"Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","errors":[{"message":"Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","domain":"usageLimits","reason":"accessNotConfigured","extendedHelp":"https://console.developers.google.com"}],"status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"activationUrl":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360","consumer":"projects/286970299360","service":"compute.googleapis.com","serviceTitle":"Compute Engine API","containerInfo":"286970299360"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360"}]}]}},"response":{"statusCode":403}},"exit":1,"message":"Request to https://compute.googleapis.com/compute/v1/projects/286970299360 had HTTP Error: 403, Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":403}
+[debug] [2025-08-13T03:29:20.999Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:20.999Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:20.999Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:29:20.999Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:29:20.999Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/286970299360:getIamPolicy [none]
+[debug] [2025-08-13T03:29:21.910Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/286970299360:getIamPolicy 200
+[debug] [2025-08-13T03:29:21.910Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/286970299360:getIamPolicy {"version":1,"etag":"BwY8Npq46to=","bindings":[{"role":"roles/aiplatform.serviceAgent","members":["serviceAccount:service-286970299360@gcp-sa-aiplatform.iam.gserviceaccount.com"]},{"role":"roles/artifactregistry.serviceAgent","members":["serviceAccount:service-286970299360@gcp-sa-artifactregistry.iam.gserviceaccount.com"]},{"role":"roles/cloudbuild.builds.builder","members":["serviceAccount:286970299360@cloudbuild.gserviceaccount.com"]},{"role":"roles/cloudbuild.serviceAgent","members":["serviceAccount:service-286970299360@gcp-sa-cloudbuild.iam.gserviceaccount.com"]},{"role":"roles/cloudfunctions.serviceAgent","members":["serviceAccount:service-286970299360@gcf-admin-robot.iam.gserviceaccount.com"]},{"role":"roles/containerregistry.ServiceAgent","members":["serviceAccount:service-286970299360@containerregistry.iam.gserviceaccount.com"]},{"role":"roles/developerconnect.readTokenAccessor","members":["serviceAccount:firebase-app-hosting-compute@pixar-educational-consultancy.iam.gserviceaccount.com"]},{"role":"roles/editor","members":["serviceAccount:286970299360-compute@developer.gserviceaccount.com","serviceAccount:286970299360@cloudservices.gserviceaccount.com"]},{"role":"roles/eventarc.eventReceiver","members":["serviceAccount:286970299360-compute@developer.gserviceaccount.com"]},{"role":"roles/firebase.managementServiceAgent","members":["serviceAccount:service-286970299360@gcp-sa-firebase.iam.gserviceaccount.com"]},{"role":"roles/firebase.sdkAdminServiceAgent","members":["serviceAccount:firebase-adminsdk-fbsvc@pixar-educational-consultancy.iam.gserviceaccount.com","serviceAccount:firebase-app-hosting-compute@pixar-educational-consultancy.iam.gserviceaccount.com"]},{"role":"roles/firebaseappcheck.admin","members":["serviceAccount:firebase-adminsdk-fbsvc@pixar-educational-consultancy.iam.gserviceaccount.com"]},{"role":"roles/firebaseapphosting.computeRunner","members":["serviceAccount:firebase-app-hosting-compute@pixar-educational-consultancy.iam.gserviceaccount.com"]},{"role":"roles/firebaseapphosting.serviceAgent","members":["serviceAccount:service-286970299360@gcp-sa-firebaseapphosting.iam.gserviceaccount.com"]},{"role":"roles/firebaseauth.admin","members":["serviceAccount:firebase-adminsdk-fbsvc@pixar-educational-consultancy.iam.gserviceaccount.com"]},{"role":"roles/firebaseml.serviceAgent","members":["serviceAccount:service-286970299360@gcp-sa-firebasevertexai.iam.gserviceaccount.com"]},{"role":"roles/firebasemods.serviceAgent","members":["serviceAccount:service-286970299360@gcp-sa-firebasemods.iam.gserviceaccount.com"]},{"role":"roles/firebaserules.system","members":["serviceAccount:service-286970299360@firebase-rules.iam.gserviceaccount.com"]},{"role":"roles/firebasestorage.serviceAgent","members":["serviceAccount:service-286970299360@gcp-sa-firebasestorage.iam.gserviceaccount.com"]},{"role":"roles/firestore.serviceAgent","members":["serviceAccount:service-286970299360@gcp-sa-firestore.iam.gserviceaccount.com"]},{"role":"roles/iam.serviceAccountTokenCreator","members":["serviceAccount:firebase-adminsdk-fbsvc@pixar-educational-consultancy.iam.gserviceaccount.com","serviceAccount:service-286970299360@gcp-sa-pubsub.iam.gserviceaccount.com"]},{"role":"roles/owner","members":["user:info@pixaredu.com","user:shikharkc63@gmail.com"]},{"role":"roles/resourcemanager.projectIamAdmin","members":["user:info@pixaredu.com","user:shikharkc63@gmail.com"]},{"role":"roles/run.invoker","members":["serviceAccount:286970299360-compute@developer.gserviceaccount.com"]},{"role":"roles/run.serviceAgent","members":["serviceAccount:service-286970299360@serverless-robot-prod.iam.gserviceaccount.com"]},{"role":"roles/secretmanager.admin_withcond_e1a498f59ed3d1d586cf","members":["serviceAccount:service-286970299360@gcp-sa-devconnect.iam.gserviceaccount.com"]},{"role":"roles/storage.admin","members":["serviceAccount:firebase-adminsdk-fbsvc@pixar-educational-consultancy.iam.gserviceaccount.com"]}]}
+[debug] [2025-08-13T03:29:21.912Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:21.912Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:21.912Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:29:21.913Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:29:21.913Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy [none]
+[debug] [2025-08-13T03:29:22.115Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy 200
+[debug] [2025-08-13T03:29:22.115Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy {"projectNumber":"286970299360","projectId":"pixar-educational-consultancy","lifecycleState":"ACTIVE","name":"Pixar Educational Consultancy","labels":{"monospace-workspace-id":"studio-7226754057","firebase":"enabled","firebase-core":"disabled"},"createTime":"2025-06-10T03:29:17.277042Z"}
+[debug] [2025-08-13T03:29:22.116Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:22.116Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:22.116Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:29:22.116Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:29:22.117Z] >>> [apiv2][query] GET https://compute.googleapis.com/compute/v1/projects/286970299360 [none]
+[debug] [2025-08-13T03:29:22.311Z] <<< [apiv2][status] GET https://compute.googleapis.com/compute/v1/projects/286970299360 403
+[debug] [2025-08-13T03:29:22.311Z] <<< [apiv2][body] GET https://compute.googleapis.com/compute/v1/projects/286970299360 {"error":{"code":403,"message":"Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","errors":[{"message":"Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","domain":"usageLimits","reason":"accessNotConfigured","extendedHelp":"https://console.developers.google.com"}],"status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"containerInfo":"286970299360","activationUrl":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360","consumer":"projects/286970299360","service":"compute.googleapis.com","serviceTitle":"Compute Engine API"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360"}]}]}}
+[debug] [2025-08-13T03:29:22.311Z] unable to look up default compute service account. Falling back to 286970299360-compute@developer.gserviceaccount.com. Error: {"name":"FirebaseError","children":[],"context":{"body":{"error":{"code":403,"message":"Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","errors":[{"message":"Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","domain":"usageLimits","reason":"accessNotConfigured","extendedHelp":"https://console.developers.google.com"}],"status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"containerInfo":"286970299360","activationUrl":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360","consumer":"projects/286970299360","service":"compute.googleapis.com","serviceTitle":"Compute Engine API"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360"}]}]}},"response":{"statusCode":403}},"exit":1,"message":"Request to https://compute.googleapis.com/compute/v1/projects/286970299360 had HTTP Error: 403, Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":403}
+[debug] [2025-08-13T03:29:22.321Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:22.321Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:22.322Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:29:22.322Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:29:22.322Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/pixar-educational-consultancy/billingInfo [none]
+[debug] [2025-08-13T03:29:22.575Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/pixar-educational-consultancy/billingInfo 200
+[debug] [2025-08-13T03:29:22.576Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/pixar-educational-consultancy/billingInfo {"name":"projects/pixar-educational-consultancy/billingInfo","projectId":"pixar-educational-consultancy","billingAccountName":"billingAccounts/01F957-D3FB92-B3E710","billingEnabled":true}
+[debug] [2025-08-13T03:29:22.578Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:22.579Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:22.579Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:29:22.579Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:29:22.579Z] >>> [apiv2][query] POST https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/functions:generateUploadUrl [none]
+[debug] [2025-08-13T03:29:24.070Z] <<< [apiv2][status] POST https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/functions:generateUploadUrl 200
+[debug] [2025-08-13T03:29:24.070Z] <<< [apiv2][body] POST https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/functions:generateUploadUrl {"uploadUrl":"https://storage.googleapis.com/gcf-v2-uploads-286970299360.us-central1.cloudfunctions.appspot.com/5ef63709-c882-441d-ae38-8959ece9a1cf.zip?GoogleAccessId=service-286970299360@gcf-admin-robot.iam.gserviceaccount.com&Expires=1755057563&Signature=FL%2F4i8%2FErEczPdJ2uEw6%2F119oPsiI3QvwhZvoEsfTSH5pJuntN4GYaLbb1Gs4gmuRR0YRYuxbxlyI4sHEish2kJWig0AbXDc8rZ42mC5VVZwnXpyLRMvDDZTC%2BI4IG2uG0NqkthAftrcu9H9%2FoBxYl9IHAjybTdXJIZK3XObsBN%2FNVvmFHyGnfKtyAk7IKs3f6XldzNsV9FMjDL01xGUc%2FOXHFnkRwBYX85QrXtSFh7V8hn298I74DnORBzEz0arwZ4zXnDdKo%2BBQWV1dX0ei1k4wyGz6RpFHJbMk3vvzkcwps37ww8fVEZl0m2OYVU4tyy9D2SCDmhNYk0TCb%2BU0g%3D%3D","storageSource":{"bucket":"gcf-v2-uploads-286970299360.us-central1.cloudfunctions.appspot.com","object":"5ef63709-c882-441d-ae38-8959ece9a1cf.zip"}}
+[debug] [2025-08-13T03:29:24.075Z] >>> [apiv2][query] PUT https://storage.googleapis.com/gcf-v2-uploads-286970299360.us-central1.cloudfunctions.appspot.com/5ef63709-c882-441d-ae38-8959ece9a1cf.zip GoogleAccessId=service-286970299360%40gcf-admin-robot.iam.gserviceaccount.com&Expires=1755057563&Signature=FL%2F4i8%2FErEczPdJ2uEw6%2F119oPsiI3QvwhZvoEsfTSH5pJuntN4GYaLbb1Gs4gmuRR0YRYuxbxlyI4sHEish2kJWig0AbXDc8rZ42mC5VVZwnXpyLRMvDDZTC%2BI4IG2uG0NqkthAftrcu9H9%2FoBxYl9IHAjybTdXJIZK3XObsBN%2FNVvmFHyGnfKtyAk7IKs3f6XldzNsV9FMjDL01xGUc%2FOXHFnkRwBYX85QrXtSFh7V8hn298I74DnORBzEz0arwZ4zXnDdKo%2BBQWV1dX0ei1k4wyGz6RpFHJbMk3vvzkcwps37ww8fVEZl0m2OYVU4tyy9D2SCDmhNYk0TCb%2BU0g%3D%3D
+[debug] [2025-08-13T03:29:24.077Z] >>> [apiv2][body] PUT https://storage.googleapis.com/gcf-v2-uploads-286970299360.us-central1.cloudfunctions.appspot.com/5ef63709-c882-441d-ae38-8959ece9a1cf.zip [stream]
+[debug] [2025-08-13T03:29:25.366Z] <<< [apiv2][status] PUT https://storage.googleapis.com/gcf-v2-uploads-286970299360.us-central1.cloudfunctions.appspot.com/5ef63709-c882-441d-ae38-8959ece9a1cf.zip 200
+[debug] [2025-08-13T03:29:25.366Z] <<< [apiv2][body] PUT https://storage.googleapis.com/gcf-v2-uploads-286970299360.us-central1.cloudfunctions.appspot.com/5ef63709-c882-441d-ae38-8959ece9a1cf.zip [omitted]
+[info] ✔  functions: dashboard folder uploaded successfully 
+[info] i  functions: creating Node.js 22 (2nd Gen) function metrics:onStudentChange(us-central1)... 
+[debug] [2025-08-13T03:29:25.378Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:25.381Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:25.381Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:29:25.381Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:29:25.382Z] >>> [apiv2][query] POST https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/functions functionId=onStudentChange
+[debug] [2025-08-13T03:29:25.382Z] >>> [apiv2][body] POST https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/functions {"name":"projects/pixar-educational-consultancy/locations/us-central1/functions/onStudentChange","buildConfig":{"runtime":"nodejs22","entryPoint":"onStudentChange","source":{"storageSource":{"bucket":"gcf-v2-uploads-286970299360.us-central1.cloudfunctions.appspot.com","object":"5ef63709-c882-441d-ae38-8959ece9a1cf.zip"}},"environmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""}},"serviceConfig":{"environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"pixar-educational-consultancy\",\"storageBucket\":\"pixar-educational-consultancy.firebasestorage.app\"}","GCLOUD_PROJECT":"pixar-educational-consultancy","EVENTARC_CLOUD_EVENT_SOURCE":"projects/pixar-educational-consultancy/locations/us-central1/services/onStudentChange","FUNCTION_SIGNATURE_TYPE":"cloudevent","FUNCTION_TARGET":"onStudentChange","LOG_EXECUTION_ID":"true"},"ingressSettings":null,"timeoutSeconds":null,"serviceAccountEmail":null,"availableMemory":"256Mi","minInstanceCount":null,"maxInstanceCount":null,"maxInstanceRequestConcurrency":80,"availableCpu":"1","vpcConnector":null,"vpcConnectorEgressSettings":null},"labels":{"deployment-tool":"cli-firebase--project-idx","firebase-functions-codebase":"metrics","firebase-functions-hash":"d67f58d6aafb5610b539e16c1cb6a3515a789be7"},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.written","retryPolicy":"RETRY_POLICY_DO_NOT_RETRY","eventFilters":[{"attribute":"database","value":"(default)"},{"attribute":"namespace","value":"(default)"},{"attribute":"document","value":"students/{studentId}","operator":"match-path-pattern"}],"triggerRegion":"us-central1"}}
+[debug] [2025-08-13T03:29:42.534Z] <<< [apiv2][status] POST https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/functions 400
+[debug] [2025-08-13T03:29:42.535Z] <<< [apiv2][body] POST https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/functions {"error":{"code":400,"message":"Validation failed for trigger projects/pixar-educational-consultancy/locations/us-central1/triggers/onstudentchange-812012: Invalid resource state for \"\": Permission denied while using the Eventarc Service Agent. If you recently started to use Eventarc, it may take a few minutes before all necessary permissions are propagated to the Service Agent. Otherwise, verify that it has Eventarc Service Agent role.","status":"FAILED_PRECONDITION"}}
+[warn] ⚠  functions: Request to https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/functions?functionId=onStudentChange had HTTP Error: 400, Validation failed for trigger projects/pixar-educational-consultancy/locations/us-central1/triggers/onstudentchange-812012: Invalid resource state for "": Permission denied while using the Eventarc Service Agent. If you recently started to use Eventarc, it may take a few minutes before all necessary permissions are propagated to the Service Agent. Otherwise, verify that it has Eventarc Service Agent role. 
+[warn] ⚠  functions: Since this is your first time using 2nd gen functions, we need a little bit longer to finish setting everything up. Retry the deployment in a few minutes. 
+[warn] ⚠  functions:  failed to create function projects/pixar-educational-consultancy/locations/us-central1/functions/onStudentChange 
+[error] Failed to create function projects/pixar-educational-consultancy/locations/us-central1/functions/onStudentChange
+[debug] [2025-08-13T03:29:42.546Z] Total Function Deployment time: 17170
+[debug] [2025-08-13T03:29:42.546Z] 1 Functions Deployed
+[debug] [2025-08-13T03:29:42.547Z] 1 Functions Errored
+[debug] [2025-08-13T03:29:42.547Z] 0 Function Deployments Aborted
+[debug] [2025-08-13T03:29:42.547Z] Average Function Deployment time: 17169
+[info] 
+[info] Functions deploy had errors with the following functions:
+	metrics:onStudentChange(us-central1)
+[debug] [2025-08-13T03:29:42.584Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:42.585Z] No OAuth tokens found
+[debug] [2025-08-13T03:29:42.585Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:29:42.585Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:29:42.585Z] >>> [apiv2][query] GET https://artifactregistry.googleapis.com/v1/projects/pixar-educational-consultancy/locations/us-central1/repositories/gcf-artifacts [none]
+[debug] [2025-08-13T03:29:43.547Z] <<< [apiv2][status] GET https://artifactregistry.googleapis.com/v1/projects/pixar-educational-consultancy/locations/us-central1/repositories/gcf-artifacts 404
+[debug] [2025-08-13T03:29:43.548Z] <<< [apiv2][body] GET https://artifactregistry.googleapis.com/v1/projects/pixar-educational-consultancy/locations/us-central1/repositories/gcf-artifacts {"error":{"code":404,"message":"Requested entity was not found.","status":"NOT_FOUND"}}
+[debug] [2025-08-13T03:29:43.548Z] Failed to check artifact cleanup policy for region us-central1: Request to https://artifactregistry.googleapis.com/v1/projects/pixar-educational-consultancy/locations/us-central1/repositories/gcf-artifacts had HTTP Error: 404, Requested entity was not found. {"name":"FirebaseError","children":[],"context":{"body":{"error":{"code":404,"message":"Requested entity was not found.","status":"NOT_FOUND"}},"response":{"statusCode":404}},"exit":1,"message":"Request to https://artifactregistry.googleapis.com/v1/projects/pixar-educational-consultancy/locations/us-central1/repositories/gcf-artifacts had HTTP Error: 404, Requested entity was not found.","status":404}
+[debug] [2025-08-13T03:29:43.548Z] Functions deploy failed.
+[debug] [2025-08-13T03:29:43.549Z] {
+  "endpoint": {
+    "id": "onStudentChange",
+    "project": "pixar-educational-consultancy",
+    "region": "us-central1",
+    "entryPoint": "onStudentChange",
+    "platform": "gcfv2",
+    "runtime": "nodejs22",
+    "eventTrigger": {
+      "eventType": "google.cloud.firestore.document.v1.written",
+      "retry": false,
+      "eventFilters": {
+        "database": "(default)",
+        "namespace": "(default)"
+      },
+      "eventFilterPathPatterns": {
+        "document": "students/{studentId}"
+      },
+      "region": "us-central1"
+    },
+    "labels": {
+      "deployment-tool": "cli-firebase--project-idx"
+    },
+    "serviceAccount": null,
+    "ingressSettings": null,
+    "availableMemoryMb": null,
+    "timeoutSeconds": null,
+    "maxInstances": null,
+    "minInstances": null,
+    "concurrency": 80,
+    "vpc": null,
+    "environmentVariables": {
+      "FIREBASE_CONFIG": "{\"projectId\":\"pixar-educational-consultancy\",\"storageBucket\":\"pixar-educational-consultancy.firebasestorage.app\"}",
+      "GCLOUD_PROJECT": "pixar-educational-consultancy",
+      "EVENTARC_CLOUD_EVENT_SOURCE": "projects/pixar-educational-consultancy/locations/us-central1/services/onStudentChange"
+    },
+    "codebase": "metrics",
+    "cpu": 1,
+    "targetedByOnly": false,
+    "hash": "d67f58d6aafb5610b539e16c1cb6a3515a789be7"
+  },
+  "op": "create",
+  "original": {
+    "name": "FirebaseError",
+    "children": [],
+    "context": {
+      "function": "projects/pixar-educational-consultancy/locations/us-central1/functions/onStudentChange"
+    },
+    "exit": 1,
+    "message": "Failed to create function projects/pixar-educational-consultancy/locations/us-central1/functions/onStudentChange",
+    "original": {
+      "name": "FirebaseError",
+      "children": [],
+      "context": {
+        "body": {
+          "error": {
+            "code": 400,
+            "message": "Validation failed for trigger projects/pixar-educational-consultancy/locations/us-central1/triggers/onstudentchange-812012: Invalid resource state for \"\": Permission denied while using the Eventarc Service Agent. If you recently started to use Eventarc, it may take a few minutes before all necessary permissions are propagated to the Service Agent. Otherwise, verify that it has Eventarc Service Agent role.",
+            "status": "FAILED_PRECONDITION"
+          }
+        },
+        "response": {
+          "statusCode": 400
+        }
+      },
+      "exit": 1,
+      "message": "Request to https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/functions?functionId=onStudentChange had HTTP Error: 400, Validation failed for trigger projects/pixar-educational-consultancy/locations/us-central1/triggers/onstudentchange-812012: Invalid resource state for \"\": Permission denied while using the Eventarc Service Agent. If you recently started to use Eventarc, it may take a few minutes before all necessary permissions are propagated to the Service Agent. Otherwise, verify that it has Eventarc Service Agent role.",
+      "status": 400
+    },
+    "status": 400,
+    "code": 400
+  }
+}
+[debug] [2025-08-13T03:29:43.565Z] Error: Failed to create function onStudentChange in region us-central1
+    at /home/user/.global_modules/lib/node_modules/firebase-tools/lib/deploy/functions/release/fabricator.js:294:27
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Fabricator.createV2Function (/home/user/.global_modules/lib/node_modules/firebase-tools/lib/deploy/functions/release/fabricator.js:278:30)
+    at async Fabricator.createEndpoint (/home/user/.global_modules/lib/node_modules/firebase-tools/lib/deploy/functions/release/fabricator.js:137:13)
+    at async handle (/home/user/.global_modules/lib/node_modules/firebase-tools/lib/deploy/functions/release/fabricator.js:89:17)
+[error] 
+[error] Error: There was an error deploying functions
+[debug] [2025-08-13T03:52:42.618Z] ----------------------------------------------------------------------
+[debug] [2025-08-13T03:52:42.620Z] Command:       /nix/store/ws50yvm6vzlzf7jzz6n7xh4szddrack1-nodejs-20.19.1/bin/node /home/user/.global_modules/bin/firebase deploy --only functions
+[debug] [2025-08-13T03:52:42.621Z] CLI Version:   14.12.0
+[debug] [2025-08-13T03:52:42.621Z] Platform:      linux
+[debug] [2025-08-13T03:52:42.621Z] Node Version:  v20.19.1
+[debug] [2025-08-13T03:52:42.621Z] Time:          Wed Aug 13 2025 03:52:42 GMT+0000 (Coordinated Universal Time)
+[debug] [2025-08-13T03:52:42.621Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-08-13T03:52:43.190Z] No OAuth tokens found
+[debug] [2025-08-13T03:52:43.191Z] No OAuth tokens found
+[error] Failed to fetch Firebase Project from current Studio Workspace: Unable to refresh auth: not yet authenticated.
+[debug] [2025-08-13T03:52:43.201Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:52:43.202Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:52:43.204Z] [iam] checking project pixar-educational-consultancy for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2025-08-13T03:52:43.207Z] No OAuth tokens found
+[debug] [2025-08-13T03:52:43.210Z] No OAuth tokens found
+[debug] [2025-08-13T03:52:43.210Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:52:43.210Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:52:43.214Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy:testIamPermissions [none]
+[debug] [2025-08-13T03:52:43.215Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy:testIamPermissions x-goog-quota-user=projects/pixar-educational-consultancy
+[debug] [2025-08-13T03:52:43.215Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2025-08-13T03:52:44.080Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy:testIamPermissions 200
+[debug] [2025-08-13T03:52:44.080Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2025-08-13T03:52:44.083Z] No OAuth tokens found
+[debug] [2025-08-13T03:52:44.083Z] No OAuth tokens found
+[debug] [2025-08-13T03:52:44.084Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:52:44.084Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:52:44.084Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/pixar-educational-consultancy/serviceAccounts/pixar-educational-consultancy@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2025-08-13T03:52:44.084Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/pixar-educational-consultancy/serviceAccounts/pixar-educational-consultancy@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2025-08-13T03:52:45.068Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/pixar-educational-consultancy/serviceAccounts/pixar-educational-consultancy@appspot.gserviceaccount.com:testIamPermissions 404
+[debug] [2025-08-13T03:52:45.069Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/pixar-educational-consultancy/serviceAccounts/pixar-educational-consultancy@appspot.gserviceaccount.com:testIamPermissions {"error":{"code":404,"message":"Unknown service account","status":"NOT_FOUND"}}
+[debug] [2025-08-13T03:52:45.070Z] [functions] service account IAM check errored, deploy may fail: Request to https://iam.googleapis.com/v1/projects/pixar-educational-consultancy/serviceAccounts/pixar-educational-consultancy@appspot.gserviceaccount.com:testIamPermissions had HTTP Error: 404, Unknown service account {"name":"FirebaseError","children":[],"context":{"body":{"error":{"code":404,"message":"Unknown service account","status":"NOT_FOUND"}},"response":{"statusCode":404}},"exit":1,"message":"Request to https://iam.googleapis.com/v1/projects/pixar-educational-consultancy/serviceAccounts/pixar-educational-consultancy@appspot.gserviceaccount.com:testIamPermissions had HTTP Error: 404, Unknown service account","status":404}
+[info] 
+[info] === Deploying to 'pixar-educational-consultancy'...
+[info] 
+[info] i  deploying functions 
+[info] Running command: npm --prefix "$RESOURCE_DIR" run lint
+[info] Running command: npm --prefix "$RESOURCE_DIR" run build
+[info] ✔  functions: Finished running predeploy script. 
+[debug] [2025-08-13T03:53:27.942Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:27.944Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:27.944Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:53:27.946Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:53:27.946Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy [none]
+[debug] [2025-08-13T03:53:28.761Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy 200
+[debug] [2025-08-13T03:53:28.761Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy {"projectNumber":"286970299360","projectId":"pixar-educational-consultancy","lifecycleState":"ACTIVE","name":"Pixar Educational Consultancy","labels":{"monospace-workspace-id":"studio-7226754057","firebase":"enabled","firebase-core":"disabled"},"createTime":"2025-06-10T03:29:17.277042Z"}
+[info] i  functions: preparing codebase metrics for deployment 
+[info] i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+[info] i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+[info] i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[debug] [2025-08-13T03:53:28.765Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:28.765Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:28.765Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:53:28.765Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:53:28.766Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/pixar-educational-consultancy/adminSdkConfig [none]
+[debug] [2025-08-13T03:53:29.577Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/pixar-educational-consultancy/adminSdkConfig 200
+[debug] [2025-08-13T03:53:29.578Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/pixar-educational-consultancy/adminSdkConfig {"projectId":"pixar-educational-consultancy","storageBucket":"pixar-educational-consultancy.firebasestorage.app"}
+[debug] [2025-08-13T03:53:29.579Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:29.579Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:29.580Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:53:29.580Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:53:29.580Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/pixar-educational-consultancy/configs [none]
+[debug] [2025-08-13T03:53:29.848Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/pixar-educational-consultancy/configs 200
+[debug] [2025-08-13T03:53:29.848Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/pixar-educational-consultancy/configs {}
+[debug] [2025-08-13T03:53:29.853Z] Validating nodejs source
+[debug] [2025-08-13T03:53:30.473Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint --ext .js,.ts .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.1.1",
+    "firebase-functions": "^5.0.1"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^5.7.3"
+  },
+  "private": true
+}
+[debug] [2025-08-13T03:53:30.474Z] Building nodejs source
+[info] i  functions: Loading and analyzing source code for codebase metrics to determine what to deploy 
+[debug] [2025-08-13T03:53:30.475Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-08-13T03:53:30.482Z] Found firebase-functions binary at '/home/user/studio/dashboard/node_modules/.bin/firebase-functions'
+[info] Serving at port 8604
+
+[debug] [2025-08-13T03:53:30.865Z] Got response from /__/functions.yaml {"endpoints":{"onStudentChange":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.written","eventFilters":{"database":"(default)","namespace":"(default)"},"eventFilterPathPatterns":{"document":"students/{studentId}"},"retry":false},"entryPoint":"onStudentChange"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] i  extensions: ensuring required API firebaseextensions.googleapis.com is enabled... 
+[debug] [2025-08-13T03:53:34.931Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:53:34.931Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:53:34.931Z] [iam] checking project pixar-educational-consultancy for permissions ["firebase.projects.get","firebaseextensions.instances.list"]
+[debug] [2025-08-13T03:53:34.932Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:34.932Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:34.932Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:53:34.932Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:53:34.936Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy:testIamPermissions [none]
+[debug] [2025-08-13T03:53:34.936Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy:testIamPermissions x-goog-quota-user=projects/pixar-educational-consultancy
+[debug] [2025-08-13T03:53:34.936Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy:testIamPermissions {"permissions":["firebase.projects.get","firebaseextensions.instances.list"]}
+[debug] [2025-08-13T03:53:35.712Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy:testIamPermissions 200
+[debug] [2025-08-13T03:53:35.713Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy:testIamPermissions {"permissions":["firebase.projects.get","firebaseextensions.instances.list"]}
+[debug] [2025-08-13T03:53:35.714Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:35.714Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:35.715Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:53:35.715Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:53:35.716Z] >>> [apiv2][query] GET https://firebaseextensions.googleapis.com/v1beta/projects/pixar-educational-consultancy/instances pageSize=100&pageToken=
+[debug] [2025-08-13T03:53:36.638Z] <<< [apiv2][status] GET https://firebaseextensions.googleapis.com/v1beta/projects/pixar-educational-consultancy/instances 200
+[debug] [2025-08-13T03:53:36.639Z] <<< [apiv2][body] GET https://firebaseextensions.googleapis.com/v1beta/projects/pixar-educational-consultancy/instances {}
+[info] i  functions: preparing dashboard directory for uploading... 
+[info] i  functions: packaged /home/user/studio/dashboard (100.78 KB) for uploading 
+[debug] [2025-08-13T03:53:36.739Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:36.740Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:36.740Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:53:36.740Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:53:36.740Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/projects/pixar-educational-consultancy/locations/-/functions [none]
+[debug] [2025-08-13T03:53:37.572Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/projects/pixar-educational-consultancy/locations/-/functions 200
+[debug] [2025-08-13T03:53:37.577Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/projects/pixar-educational-consultancy/locations/-/functions {}
+[debug] [2025-08-13T03:53:37.578Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:37.580Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:37.580Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:53:37.581Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:53:37.581Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/-/functions filter=environment%3D%22GEN_2%22
+[debug] [2025-08-13T03:53:38.896Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/-/functions 200
+[debug] [2025-08-13T03:53:38.901Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/-/functions {}
+[debug] [2025-08-13T03:53:38.916Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:38.916Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:38.916Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:53:38.916Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:53:38.917Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/pixar-educational-consultancy/databases/(default) [none]
+[debug] [2025-08-13T03:53:40.087Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/pixar-educational-consultancy/databases/(default) 200
+[debug] [2025-08-13T03:53:40.092Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/pixar-educational-consultancy/databases/(default) {"name":"projects/pixar-educational-consultancy/databases/(default)","uid":"2497220c-4454-492f-998e-d477e902b62d","createTime":"2025-08-04T11:10:37.576365Z","updateTime":"2025-08-04T11:10:37.576365Z","locationId":"us-central1","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2025-08-13T02:53:40.003466Z","appEngineIntegrationMode":"DISABLED","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","databaseEdition":"STANDARD","freeTier":false,"etag":"ILjHotHxho8DMIPxxLSw8o4D"}
+[info] i  functions: ensuring required API run.googleapis.com is enabled... 
+[info] i  functions: ensuring required API eventarc.googleapis.com is enabled... 
+[info] i  functions: ensuring required API pubsub.googleapis.com is enabled... 
+[info] i  functions: ensuring required API storage.googleapis.com is enabled... 
+[info] i  functions: generating the service identity for pubsub.googleapis.com... 
+[debug] [2025-08-13T03:53:40.106Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:40.106Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:40.106Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:53:40.107Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[info] i  functions: generating the service identity for eventarc.googleapis.com... 
+[debug] [2025-08-13T03:53:40.108Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:40.108Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:40.108Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:53:40.109Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:53:40.109Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1beta1/projects/286970299360/services/pubsub.googleapis.com:generateServiceIdentity [none]
+[debug] [2025-08-13T03:53:40.109Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1beta1/projects/286970299360/services/pubsub.googleapis.com:generateServiceIdentity x-goog-quota-user=projects/286970299360
+[debug] [2025-08-13T03:53:40.109Z] >>> [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/286970299360/services/pubsub.googleapis.com:generateServiceIdentity {}
+[debug] [2025-08-13T03:53:40.113Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1beta1/projects/286970299360/services/eventarc.googleapis.com:generateServiceIdentity [none]
+[debug] [2025-08-13T03:53:40.114Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1beta1/projects/286970299360/services/eventarc.googleapis.com:generateServiceIdentity x-goog-quota-user=projects/286970299360
+[debug] [2025-08-13T03:53:40.114Z] >>> [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/286970299360/services/eventarc.googleapis.com:generateServiceIdentity {}
+[debug] [2025-08-13T03:53:41.249Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1beta1/projects/286970299360/services/eventarc.googleapis.com:generateServiceIdentity 200
+[debug] [2025-08-13T03:53:41.249Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/286970299360/services/eventarc.googleapis.com:generateServiceIdentity {"name":"operations/finished.DONE_OPERATION","done":true,"response":{"@type":"type.googleapis.com/google.api.serviceusage.v1beta1.ServiceIdentity","email":"service-286970299360@gcp-sa-eventarc.iam.gserviceaccount.com","uniqueId":"115193459468135310900"}}
+[debug] [2025-08-13T03:53:41.284Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1beta1/projects/286970299360/services/pubsub.googleapis.com:generateServiceIdentity 200
+[debug] [2025-08-13T03:53:41.285Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/286970299360/services/pubsub.googleapis.com:generateServiceIdentity {"name":"operations/finished.DONE_OPERATION","done":true,"response":{"@type":"type.googleapis.com/google.api.serviceusage.v1beta1.ServiceIdentity","email":"service-286970299360@gcp-sa-pubsub.iam.gserviceaccount.com","uniqueId":"103386849890502960612"}}
+[debug] [2025-08-13T03:53:41.305Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:41.308Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:41.308Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:53:41.308Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:53:41.308Z] >>> [apiv2][query] GET https://compute.googleapis.com/compute/v1/projects/286970299360 [none]
+[debug] [2025-08-13T03:53:41.523Z] <<< [apiv2][status] GET https://compute.googleapis.com/compute/v1/projects/286970299360 403
+[debug] [2025-08-13T03:53:41.526Z] <<< [apiv2][body] GET https://compute.googleapis.com/compute/v1/projects/286970299360 {"error":{"code":403,"message":"Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","errors":[{"message":"Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","domain":"usageLimits","reason":"accessNotConfigured","extendedHelp":"https://console.developers.google.com"}],"status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"activationUrl":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360","consumer":"projects/286970299360","service":"compute.googleapis.com","containerInfo":"286970299360","serviceTitle":"Compute Engine API"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360"}]}]}}
+[debug] [2025-08-13T03:53:41.528Z] unable to look up default compute service account. Falling back to 286970299360-compute@developer.gserviceaccount.com. Error: {"name":"FirebaseError","children":[],"context":{"body":{"error":{"code":403,"message":"Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","errors":[{"message":"Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","domain":"usageLimits","reason":"accessNotConfigured","extendedHelp":"https://console.developers.google.com"}],"status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"activationUrl":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360","consumer":"projects/286970299360","service":"compute.googleapis.com","containerInfo":"286970299360","serviceTitle":"Compute Engine API"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360"}]}]}},"response":{"statusCode":403}},"exit":1,"message":"Request to https://compute.googleapis.com/compute/v1/projects/286970299360 had HTTP Error: 403, Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":403}
+[debug] [2025-08-13T03:53:41.532Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:41.532Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:41.532Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:53:41.532Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:53:41.532Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/286970299360:getIamPolicy [none]
+[debug] [2025-08-13T03:53:42.404Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/286970299360:getIamPolicy 200
+[debug] [2025-08-13T03:53:42.408Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/286970299360:getIamPolicy {"version":1,"etag":"BwY8Nwdwqv0=","bindings":[{"role":"roles/aiplatform.serviceAgent","members":["serviceAccount:service-286970299360@gcp-sa-aiplatform.iam.gserviceaccount.com"]},{"role":"roles/artifactregistry.serviceAgent","members":["serviceAccount:service-286970299360@gcp-sa-artifactregistry.iam.gserviceaccount.com"]},{"role":"roles/cloudbuild.builds.builder","members":["serviceAccount:286970299360@cloudbuild.gserviceaccount.com"]},{"role":"roles/cloudbuild.serviceAgent","members":["serviceAccount:service-286970299360@gcp-sa-cloudbuild.iam.gserviceaccount.com"]},{"role":"roles/cloudfunctions.serviceAgent","members":["serviceAccount:service-286970299360@gcf-admin-robot.iam.gserviceaccount.com"]},{"role":"roles/containerregistry.ServiceAgent","members":["serviceAccount:service-286970299360@containerregistry.iam.gserviceaccount.com"]},{"role":"roles/developerconnect.readTokenAccessor","members":["serviceAccount:firebase-app-hosting-compute@pixar-educational-consultancy.iam.gserviceaccount.com"]},{"role":"roles/editor","members":["serviceAccount:286970299360-compute@developer.gserviceaccount.com","serviceAccount:286970299360@cloudservices.gserviceaccount.com"]},{"role":"roles/eventarc.eventReceiver","members":["serviceAccount:286970299360-compute@developer.gserviceaccount.com"]},{"role":"roles/eventarc.serviceAgent","members":["serviceAccount:286970299360-compute@developer.gserviceaccount.com","serviceAccount:service-286970299360@gcp-sa-eventarc.iam.gserviceaccount.com"]},{"role":"roles/firebase.managementServiceAgent","members":["serviceAccount:service-286970299360@gcp-sa-firebase.iam.gserviceaccount.com"]},{"role":"roles/firebase.sdkAdminServiceAgent","members":["serviceAccount:firebase-adminsdk-fbsvc@pixar-educational-consultancy.iam.gserviceaccount.com","serviceAccount:firebase-app-hosting-compute@pixar-educational-consultancy.iam.gserviceaccount.com"]},{"role":"roles/firebaseappcheck.admin","members":["serviceAccount:firebase-adminsdk-fbsvc@pixar-educational-consultancy.iam.gserviceaccount.com"]},{"role":"roles/firebaseapphosting.computeRunner","members":["serviceAccount:firebase-app-hosting-compute@pixar-educational-consultancy.iam.gserviceaccount.com"]},{"role":"roles/firebaseapphosting.serviceAgent","members":["serviceAccount:service-286970299360@gcp-sa-firebaseapphosting.iam.gserviceaccount.com"]},{"role":"roles/firebaseauth.admin","members":["serviceAccount:firebase-adminsdk-fbsvc@pixar-educational-consultancy.iam.gserviceaccount.com"]},{"role":"roles/firebaseml.serviceAgent","members":["serviceAccount:service-286970299360@gcp-sa-firebasevertexai.iam.gserviceaccount.com"]},{"role":"roles/firebasemods.serviceAgent","members":["serviceAccount:service-286970299360@gcp-sa-firebasemods.iam.gserviceaccount.com"]},{"role":"roles/firebaserules.system","members":["serviceAccount:service-286970299360@firebase-rules.iam.gserviceaccount.com"]},{"role":"roles/firebasestorage.serviceAgent","members":["serviceAccount:service-286970299360@gcp-sa-firebasestorage.iam.gserviceaccount.com"]},{"role":"roles/firestore.serviceAgent","members":["serviceAccount:service-286970299360@gcp-sa-firestore.iam.gserviceaccount.com"]},{"role":"roles/iam.serviceAccountTokenCreator","members":["serviceAccount:firebase-adminsdk-fbsvc@pixar-educational-consultancy.iam.gserviceaccount.com","serviceAccount:service-286970299360@gcp-sa-pubsub.iam.gserviceaccount.com"]},{"role":"roles/owner","members":["user:info@pixaredu.com","user:shikharkc63@gmail.com"]},{"role":"roles/resourcemanager.projectIamAdmin","members":["user:info@pixaredu.com","user:shikharkc63@gmail.com"]},{"role":"roles/run.invoker","members":["serviceAccount:286970299360-compute@developer.gserviceaccount.com"]},{"role":"roles/run.serviceAgent","members":["serviceAccount:service-286970299360@serverless-robot-prod.iam.gserviceaccount.com"]},{"role":"roles/secretmanager.admin_withcond_e1a498f59ed3d1d586cf","members":["serviceAccount:service-286970299360@gcp-sa-devconnect.iam.gserviceaccount.com"]},{"role":"roles/storage.admin","members":["serviceAccount:firebase-adminsdk-fbsvc@pixar-educational-consultancy.iam.gserviceaccount.com"]}]}
+[debug] [2025-08-13T03:53:42.419Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:42.422Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:42.422Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:53:42.423Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:53:42.424Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy [none]
+[debug] [2025-08-13T03:53:42.627Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy 200
+[debug] [2025-08-13T03:53:42.631Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/pixar-educational-consultancy {"projectNumber":"286970299360","projectId":"pixar-educational-consultancy","lifecycleState":"ACTIVE","name":"Pixar Educational Consultancy","labels":{"monospace-workspace-id":"studio-7226754057","firebase":"enabled","firebase-core":"disabled"},"createTime":"2025-06-10T03:29:17.277042Z"}
+[debug] [2025-08-13T03:53:42.638Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:42.638Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:42.638Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:53:42.639Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:53:42.639Z] >>> [apiv2][query] GET https://compute.googleapis.com/compute/v1/projects/286970299360 [none]
+[debug] [2025-08-13T03:53:42.847Z] <<< [apiv2][status] GET https://compute.googleapis.com/compute/v1/projects/286970299360 403
+[debug] [2025-08-13T03:53:42.847Z] <<< [apiv2][body] GET https://compute.googleapis.com/compute/v1/projects/286970299360 {"error":{"code":403,"message":"Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","errors":[{"message":"Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","domain":"usageLimits","reason":"accessNotConfigured","extendedHelp":"https://console.developers.google.com"}],"status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"activationUrl":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360","consumer":"projects/286970299360","serviceTitle":"Compute Engine API","containerInfo":"286970299360","service":"compute.googleapis.com"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360"}]}]}}
+[debug] [2025-08-13T03:53:42.851Z] unable to look up default compute service account. Falling back to 286970299360-compute@developer.gserviceaccount.com. Error: {"name":"FirebaseError","children":[],"context":{"body":{"error":{"code":403,"message":"Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","errors":[{"message":"Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","domain":"usageLimits","reason":"accessNotConfigured","extendedHelp":"https://console.developers.google.com"}],"status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"activationUrl":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360","consumer":"projects/286970299360","serviceTitle":"Compute Engine API","containerInfo":"286970299360","service":"compute.googleapis.com"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360"}]}]}},"response":{"statusCode":403}},"exit":1,"message":"Request to https://compute.googleapis.com/compute/v1/projects/286970299360 had HTTP Error: 403, Compute Engine API has not been used in project 286970299360 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=286970299360 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":403}
+[debug] [2025-08-13T03:53:42.862Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:42.862Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:42.862Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:53:42.864Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:53:42.864Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/pixar-educational-consultancy/billingInfo [none]
+[debug] [2025-08-13T03:53:43.120Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/pixar-educational-consultancy/billingInfo 200
+[debug] [2025-08-13T03:53:43.123Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/pixar-educational-consultancy/billingInfo {"name":"projects/pixar-educational-consultancy/billingInfo","projectId":"pixar-educational-consultancy","billingAccountName":"billingAccounts/01F957-D3FB92-B3E710","billingEnabled":true}
+[debug] [2025-08-13T03:53:43.131Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:43.132Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:43.132Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:53:43.132Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:53:43.136Z] >>> [apiv2][query] POST https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/functions:generateUploadUrl [none]
+[debug] [2025-08-13T03:53:44.181Z] <<< [apiv2][status] POST https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/functions:generateUploadUrl 200
+[debug] [2025-08-13T03:53:44.181Z] <<< [apiv2][body] POST https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/functions:generateUploadUrl {"uploadUrl":"https://storage.googleapis.com/gcf-v2-uploads-286970299360.us-central1.cloudfunctions.appspot.com/f8e1ec91-bc74-433a-8055-446c33d16b98.zip?GoogleAccessId=service-286970299360@gcf-admin-robot.iam.gserviceaccount.com&Expires=1755059024&Signature=JClroEg%2BBxCWv9ningnQJPIT%2FIGBxCA6MKP814bWbsqsSLXQSldWLV4rdzeW21md8RtPpMDmhgbsl9uZiZZBTxb6mPctws7yHhNaYGw50pqyASk67pqZepbldK6m3JG2RpsdROMmjKjHsrzTGpxqnmid83uWyFgzZWuuCM6%2FRNhpbOQ9NXrkXY7K88cWinzgBx0VKt3OXMy0ixlfgvR3%2FAgJAjAVxuTwQU7gDEYHE2H2psppIw%2FV3pYilCISzwCoVZWRW8U2F7FO1TvQJglgQL5s1oPfdqpU2amgLWTfUiqtFANzAV4WKQjWNItHRe8YAnkghAzVIWdkHcG0cfXa9g%3D%3D","storageSource":{"bucket":"gcf-v2-uploads-286970299360.us-central1.cloudfunctions.appspot.com","object":"f8e1ec91-bc74-433a-8055-446c33d16b98.zip"}}
+[debug] [2025-08-13T03:53:44.188Z] >>> [apiv2][query] PUT https://storage.googleapis.com/gcf-v2-uploads-286970299360.us-central1.cloudfunctions.appspot.com/f8e1ec91-bc74-433a-8055-446c33d16b98.zip GoogleAccessId=service-286970299360%40gcf-admin-robot.iam.gserviceaccount.com&Expires=1755059024&Signature=JClroEg%2BBxCWv9ningnQJPIT%2FIGBxCA6MKP814bWbsqsSLXQSldWLV4rdzeW21md8RtPpMDmhgbsl9uZiZZBTxb6mPctws7yHhNaYGw50pqyASk67pqZepbldK6m3JG2RpsdROMmjKjHsrzTGpxqnmid83uWyFgzZWuuCM6%2FRNhpbOQ9NXrkXY7K88cWinzgBx0VKt3OXMy0ixlfgvR3%2FAgJAjAVxuTwQU7gDEYHE2H2psppIw%2FV3pYilCISzwCoVZWRW8U2F7FO1TvQJglgQL5s1oPfdqpU2amgLWTfUiqtFANzAV4WKQjWNItHRe8YAnkghAzVIWdkHcG0cfXa9g%3D%3D
+[debug] [2025-08-13T03:53:44.188Z] >>> [apiv2][body] PUT https://storage.googleapis.com/gcf-v2-uploads-286970299360.us-central1.cloudfunctions.appspot.com/f8e1ec91-bc74-433a-8055-446c33d16b98.zip [stream]
+[debug] [2025-08-13T03:53:44.744Z] <<< [apiv2][status] PUT https://storage.googleapis.com/gcf-v2-uploads-286970299360.us-central1.cloudfunctions.appspot.com/f8e1ec91-bc74-433a-8055-446c33d16b98.zip 200
+[debug] [2025-08-13T03:53:44.744Z] <<< [apiv2][body] PUT https://storage.googleapis.com/gcf-v2-uploads-286970299360.us-central1.cloudfunctions.appspot.com/f8e1ec91-bc74-433a-8055-446c33d16b98.zip [omitted]
+[info] ✔  functions: dashboard folder uploaded successfully 
+[info] i  functions: creating Node.js 22 (2nd Gen) function metrics:onStudentChange(us-central1)... 
+[debug] [2025-08-13T03:53:44.758Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:44.758Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:44.758Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:53:44.758Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:53:44.759Z] >>> [apiv2][query] POST https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/functions functionId=onStudentChange
+[debug] [2025-08-13T03:53:44.759Z] >>> [apiv2][body] POST https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/functions {"name":"projects/pixar-educational-consultancy/locations/us-central1/functions/onStudentChange","buildConfig":{"runtime":"nodejs22","entryPoint":"onStudentChange","source":{"storageSource":{"bucket":"gcf-v2-uploads-286970299360.us-central1.cloudfunctions.appspot.com","object":"f8e1ec91-bc74-433a-8055-446c33d16b98.zip"}},"environmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""}},"serviceConfig":{"environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"pixar-educational-consultancy\",\"storageBucket\":\"pixar-educational-consultancy.firebasestorage.app\"}","GCLOUD_PROJECT":"pixar-educational-consultancy","EVENTARC_CLOUD_EVENT_SOURCE":"projects/pixar-educational-consultancy/locations/us-central1/services/onStudentChange","FUNCTION_SIGNATURE_TYPE":"cloudevent","FUNCTION_TARGET":"onStudentChange","LOG_EXECUTION_ID":"true"},"ingressSettings":null,"timeoutSeconds":null,"serviceAccountEmail":null,"availableMemory":"256Mi","minInstanceCount":null,"maxInstanceCount":null,"maxInstanceRequestConcurrency":80,"availableCpu":"1","vpcConnector":null,"vpcConnectorEgressSettings":null},"labels":{"deployment-tool":"cli-firebase--project-idx","firebase-functions-codebase":"metrics","firebase-functions-hash":"d67f58d6aafb5610b539e16c1cb6a3515a789be7"},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.written","retryPolicy":"RETRY_POLICY_DO_NOT_RETRY","eventFilters":[{"attribute":"database","value":"(default)"},{"attribute":"namespace","value":"(default)"},{"attribute":"document","value":"students/{studentId}","operator":"match-path-pattern"}],"triggerRegion":"us-central1"}}
+[debug] [2025-08-13T03:53:46.735Z] <<< [apiv2][status] POST https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/functions 200
+[debug] [2025-08-13T03:53:46.735Z] <<< [apiv2][body] POST https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/functions {"name":"projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v2.OperationMetadata","createTime":"2025-08-13T03:53:46.644885934Z","target":"projects/pixar-educational-consultancy/locations/us-central1/functions/onStudentChange","verb":"create","cancelRequested":false,"apiVersion":"v2"},"done":false}
+[debug] [2025-08-13T03:53:46.736Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:46.736Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:46.736Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:53:46.736Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:53:46.741Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e [none]
+[debug] [2025-08-13T03:53:47.683Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e 200
+[debug] [2025-08-13T03:53:47.683Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e {"name":"projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v2.OperationMetadata","createTime":"2025-08-13T03:53:46.644885934Z","target":"projects/pixar-educational-consultancy/locations/us-central1/functions/onStudentChange","verb":"create","cancelRequested":false,"apiVersion":"v2","requestResource":{"@type":"type.googleapis.com/google.cloud.functions.v2.Function","name":"projects/pixar-educational-consultancy/locations/us-central1/functions/onStudentChange","buildConfig":{"runtime":"nodejs22","entryPoint":"onStudentChange","source":{"storageSource":{"bucket":"gcf-v2-sources-286970299360-us-central1","object":"onStudentChange/function-source.zip","generation":"1755057225917004"}},"environmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"serviceAccount":"projects/pixar-educational-consultancy/serviceAccounts/286970299360-compute@developer.gserviceaccount.com","automaticUpdatePolicy":{}},"serviceConfig":{"service":"projects/pixar-educational-consultancy/locations/us-central1/services/onstudentchange","timeoutSeconds":60,"environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"pixar-educational-consultancy\",\"storageBucket\":\"pixar-educational-consultancy.firebasestorage.app\"}","GCLOUD_PROJECT":"pixar-educational-consultancy","EVENTARC_CLOUD_EVENT_SOURCE":"projects/pixar-educational-consultancy/locations/us-central1/services/onStudentChange","FUNCTION_SIGNATURE_TYPE":"cloudevent","FUNCTION_TARGET":"onStudentChange","LOG_EXECUTION_ID":"true"},"ingressSettings":"ALLOW_ALL","serviceAccountEmail":"286970299360-compute@developer.gserviceaccount.com","availableMemory":"256Mi","maxInstanceRequestConcurrency":80,"availableCpu":"1"},"eventTrigger":{"trigger":"projects/pixar-educational-consultancy/locations/us-central1/triggers/onstudentchange-421882","triggerRegion":"us-central1","eventType":"google.cloud.firestore.document.v1.written","eventFilters":[{"attribute":"database","value":"(default)"},{"attribute":"namespace","value":"(default)"},{"attribute":"document","value":"students/{studentId}","operator":"match-path-pattern"}],"serviceAccountEmail":"286970299360-compute@developer.gserviceaccount.com","retryPolicy":"RETRY_POLICY_DO_NOT_RETRY"},"labels":{"deployment-tool":"cli-firebase--project-idx","firebase-functions-codebase":"metrics","firebase-functions-hash":"d67f58d6aafb5610b539e16c1cb6a3515a789be7"},"environment":"GEN_2"},"stages":[{"name":"BUILD","state":"NOT_STARTED"},{"name":"SERVICE","state":"NOT_STARTED"},{"name":"TRIGGER","state":"NOT_STARTED"}],"operationType":"CREATE_FUNCTION"},"done":false}
+[debug] [2025-08-13T03:53:48.185Z] [create-metrics-us-central1-onStudentChange] Retrying task index 0
+[debug] [2025-08-13T03:53:48.186Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:48.186Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:48.186Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:53:48.186Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:53:48.191Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e [none]
+[debug] [2025-08-13T03:53:49.151Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e 200
+[debug] [2025-08-13T03:53:49.153Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e {"name":"projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v2.OperationMetadata","createTime":"2025-08-13T03:53:46.644885934Z","target":"projects/pixar-educational-consultancy/locations/us-central1/functions/onStudentChange","verb":"create","cancelRequested":false,"apiVersion":"v2","requestResource":{"@type":"type.googleapis.com/google.cloud.functions.v2.Function","name":"projects/pixar-educational-consultancy/locations/us-central1/functions/onStudentChange","buildConfig":{"runtime":"nodejs22","entryPoint":"onStudentChange","source":{"storageSource":{"bucket":"gcf-v2-sources-286970299360-us-central1","object":"onStudentChange/function-source.zip","generation":"1755057225917004"}},"environmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"serviceAccount":"projects/pixar-educational-consultancy/serviceAccounts/286970299360-compute@developer.gserviceaccount.com","automaticUpdatePolicy":{}},"serviceConfig":{"service":"projects/pixar-educational-consultancy/locations/us-central1/services/onstudentchange","timeoutSeconds":60,"environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"pixar-educational-consultancy\",\"storageBucket\":\"pixar-educational-consultancy.firebasestorage.app\"}","GCLOUD_PROJECT":"pixar-educational-consultancy","EVENTARC_CLOUD_EVENT_SOURCE":"projects/pixar-educational-consultancy/locations/us-central1/services/onStudentChange","FUNCTION_SIGNATURE_TYPE":"cloudevent","FUNCTION_TARGET":"onStudentChange","LOG_EXECUTION_ID":"true"},"ingressSettings":"ALLOW_ALL","serviceAccountEmail":"286970299360-compute@developer.gserviceaccount.com","availableMemory":"256Mi","maxInstanceRequestConcurrency":80,"availableCpu":"1"},"eventTrigger":{"trigger":"projects/pixar-educational-consultancy/locations/us-central1/triggers/onstudentchange-421882","triggerRegion":"us-central1","eventType":"google.cloud.firestore.document.v1.written","eventFilters":[{"attribute":"database","value":"(default)"},{"attribute":"namespace","value":"(default)"},{"attribute":"document","value":"students/{studentId}","operator":"match-path-pattern"}],"serviceAccountEmail":"286970299360-compute@developer.gserviceaccount.com","retryPolicy":"RETRY_POLICY_DO_NOT_RETRY"},"labels":{"deployment-tool":"cli-firebase--project-idx","firebase-functions-codebase":"metrics","firebase-functions-hash":"d67f58d6aafb5610b539e16c1cb6a3515a789be7"},"environment":"GEN_2"},"stages":[{"name":"BUILD","message":"Build in progress","state":"IN_PROGRESS","resource":"projects/286970299360/locations/us-central1/builds/c3797bae-cf2f-4cee-b134-fd9627ab0def","resourceUri":"https://console.cloud.google.com/cloud-build/builds;region=us-central1/c3797bae-cf2f-4cee-b134-fd9627ab0def?project=286970299360"},{"name":"SERVICE","state":"NOT_STARTED"},{"name":"TRIGGER","state":"NOT_STARTED"}],"operationType":"CREATE_FUNCTION","buildName":"projects/286970299360/locations/us-central1/builds/c3797bae-cf2f-4cee-b134-fd9627ab0def"},"done":false}
+[debug] [2025-08-13T03:53:50.154Z] [create-metrics-us-central1-onStudentChange] Retrying task index 0
+[debug] [2025-08-13T03:53:50.155Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:50.155Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:50.155Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:53:50.155Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:53:50.155Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e [none]
+[debug] [2025-08-13T03:53:51.098Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e 200
+[debug] [2025-08-13T03:53:51.099Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e {"name":"projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v2.OperationMetadata","createTime":"2025-08-13T03:53:46.644885934Z","target":"projects/pixar-educational-consultancy/locations/us-central1/functions/onStudentChange","verb":"create","cancelRequested":false,"apiVersion":"v2","requestResource":{"@type":"type.googleapis.com/google.cloud.functions.v2.Function","name":"projects/pixar-educational-consultancy/locations/us-central1/functions/onStudentChange","buildConfig":{"runtime":"nodejs22","entryPoint":"onStudentChange","source":{"storageSource":{"bucket":"gcf-v2-sources-286970299360-us-central1","object":"onStudentChange/function-source.zip","generation":"1755057225917004"}},"environmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"serviceAccount":"projects/pixar-educational-consultancy/serviceAccounts/286970299360-compute@developer.gserviceaccount.com","automaticUpdatePolicy":{}},"serviceConfig":{"service":"projects/pixar-educational-consultancy/locations/us-central1/services/onstudentchange","timeoutSeconds":60,"environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"pixar-educational-consultancy\",\"storageBucket\":\"pixar-educational-consultancy.firebasestorage.app\"}","GCLOUD_PROJECT":"pixar-educational-consultancy","EVENTARC_CLOUD_EVENT_SOURCE":"projects/pixar-educational-consultancy/locations/us-central1/services/onStudentChange","FUNCTION_SIGNATURE_TYPE":"cloudevent","FUNCTION_TARGET":"onStudentChange","LOG_EXECUTION_ID":"true"},"ingressSettings":"ALLOW_ALL","serviceAccountEmail":"286970299360-compute@developer.gserviceaccount.com","availableMemory":"256Mi","maxInstanceRequestConcurrency":80,"availableCpu":"1"},"eventTrigger":{"trigger":"projects/pixar-educational-consultancy/locations/us-central1/triggers/onstudentchange-421882","triggerRegion":"us-central1","eventType":"google.cloud.firestore.document.v1.written","eventFilters":[{"attribute":"database","value":"(default)"},{"attribute":"namespace","value":"(default)"},{"attribute":"document","value":"students/{studentId}","operator":"match-path-pattern"}],"serviceAccountEmail":"286970299360-compute@developer.gserviceaccount.com","retryPolicy":"RETRY_POLICY_DO_NOT_RETRY"},"labels":{"deployment-tool":"cli-firebase--project-idx","firebase-functions-codebase":"metrics","firebase-functions-hash":"d67f58d6aafb5610b539e16c1cb6a3515a789be7"},"environment":"GEN_2"},"stages":[{"name":"BUILD","message":"Build in progress","state":"IN_PROGRESS","resource":"projects/286970299360/locations/us-central1/builds/c3797bae-cf2f-4cee-b134-fd9627ab0def","resourceUri":"https://console.cloud.google.com/cloud-build/builds;region=us-central1/c3797bae-cf2f-4cee-b134-fd9627ab0def?project=286970299360"},{"name":"SERVICE","state":"NOT_STARTED"},{"name":"TRIGGER","state":"NOT_STARTED"}],"operationType":"CREATE_FUNCTION","buildName":"projects/286970299360/locations/us-central1/builds/c3797bae-cf2f-4cee-b134-fd9627ab0def"},"done":false}
+[debug] [2025-08-13T03:53:53.101Z] [create-metrics-us-central1-onStudentChange] Retrying task index 0
+[debug] [2025-08-13T03:53:53.102Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:53.103Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:53.103Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:53:53.103Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:53:53.103Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e [none]
+[debug] [2025-08-13T03:53:54.040Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e 200
+[debug] [2025-08-13T03:53:54.041Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e {"name":"projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v2.OperationMetadata","createTime":"2025-08-13T03:53:46.644885934Z","target":"projects/pixar-educational-consultancy/locations/us-central1/functions/onStudentChange","verb":"create","cancelRequested":false,"apiVersion":"v2","requestResource":{"@type":"type.googleapis.com/google.cloud.functions.v2.Function","name":"projects/pixar-educational-consultancy/locations/us-central1/functions/onStudentChange","buildConfig":{"runtime":"nodejs22","entryPoint":"onStudentChange","source":{"storageSource":{"bucket":"gcf-v2-sources-286970299360-us-central1","object":"onStudentChange/function-source.zip","generation":"1755057225917004"}},"environmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"serviceAccount":"projects/pixar-educational-consultancy/serviceAccounts/286970299360-compute@developer.gserviceaccount.com","automaticUpdatePolicy":{}},"serviceConfig":{"service":"projects/pixar-educational-consultancy/locations/us-central1/services/onstudentchange","timeoutSeconds":60,"environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"pixar-educational-consultancy\",\"storageBucket\":\"pixar-educational-consultancy.firebasestorage.app\"}","GCLOUD_PROJECT":"pixar-educational-consultancy","EVENTARC_CLOUD_EVENT_SOURCE":"projects/pixar-educational-consultancy/locations/us-central1/services/onStudentChange","FUNCTION_SIGNATURE_TYPE":"cloudevent","FUNCTION_TARGET":"onStudentChange","LOG_EXECUTION_ID":"true"},"ingressSettings":"ALLOW_ALL","serviceAccountEmail":"286970299360-compute@developer.gserviceaccount.com","availableMemory":"256Mi","maxInstanceRequestConcurrency":80,"availableCpu":"1"},"eventTrigger":{"trigger":"projects/pixar-educational-consultancy/locations/us-central1/triggers/onstudentchange-421882","triggerRegion":"us-central1","eventType":"google.cloud.firestore.document.v1.written","eventFilters":[{"attribute":"database","value":"(default)"},{"attribute":"namespace","value":"(default)"},{"attribute":"document","value":"students/{studentId}","operator":"match-path-pattern"}],"serviceAccountEmail":"286970299360-compute@developer.gserviceaccount.com","retryPolicy":"RETRY_POLICY_DO_NOT_RETRY"},"labels":{"deployment-tool":"cli-firebase--project-idx","firebase-functions-codebase":"metrics","firebase-functions-hash":"d67f58d6aafb5610b539e16c1cb6a3515a789be7"},"environment":"GEN_2"},"stages":[{"name":"BUILD","message":"Build in progress","state":"IN_PROGRESS","resource":"projects/286970299360/locations/us-central1/builds/c3797bae-cf2f-4cee-b134-fd9627ab0def","resourceUri":"https://console.cloud.google.com/cloud-build/builds;region=us-central1/c3797bae-cf2f-4cee-b134-fd9627ab0def?project=286970299360"},{"name":"SERVICE","state":"NOT_STARTED"},{"name":"TRIGGER","state":"NOT_STARTED"}],"operationType":"CREATE_FUNCTION","buildName":"projects/286970299360/locations/us-central1/builds/c3797bae-cf2f-4cee-b134-fd9627ab0def"},"done":false}
+[debug] [2025-08-13T03:53:58.042Z] [create-metrics-us-central1-onStudentChange] Retrying task index 0
+[debug] [2025-08-13T03:53:58.043Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:58.043Z] No OAuth tokens found
+[debug] [2025-08-13T03:53:58.043Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:53:58.044Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:53:58.044Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e [none]
+[debug] [2025-08-13T03:53:58.998Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e 200
+[debug] [2025-08-13T03:53:58.999Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e {"name":"projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v2.OperationMetadata","createTime":"2025-08-13T03:53:46.644885934Z","target":"projects/pixar-educational-consultancy/locations/us-central1/functions/onStudentChange","verb":"create","cancelRequested":false,"apiVersion":"v2","requestResource":{"@type":"type.googleapis.com/google.cloud.functions.v2.Function","name":"projects/pixar-educational-consultancy/locations/us-central1/functions/onStudentChange","buildConfig":{"runtime":"nodejs22","entryPoint":"onStudentChange","source":{"storageSource":{"bucket":"gcf-v2-sources-286970299360-us-central1","object":"onStudentChange/function-source.zip","generation":"1755057225917004"}},"environmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"serviceAccount":"projects/pixar-educational-consultancy/serviceAccounts/286970299360-compute@developer.gserviceaccount.com","automaticUpdatePolicy":{}},"serviceConfig":{"service":"projects/pixar-educational-consultancy/locations/us-central1/services/onstudentchange","timeoutSeconds":60,"environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"pixar-educational-consultancy\",\"storageBucket\":\"pixar-educational-consultancy.firebasestorage.app\"}","GCLOUD_PROJECT":"pixar-educational-consultancy","EVENTARC_CLOUD_EVENT_SOURCE":"projects/pixar-educational-consultancy/locations/us-central1/services/onStudentChange","FUNCTION_SIGNATURE_TYPE":"cloudevent","FUNCTION_TARGET":"onStudentChange","LOG_EXECUTION_ID":"true"},"ingressSettings":"ALLOW_ALL","serviceAccountEmail":"286970299360-compute@developer.gserviceaccount.com","availableMemory":"256Mi","maxInstanceRequestConcurrency":80,"availableCpu":"1"},"eventTrigger":{"trigger":"projects/pixar-educational-consultancy/locations/us-central1/triggers/onstudentchange-421882","triggerRegion":"us-central1","eventType":"google.cloud.firestore.document.v1.written","eventFilters":[{"attribute":"database","value":"(default)"},{"attribute":"namespace","value":"(default)"},{"attribute":"document","value":"students/{studentId}","operator":"match-path-pattern"}],"serviceAccountEmail":"286970299360-compute@developer.gserviceaccount.com","retryPolicy":"RETRY_POLICY_DO_NOT_RETRY"},"labels":{"deployment-tool":"cli-firebase--project-idx","firebase-functions-codebase":"metrics","firebase-functions-hash":"d67f58d6aafb5610b539e16c1cb6a3515a789be7"},"environment":"GEN_2"},"stages":[{"name":"BUILD","message":"Build in progress","state":"IN_PROGRESS","resource":"projects/286970299360/locations/us-central1/builds/c3797bae-cf2f-4cee-b134-fd9627ab0def","resourceUri":"https://console.cloud.google.com/cloud-build/builds;region=us-central1/c3797bae-cf2f-4cee-b134-fd9627ab0def?project=286970299360"},{"name":"SERVICE","state":"NOT_STARTED"},{"name":"TRIGGER","state":"NOT_STARTED"}],"operationType":"CREATE_FUNCTION","buildName":"projects/286970299360/locations/us-central1/builds/c3797bae-cf2f-4cee-b134-fd9627ab0def"},"done":false}
+[debug] [2025-08-13T03:54:07.002Z] [create-metrics-us-central1-onStudentChange] Retrying task index 0
+[debug] [2025-08-13T03:54:07.006Z] No OAuth tokens found
+[debug] [2025-08-13T03:54:07.009Z] No OAuth tokens found
+[debug] [2025-08-13T03:54:07.009Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:54:07.009Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:54:07.010Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e [none]
+[debug] [2025-08-13T03:54:08.016Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e 200
+[debug] [2025-08-13T03:54:08.016Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e {"name":"projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v2.OperationMetadata","createTime":"2025-08-13T03:53:46.644885934Z","target":"projects/pixar-educational-consultancy/locations/us-central1/functions/onStudentChange","verb":"create","cancelRequested":false,"apiVersion":"v2","requestResource":{"@type":"type.googleapis.com/google.cloud.functions.v2.Function","name":"projects/pixar-educational-consultancy/locations/us-central1/functions/onStudentChange","buildConfig":{"runtime":"nodejs22","entryPoint":"onStudentChange","source":{"storageSource":{"bucket":"gcf-v2-sources-286970299360-us-central1","object":"onStudentChange/function-source.zip","generation":"1755057225917004"}},"environmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"serviceAccount":"projects/pixar-educational-consultancy/serviceAccounts/286970299360-compute@developer.gserviceaccount.com","automaticUpdatePolicy":{}},"serviceConfig":{"service":"projects/pixar-educational-consultancy/locations/us-central1/services/onstudentchange","timeoutSeconds":60,"environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"pixar-educational-consultancy\",\"storageBucket\":\"pixar-educational-consultancy.firebasestorage.app\"}","GCLOUD_PROJECT":"pixar-educational-consultancy","EVENTARC_CLOUD_EVENT_SOURCE":"projects/pixar-educational-consultancy/locations/us-central1/services/onStudentChange","FUNCTION_SIGNATURE_TYPE":"cloudevent","FUNCTION_TARGET":"onStudentChange","LOG_EXECUTION_ID":"true"},"ingressSettings":"ALLOW_ALL","serviceAccountEmail":"286970299360-compute@developer.gserviceaccount.com","availableMemory":"256Mi","maxInstanceRequestConcurrency":80,"availableCpu":"1"},"eventTrigger":{"trigger":"projects/pixar-educational-consultancy/locations/us-central1/triggers/onstudentchange-421882","triggerRegion":"us-central1","eventType":"google.cloud.firestore.document.v1.written","eventFilters":[{"attribute":"database","value":"(default)"},{"attribute":"namespace","value":"(default)"},{"attribute":"document","value":"students/{studentId}","operator":"match-path-pattern"}],"serviceAccountEmail":"286970299360-compute@developer.gserviceaccount.com","retryPolicy":"RETRY_POLICY_DO_NOT_RETRY"},"labels":{"deployment-tool":"cli-firebase--project-idx","firebase-functions-codebase":"metrics","firebase-functions-hash":"d67f58d6aafb5610b539e16c1cb6a3515a789be7"},"environment":"GEN_2"},"stages":[{"name":"BUILD","message":"Build in progress","state":"IN_PROGRESS","resource":"projects/286970299360/locations/us-central1/builds/c3797bae-cf2f-4cee-b134-fd9627ab0def","resourceUri":"https://console.cloud.google.com/cloud-build/builds;region=us-central1/c3797bae-cf2f-4cee-b134-fd9627ab0def?project=286970299360"},{"name":"SERVICE","state":"NOT_STARTED"},{"name":"TRIGGER","state":"NOT_STARTED"}],"operationType":"CREATE_FUNCTION","buildName":"projects/286970299360/locations/us-central1/builds/c3797bae-cf2f-4cee-b134-fd9627ab0def"},"done":false}
+[debug] [2025-08-13T03:54:18.022Z] [create-metrics-us-central1-onStudentChange] Retrying task index 0
+[debug] [2025-08-13T03:54:18.023Z] No OAuth tokens found
+[debug] [2025-08-13T03:54:18.028Z] No OAuth tokens found
+[debug] [2025-08-13T03:54:18.028Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:54:18.028Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:54:18.028Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e [none]
+[debug] [2025-08-13T03:54:18.996Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e 200
+[debug] [2025-08-13T03:54:18.996Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e {"name":"projects/pixar-educational-consultancy/locations/us-central1/operations/operation-1755057225626-63c371a7e7480-f7ebc034-3c0a4c9e","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v2.OperationMetadata","createTime":"2025-08-13T03:53:46.644885934Z","endTime":"2025-08-13T03:54:15.218392699Z","target":"projects/pixar-educational-consultancy/locations/us-central1/functions/onStudentChange","verb":"create","cancelRequested":false,"apiVersion":"v2","requestResource":{"@type":"type.googleapis.com/google.cloud.functions.v2.Function","name":"projects/pixar-educational-consultancy/locations/us-central1/functions/onStudentChange","buildConfig":{"runtime":"nodejs22","entryPoint":"onStudentChange","source":{"storageSource":{"bucket":"gcf-v2-sources-286970299360-us-central1","object":"onStudentChange/function-source.zip","generation":"1755057225917004"}},"environmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"serviceAccount":"projects/pixar-educational-consultancy/serviceAccounts/286970299360-compute@developer.gserviceaccount.com","automaticUpdatePolicy":{}},"serviceConfig":{"service":"projects/pixar-educational-consultancy/locations/us-central1/services/onstudentchange","timeoutSeconds":60,"environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"pixar-educational-consultancy\",\"storageBucket\":\"pixar-educational-consultancy.firebasestorage.app\"}","GCLOUD_PROJECT":"pixar-educational-consultancy","EVENTARC_CLOUD_EVENT_SOURCE":"projects/pixar-educational-consultancy/locations/us-central1/services/onStudentChange","FUNCTION_SIGNATURE_TYPE":"cloudevent","FUNCTION_TARGET":"onStudentChange","LOG_EXECUTION_ID":"true"},"ingressSettings":"ALLOW_ALL","serviceAccountEmail":"286970299360-compute@developer.gserviceaccount.com","availableMemory":"256Mi","maxInstanceRequestConcurrency":80,"availableCpu":"1"},"eventTrigger":{"trigger":"projects/pixar-educational-consultancy/locations/us-central1/triggers/onstudentchange-421882","triggerRegion":"us-central1","eventType":"google.cloud.firestore.document.v1.written","eventFilters":[{"attribute":"database","value":"(default)"},{"attribute":"namespace","value":"(default)"},{"attribute":"document","value":"students/{studentId}","operator":"match-path-pattern"}],"serviceAccountEmail":"286970299360-compute@developer.gserviceaccount.com","retryPolicy":"RETRY_POLICY_DO_NOT_RETRY"},"labels":{"deployment-tool":"cli-firebase--project-idx","firebase-functions-codebase":"metrics","firebase-functions-hash":"d67f58d6aafb5610b539e16c1cb6a3515a789be7"},"environment":"GEN_2"},"stages":[{"name":"ARTIFACT_REGISTRY","message":"Deleting function artifacts in Artifact Registry","state":"COMPLETE"},{"name":"SERVICE","message":"Deleting Cloud Run service","state":"COMPLETE","resource":"projects/pixar-educational-consultancy/locations/us-central1/services/onstudentchange"},{"name":"TRIGGER","message":"Deleting Eventarc trigger","state":"COMPLETE","resource":"projects/pixar-educational-consultancy/locations/us-central1/triggers/onstudentchange-421882"}],"operationType":"CREATE_FUNCTION"},"done":true,"error":{"code":3,"message":"Build failed with status: FAILURE and message: npm error code EUSAGE\nnpm error\nnpm error `npm ci` can only install packages when your package.json and package-lock.json or npm-shrinkwrap.json are in sync. Please update your lock file with `npm install` before continuing.\nnpm error\nnpm error Invalid: lock file's firebase-functions@6.4.0 does not satisfy firebase-functions@5.1.1\nnpm error Missing: @types/express@4.17.3 from lock file\nnpm error\nnpm error Clean install a project\nnpm error\nnpm error Usage:\nnpm error npm ci\nnpm error\nnpm error Options:\nnpm error [--install-strategy <hoisted|nested|shallow|linked>] [--legacy-bundling]\nnpm error [--global-style] [--omit <dev|optional|peer> [--omit <dev|optional|peer> ...]]\nnpm error [--include <prod|dev|optional|peer> [--include <prod|dev|optional|peer> ...]]\nnpm error [--strict-peer-deps] [--foreground-scripts] [--ignore-scripts] [--no-audit]\nnpm error [--no-bin-links] [--no-fund] [--dry-run]\nnpm error [-w|--workspace <workspace-name> [-w|--workspace <workspace-name> ...]]\nnpm error [-ws|--workspaces] [--include-workspace-root] [--install-links]\nnpm error\nnpm error aliases: clean-install, ic, install-clean, isntall-clean\nnpm error\nnpm error Run \"npm help ci\" for more info\nnpm error A complete log of this run can be found in: /www-data-home/.npm/_logs/2025-08-13T03_54_06_345Z-debug-0.log. For more details see the logs at https://console.cloud.google.com/cloud-build/builds;region=us-central1/c3797bae-cf2f-4cee-b134-fd9627ab0def?project=286970299360."}}
+[debug] [2025-08-13T03:54:18.996Z] Got source token undefined for region us-central1
+[error] Build failed with status: FAILURE and message: npm error code EUSAGE
+npm error
+npm error `npm ci` can only install packages when your package.json and package-lock.json or npm-shrinkwrap.json are in sync. Please update your lock file with `npm install` before continuing.
+npm error
+npm error Invalid: lock file's firebase-functions@6.4.0 does not satisfy firebase-functions@5.1.1
+npm error Missing: @types/express@4.17.3 from lock file
+npm error
+npm error Clean install a project
+npm error
+npm error Usage:
+npm error npm ci
+npm error
+npm error Options:
+npm error [--install-strategy <hoisted|nested|shallow|linked>] [--legacy-bundling]
+npm error [--global-style] [--omit <dev|optional|peer> [--omit <dev|optional|peer> ...]]
+npm error [--include <prod|dev|optional|peer> [--include <prod|dev|optional|peer> ...]]
+npm error [--strict-peer-deps] [--foreground-scripts] [--ignore-scripts] [--no-audit]
+npm error [--no-bin-links] [--no-fund] [--dry-run]
+npm error [-w|--workspace <workspace-name> [-w|--workspace <workspace-name> ...]]
+npm error [-ws|--workspaces] [--include-workspace-root] [--install-links]
+npm error
+npm error aliases: clean-install, ic, install-clean, isntall-clean
+npm error
+npm error Run "npm help ci" for more info
+npm error A complete log of this run can be found in: /www-data-home/.npm/_logs/2025-08-13T03_54_06_345Z-debug-0.log. For more details see the logs at https://console.cloud.google.com/cloud-build/builds;region=us-central1/c3797bae-cf2f-4cee-b134-fd9627ab0def?project=286970299360.
+[debug] [2025-08-13T03:54:19.025Z] Total Function Deployment time: 34251
+[debug] [2025-08-13T03:54:19.026Z] 1 Functions Deployed
+[debug] [2025-08-13T03:54:19.026Z] 1 Functions Errored
+[debug] [2025-08-13T03:54:19.026Z] 0 Function Deployments Aborted
+[debug] [2025-08-13T03:54:19.026Z] Average Function Deployment time: 34248
+[info] 
+[info] Functions deploy had errors with the following functions:
+	metrics:onStudentChange(us-central1)
+[debug] [2025-08-13T03:54:19.091Z] No OAuth tokens found
+[debug] [2025-08-13T03:54:19.092Z] No OAuth tokens found
+[debug] [2025-08-13T03:54:19.092Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:54:19.092Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:54:19.092Z] >>> [apiv2][query] GET https://artifactregistry.googleapis.com/v1/projects/pixar-educational-consultancy/locations/us-central1/repositories/gcf-artifacts [none]
+[debug] [2025-08-13T03:54:19.337Z] <<< [apiv2][status] GET https://artifactregistry.googleapis.com/v1/projects/pixar-educational-consultancy/locations/us-central1/repositories/gcf-artifacts 200
+[debug] [2025-08-13T03:54:19.340Z] <<< [apiv2][body] GET https://artifactregistry.googleapis.com/v1/projects/pixar-educational-consultancy/locations/us-central1/repositories/gcf-artifacts {"name":"projects/pixar-educational-consultancy/locations/us-central1/repositories/gcf-artifacts","format":"DOCKER","description":"This repository is created and used by Cloud Functions for storing function docker images.","labels":{"goog-managed-by":"cloudfunctions"},"createTime":"2025-08-13T03:53:47.449784Z","updateTime":"2025-08-13T03:53:47.449784Z","mode":"STANDARD_REPOSITORY","vulnerabilityScanningConfig":{"lastEnableTime":"2025-08-13T03:53:46.812298768Z","enablementState":"SCANNING_DISABLED","enablementStateReason":"API containerscanning.googleapis.com is not enabled."},"satisfiesPzi":true,"registryUri":"us-central1-docker.pkg.dev/pixar-educational-consultancy/gcf-artifacts"}
+[warn] ⚠  functions: No cleanup policy detected for repositories in us-central1. This may result in a small monthly bill as container images accumulate over time. 
+[info] i  functions: Configuring cleanup policy for repository in us-central1. Images older than 1 days will be automatically deleted. 
+[debug] [2025-08-13T03:54:27.357Z] Setting up artifact cleanup policy for region us-central1
+[debug] [2025-08-13T03:54:27.363Z] No OAuth tokens found
+[debug] [2025-08-13T03:54:27.364Z] No OAuth tokens found
+[debug] [2025-08-13T03:54:27.364Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-13T03:54:27.364Z] > authorizing via signed-in user (shikharkc63@gmail.com)
+[debug] [2025-08-13T03:54:27.364Z] >>> [apiv2][query] PATCH https://artifactregistry.googleapis.com/v1/projects/pixar-educational-consultancy/locations/us-central1/repositories/gcf-artifacts updateMask=name%2CcleanupPolicies%2CcleanupPolicyDryRun%2Clabels
+[debug] [2025-08-13T03:54:27.365Z] >>> [apiv2][body] PATCH https://artifactregistry.googleapis.com/v1/projects/pixar-educational-consultancy/locations/us-central1/repositories/gcf-artifacts {"name":"projects/pixar-educational-consultancy/locations/us-central1/repositories/gcf-artifacts","cleanupPolicies":{"firebase-functions-cleanup":{"id":"firebase-functions-cleanup","condition":{"tagState":"ANY","olderThan":"86400s"},"action":"DELETE"}},"cleanupPolicyDryRun":false,"labels":{"goog-managed-by":"cloudfunctions"}}
+[debug] [2025-08-13T03:54:28.401Z] <<< [apiv2][status] PATCH https://artifactregistry.googleapis.com/v1/projects/pixar-educational-consultancy/locations/us-central1/repositories/gcf-artifacts 200
+[debug] [2025-08-13T03:54:28.401Z] <<< [apiv2][body] PATCH https://artifactregistry.googleapis.com/v1/projects/pixar-educational-consultancy/locations/us-central1/repositories/gcf-artifacts {"name":"projects/pixar-educational-consultancy/locations/us-central1/repositories/gcf-artifacts","format":"DOCKER","description":"This repository is created and used by Cloud Functions for storing function docker images.","labels":{"goog-managed-by":"cloudfunctions"},"createTime":"2025-08-13T03:53:47.449784Z","updateTime":"2025-08-13T03:54:28.288686Z","mode":"STANDARD_REPOSITORY","cleanupPolicies":{"firebase-functions-cleanup":{"id":"firebase-functions-cleanup","action":"DELETE","condition":{"tagState":"ANY","olderThan":"86400s"}}},"vulnerabilityScanningConfig":{"lastEnableTime":"2025-08-13T03:53:46.812298768Z","enablementState":"SCANNING_DISABLED","enablementStateReason":"API containerscanning.googleapis.com is not enabled."},"satisfiesPzi":true}
+[info] i  functions: Configured cleanup policy for repository in us-central1. 
+[debug] [2025-08-13T03:54:28.402Z] Functions deploy failed.
+[debug] [2025-08-13T03:54:28.402Z] {
+  "endpoint": {
+    "id": "onStudentChange",
+    "project": "pixar-educational-consultancy",
+    "region": "us-central1",
+    "entryPoint": "onStudentChange",
+    "platform": "gcfv2",
+    "runtime": "nodejs22",
+    "eventTrigger": {
+      "eventType": "google.cloud.firestore.document.v1.written",
+      "retry": false,
+      "eventFilters": {
+        "database": "(default)",
+        "namespace": "(default)"
+      },
+      "eventFilterPathPatterns": {
+        "document": "students/{studentId}"
+      },
+      "region": "us-central1"
+    },
+    "labels": {
+      "deployment-tool": "cli-firebase--project-idx"
+    },
+    "serviceAccount": null,
+    "ingressSettings": null,
+    "availableMemoryMb": null,
+    "timeoutSeconds": null,
+    "maxInstances": null,
+    "minInstances": null,
+    "concurrency": 80,
+    "vpc": null,
+    "environmentVariables": {
+      "FIREBASE_CONFIG": "{\"projectId\":\"pixar-educational-consultancy\",\"storageBucket\":\"pixar-educational-consultancy.firebasestorage.app\"}",
+      "GCLOUD_PROJECT": "pixar-educational-consultancy",
+      "EVENTARC_CLOUD_EVENT_SOURCE": "projects/pixar-educational-consultancy/locations/us-central1/services/onStudentChange"
+    },
+    "codebase": "metrics",
+    "cpu": 1,
+    "targetedByOnly": false,
+    "hash": "d67f58d6aafb5610b539e16c1cb6a3515a789be7"
+  },
+  "op": "create",
+  "original": {
+    "name": "FirebaseError",
+    "children": [],
+    "exit": 1,
+    "message": "Build failed with status: FAILURE and message: npm error code EUSAGE\nnpm error\nnpm error `npm ci` can only install packages when your package.json and package-lock.json or npm-shrinkwrap.json are in sync. Please update your lock file with `npm install` before continuing.\nnpm error\nnpm error Invalid: lock file's firebase-functions@6.4.0 does not satisfy firebase-functions@5.1.1\nnpm error Missing: @types/express@4.17.3 from lock file\nnpm error\nnpm error Clean install a project\nnpm error\nnpm error Usage:\nnpm error npm ci\nnpm error\nnpm error Options:\nnpm error [--install-strategy <hoisted|nested|shallow|linked>] [--legacy-bundling]\nnpm error [--global-style] [--omit <dev|optional|peer> [--omit <dev|optional|peer> ...]]\nnpm error [--include <prod|dev|optional|peer> [--include <prod|dev|optional|peer> ...]]\nnpm error [--strict-peer-deps] [--foreground-scripts] [--ignore-scripts] [--no-audit]\nnpm error [--no-bin-links] [--no-fund] [--dry-run]\nnpm error [-w|--workspace <workspace-name> [-w|--workspace <workspace-name> ...]]\nnpm error [-ws|--workspaces] [--include-workspace-root] [--install-links]\nnpm error\nnpm error aliases: clean-install, ic, install-clean, isntall-clean\nnpm error\nnpm error Run \"npm help ci\" for more info\nnpm error A complete log of this run can be found in: /www-data-home/.npm/_logs/2025-08-13T03_54_06_345Z-debug-0.log. For more details see the logs at https://console.cloud.google.com/cloud-build/builds;region=us-central1/c3797bae-cf2f-4cee-b134-fd9627ab0def?project=286970299360.",
+    "original": {
+      "code": 3,
+      "message": "Build failed with status: FAILURE and message: npm error code EUSAGE\nnpm error\nnpm error `npm ci` can only install packages when your package.json and package-lock.json or npm-shrinkwrap.json are in sync. Please update your lock file with `npm install` before continuing.\nnpm error\nnpm error Invalid: lock file's firebase-functions@6.4.0 does not satisfy firebase-functions@5.1.1\nnpm error Missing: @types/express@4.17.3 from lock file\nnpm error\nnpm error Clean install a project\nnpm error\nnpm error Usage:\nnpm error npm ci\nnpm error\nnpm error Options:\nnpm error [--install-strategy <hoisted|nested|shallow|linked>] [--legacy-bundling]\nnpm error [--global-style] [--omit <dev|optional|peer> [--omit <dev|optional|peer> ...]]\nnpm error [--include <prod|dev|optional|peer> [--include <prod|dev|optional|peer> ...]]\nnpm error [--strict-peer-deps] [--foreground-scripts] [--ignore-scripts] [--no-audit]\nnpm error [--no-bin-links] [--no-fund] [--dry-run]\nnpm error [-w|--workspace <workspace-name> [-w|--workspace <workspace-name> ...]]\nnpm error [-ws|--workspaces] [--include-workspace-root] [--install-links]\nnpm error\nnpm error aliases: clean-install, ic, install-clean, isntall-clean\nnpm error\nnpm error Run \"npm help ci\" for more info\nnpm error A complete log of this run can be found in: /www-data-home/.npm/_logs/2025-08-13T03_54_06_345Z-debug-0.log. For more details see the logs at https://console.cloud.google.com/cloud-build/builds;region=us-central1/c3797bae-cf2f-4cee-b134-fd9627ab0def?project=286970299360."
+    },
+    "status": 3,
+    "code": 3
+  }
+}
+[debug] [2025-08-13T03:54:28.456Z] Error: Failed to create function onStudentChange in region us-central1
+    at /home/user/.global_modules/lib/node_modules/firebase-tools/lib/deploy/functions/release/fabricator.js:294:27
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Fabricator.createV2Function (/home/user/.global_modules/lib/node_modules/firebase-tools/lib/deploy/functions/release/fabricator.js:278:30)
+    at async Fabricator.createEndpoint (/home/user/.global_modules/lib/node_modules/firebase-tools/lib/deploy/functions/release/fabricator.js:137:13)
+    at async handle (/home/user/.global_modules/lib/node_modules/firebase-tools/lib/deploy/functions/release/fabricator.js:89:17)
+[error] 
+[error] Error: There was an error deploying functions
