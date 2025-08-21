@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import * as React from "react";
@@ -130,9 +128,14 @@ export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: Stude
   React.useEffect(() => {
       if (serviceFeeStatus === 'Paid' && !form.getValues('serviceFeePaidDate')) {
         form.setValue('serviceFeePaidDate', new Date(), { shouldValidate: true, shouldDirty: true });
+      } else if (serviceFeeStatus === 'Unpaid') {
+        form.setValue('serviceFeePaidDate', null);
       }
+      
       if (visaStatus !== 'Not Applied' && !form.getValues('visaStatusUpdateDate')) {
         form.setValue('visaStatusUpdateDate', new Date(), { shouldValidate: true, shouldDirty: true });
+      } else if (visaStatus === 'Not Applied') {
+        form.setValue('visaStatusUpdateDate', null);
       }
   }, [serviceFeeStatus, visaStatus, form]);
 
