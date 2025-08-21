@@ -32,7 +32,6 @@ const getVisaStatusBadgeVariant = (status?: Student['visaStatus']) => {
 const getFeeStatusBadgeVariant = (status?: Student['serviceFeeStatus']) => {
   switch (status) {
       case 'Paid': return 'default';
-      case 'Partial': return 'secondary';
       case 'Unpaid': return 'outline';
       default: return 'outline';
   }
