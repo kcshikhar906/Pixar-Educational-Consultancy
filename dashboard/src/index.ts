@@ -1,17 +1,23 @@
 
 /**
- * @fileOverview Cloud Functions for automatically aggregating student metrics
- * and managing the office welcome screen display.
+ * @fileOverview Cloud Functions for automatically managing the office
+ * welcome screen display and aggregating student metrics.
  *
  * Functions:
- * - onStudentChange: Triggered when a student is created, updated, or deleted.
- *   This function handles two main tasks:
- *   1. Re-calculating and updating the welcome screen list of unassigned
- *      students.
- *   2. Incrementally updating aggregated dashboard metrics for real-time stats.
+ * - onStudentChange: Triggered on student creation, update, or deletion
+ *   to update aggregated dashboard metrics.
+ * - manageWelcomeScreenOnWrite: Triggered on student creation or update
+ *   to regenerate the list of unassigned students for the office TV.
+ * - manageWelcomeScreenOnDelete: Triggered on student deletion to ensure
+ *   the welcome screen list is up-to-date.
  */
 
-import {onDocumentWritten} from "firebase-functions/v2/firestore";
+import {
+  onDocumentWritten,
+  onDocumentCreated,
+  onDocumentUpdated,
+  onDocumentDeleted,
+} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 
 admin.initializeApp();
@@ -25,6 +31,66 @@ const toTitleCase = (str: string | undefined | null): string => {
   });
 };
 
+/**
+ * Regenerates the list of unassigned students for the office welcome screen.
+ * This is a robust, self-correcting approach that runs on any relevant change.
+ */
+const regenerateWelcomeScreen = async () => {
+  const welcomeRef = db.collection("display").doc("officeTV");
+
+  try {
+    // Query for all students who are currently unassigned.
+    const studentsQuery = db.collection("students")
+        .where("assignedTo", "==", "Unassigned")
+        .orderBy("timestamp", "desc"); // Sort by newest first
+
+    const querySnapshot = await studentsQuery.get();
+
+    // Extract just the full names
+    const unassignedNames = querySnapshot.docs.map(
+      (doc) => doc.data().fullName
+    );
+
+    // Overwrite the document with the fresh list of names.
+    // If there are no unassigned students, this will correctly set an empty array.
+    await welcomeRef.set({studentNames: unassignedNames});
+
+    console.log(
+      `Welcome screen updated with ${unassignedNames.length} names.`
+    );
+  } catch (error) {
+    console.error("Error regenerating welcome screen:", error);
+    // In case of an error, we might want to clear the list to avoid stale data
+    await welcomeRef.set({studentNames: []});
+  }
+};
+
+
+// ----- Welcome Screen Management Functions -----
+
+// This function will trigger whenever a student document is created or updated.
+export const manageWelcomeScreenOnWrite = onDocumentWritten(
+  "students/{studentId}",
+  async () => {
+    // We simply call the regenerate function. It will handle the logic
+    // of figuring out who is and isn't unassigned.
+    await regenerateWelcomeScreen();
+  }
+);
+
+// This function will trigger whenever a student document is deleted.
+export const manageWelcomeScreenOnDelete = onDocumentDeleted(
+    "students/{studentId}",
+    async () => {
+        // We need to regenerate the list in case the deleted student
+        // was on the welcome screen.
+        await regenerateWelcomeScreen();
+    }
+);
+
+
+// ----- Dashboard Metrics Management Function -----
+
 const updateMetrics = (
   updateFn: (data: admin.firestore.DocumentData) => admin.firestore.DocumentData
 ) => {
@@ -37,72 +103,28 @@ const updateMetrics = (
   });
 };
 
-/**
- * Recalculates the list of unassigned students and updates the welcome screen.
- * This is a robust, self-correcting approach that runs on any student change.
- */
-const regenerateWelcomeScreen = async () => {
-  const welcomeRef = db.collection("display").doc("officeTV");
-
-  // Query for the 20 most recent students who are unassigned.
-  // This ensures the list is always fresh and relevant.
-  const studentsQuery = db.collection("students")
-    .where("assignedTo", "==", "Unassigned")
-    .orderBy("timestamp", "desc")
-    .limit(20);
-
-  try {
-    const querySnapshot = await studentsQuery.get();
-    const unassignedNames = querySnapshot.docs.map(
-      (doc) => doc.data().fullName
-    );
-
-    // Overwrite the document with the fresh list of names.
-    await welcomeRef.set({studentNames: unassignedNames});
-    console.log(
-      `Welcome screen updated with ${unassignedNames.length} names.`
-    );
-  } catch (error) {
-    console.error("Error regenerating welcome screen:", error);
-  }
-};
-
-
-/**
- * @param {number | undefined} currentValue The current value to increment.
- * @return {admin.firestore.FieldValue} The FieldValue increment operation.
- */
 const increment = (currentValue: number | undefined) => {
-  const val = currentValue === undefined ? 1 : 1;
-  return admin.firestore.FieldValue.increment(val);
+  return admin.firestore.FieldValue.increment(currentValue === undefined ? 1 : 1);
 };
 
-/**
- * @param {number | undefined} currentValue The current value to decrement.
- * @return {admin.firestore.FieldValue} The FieldValue decrement operation.\
- */
 const decrement = (currentValue: number | undefined) => {
   const value = currentValue === undefined || currentValue <= 0 ? 0 : -1;
   return admin.firestore.FieldValue.increment(value);
 };
 
-
-export const onStudentChange = onDocumentWritten(
+export const onStudentChangeForMetrics = onDocumentWritten(
   "students/{studentId}",
   async (event) => {
     const before = event.data?.before.data();
     const after = event.data?.after.data();
 
-    // Regenerate Welcome Screen on ANY change. This is a simple and robust
-    // way to ensure the list is always accurate. The function itself contains
-    // the logic to only get recent, unassigned students.
-    const welcomeScreenPromise = regenerateWelcomeScreen();
+    // No need for welcome screen logic here anymore, it's handled separately.
 
     // --- Handle Metrics ---
     const metricsPromise = updateMetrics((data) => {
       // --- Handle Deletes ---
       if (!after) {
-        if (!before) return data; // Should not happen
+        if (!before) return data;
         const dest = toTitleCase(before.preferredStudyDestination);
         const visa = toTitleCase(before.visaStatus);
         const coun = toTitleCase(before.assignedTo);
@@ -243,7 +265,8 @@ export const onStudentChange = onDocumentWritten(
       return data;
     });
 
-    // Await both promises to complete
-    await Promise.all([welcomeScreenPromise, metricsPromise]);
+    await metricsPromise;
   }
 );
+
+    
