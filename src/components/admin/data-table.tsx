@@ -27,7 +27,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Loader2, Search, AlertTriangle, UserPlus, CalendarDays, Users, FilterX } from 'lucide-react';
+import { Loader2, Search, AlertTriangle, UserPlus, CalendarDays, Users, FilterX, X } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { format, formatDistanceToNowStrict, isToday, sub } from 'date-fns';
@@ -199,8 +199,18 @@ export function DataTable({ onRowSelect, selectedStudentId }: DataTableProps) {
                 setSearchTerm(e.target.value);
                 if (showOnlyUnassigned) setShowOnlyUnassigned(false); // Disable filter when searching
               }}
-              className="w-full pl-10"
+              className="w-full pl-10 pr-10" // Add pr-10 for clear button
             />
+            {searchTerm && (
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full"
+                    onClick={() => setSearchTerm('')}
+                >
+                    <X className="h-4 w-4" />
+                </Button>
+            )}
           </div>
            <Button
              variant={showOnlyUnassigned ? "secondary" : "outline"}
