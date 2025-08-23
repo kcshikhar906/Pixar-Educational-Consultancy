@@ -19,9 +19,11 @@ import * as admin from "firebase-admin";
 import {Change} from "firebase-functions";
 import {DocumentData, DocumentSnapshot} from "firebase-admin/firestore";
 
+// Initialize Firebase Admin SDK
 admin.initializeApp();
+
 // Explicitly connect to the 'pixareducation' database. This is the crucial fix.
-const db = admin.firestore("pixareducation");
+const db = admin.firestore();
 
 
 // Helper to normalize strings to Title Case for consistency
@@ -97,7 +99,10 @@ const decrement = (currentValue: number | undefined) => {
 
 
 export const onStudentChange = onDocumentWritten(
-  "students/{studentId}",
+  {
+    document: "students/{studentId}",
+    database: "pixareducation", // Specify the database here
+  },
   async (event: FirestoreEvent<Change<DocumentSnapshot> | undefined,
     { studentId: string }>) => {
     if (!event.data) {
