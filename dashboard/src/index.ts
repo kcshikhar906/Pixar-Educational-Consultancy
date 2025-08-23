@@ -95,11 +95,20 @@ export const onStudentChange = onDocumentWritten(
         welcomeScreenPromises.push(updateWelcomeScreen(names => {
           let updatedNames = [...names];
           // Remove old name if they were unassigned before
-          if (oldAssigned === 'Unassigned') {
+          if (oldAssigned === 'Unassigned' && oldName !== newName) {
             updatedNames = updatedNames.filter(name => name !== oldName);
           }
+           // if name changed, remove old name
+          if (oldName !== newName) {
+             updatedNames = updatedNames.filter(name => name !== oldName);
+          }
+
+          // Remove the student if they are no longer unassigned
+          if (newAssigned !== 'Unassigned') {
+              updatedNames = updatedNames.filter(name => name !== newName);
+          }
           // Add new name if they are unassigned now
-          if (newAssigned === 'Unassigned') {
+          else if (newAssigned === 'Unassigned') {
             // Avoid duplicates
             if (!updatedNames.includes(newName)) {
               updatedNames.push(newName);
@@ -258,3 +267,5 @@ export const onStudentChange = onDocumentWritten(
     await Promise.all([...welcomeScreenPromises, metricsPromise]);
   }
 );
+
+    
