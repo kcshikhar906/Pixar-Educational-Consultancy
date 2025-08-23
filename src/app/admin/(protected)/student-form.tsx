@@ -22,11 +22,11 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Student, allEducationLevels, englishTestOptions, studyDestinationOptions, counselorNames } from '@/lib/data.tsx';
-import { collection, addDoc, updateDoc, doc, serverTimestamp, Timestamp, deleteDoc } from 'firebase/firestore';
+import { collection, addDoc, updateDoc, doc, serverTimestamp, Timestamp, deleteDoc, getDoc, setDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
-import { CalendarIcon, Loader2, BookUser, Mail, Phone, GraduationCap, Languages, Target, StickyNote, Users, CalendarDays, CircleDollarSign, Briefcase, ShieldQuestion, FilePenLine, Trash2, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { CalendarIcon, Loader2, BookUser, Mail, Phone, GraduationCap, Languages, Target, StickyNote, Users, CalendarDays, CircleDollarSign, Briefcase, ShieldQuestion, FilePenLine, Trash2, X, Tv2 } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
@@ -96,6 +96,7 @@ export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: Stude
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [isWelcomed, setIsWelcomed] = useState(false);
 
   const isNewStudent = !student?.id;
 
@@ -114,7 +115,24 @@ export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: Stude
   const serviceFeeStatus = form.watch('serviceFeeStatus');
   const visaStatus = form.watch('visaStatus');
 
-  React.useEffect(() => {
+  useEffect(() => {
+    const checkWelcomeStatus = async () => {
+      if (student?.fullName) {
+        const docRef = doc(db, 'display', 'officeTV');
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const names = docSnap.data()?.studentNames || [];
+          setIsWelcomed(names.includes(student.fullName));
+        } else {
+          setIsWelcomed(false);
+        }
+      }
+    };
+    checkWelcomeStatus();
+  }, [student]);
+
+
+  useEffect(() => {
     if (student) {
       form.reset({
         ...defaultValues,
@@ -126,7 +144,7 @@ export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: Stude
     }
   }, [student, form, isNewStudent]);
 
-  React.useEffect(() => {
+  useEffect(() => {
       if (serviceFeeStatus === 'Paid' && !form.getValues('serviceFeePaidDate')) {
         form.setValue('serviceFeePaidDate', new Date(), { shouldValidate: true, shouldDirty: true });
       } else if (serviceFeeStatus === 'Unpaid') {
@@ -139,6 +157,29 @@ export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: Stude
         form.setValue('visaStatusUpdateDate', null);
       }
   }, [serviceFeeStatus, visaStatus, form]);
+
+  const handleWelcomeToggle = async () => {
+      if (!student?.fullName) return;
+      setIsLoading(true);
+      const docRef = doc(db, 'display', 'officeTV');
+      const docSnap = await getDoc(docRef);
+      const operation = isWelcomed ? arrayRemove(student.fullName) : arrayUnion(student.fullName);
+
+      try {
+        if(docSnap.exists()) {
+          await updateDoc(docRef, { studentNames: operation });
+        } else {
+          await setDoc(docRef, { studentNames: [student.fullName] });
+        }
+        toast({ title: 'Welcome Board Updated!', description: `${student.fullName} has been ${isWelcomed ? 'removed from' : 'added to'} the welcome screen.` });
+        setIsWelcomed(!isWelcomed);
+      } catch (error) {
+        console.error("Error updating welcome board:", error);
+        toast({ title: "Error", description: "Could not update the welcome board.", variant: "destructive" });
+      } finally {
+        setIsLoading(false);
+      }
+  };
 
   const onSubmit = async (data: StudentFormValues) => {
     setIsLoading(true);
@@ -344,13 +385,25 @@ export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: Stude
                <Separator />
                <div className="space-y-4">
                  <h3 className="font-semibold text-lg text-primary">Internal Records</h3>
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
                     {/* Assigned To is now in the header */}
                     <DetailItem icon={ShieldQuestion} label="Visa Status" value={<Badge variant={getVisaStatusBadgeVariant(student?.visaStatus)}>{student?.visaStatus}</Badge>} />
                     {displayVisaStatusDate && <DetailItem icon={CalendarDays} label="Visa Status Date" value={format(displayVisaStatusDate, 'PPP')} />}
                     <DetailItem icon={CircleDollarSign} label="Service Fee Status" value={<Badge variant={getFeeStatusBadgeVariant(student?.serviceFeeStatus)}>{student?.serviceFeeStatus}</Badge>} />
                     {displayServiceFeeDate && <DetailItem icon={CalendarDays} label="Fee Paid Date" value={format(displayServiceFeeDate, 'PPP')} />}
                     <DetailItem icon={CalendarDays} label="Date Added" value={displayTimestamp ? format(displayTimestamp, 'PPP, p') : 'N/A'} />
+                     {!isNewStudent && (
+                        <div className="mt-2">
+                            <Button variant={isWelcomed ? 'destructive' : 'default'} onClick={handleWelcomeToggle} disabled={isLoading}>
+                                {isLoading ? (
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Tv2 className="mr-2 h-4 w-4" />
+                                )}
+                                {isWelcomed ? 'Remove from Welcome Screen' : 'Welcome to Office'}
+                            </Button>
+                        </div>
+                    )}
                  </div>
               </div>
         </CardContent>
@@ -371,4 +424,3 @@ export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: Stude
     </Card>
   );
 }
-
