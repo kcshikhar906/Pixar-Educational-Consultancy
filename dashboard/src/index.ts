@@ -1,3 +1,4 @@
+
 /**
  * @fileOverview Cloud Functions for automatically aggregating student metrics
  * and managing the office welcome screen display.
@@ -37,11 +38,17 @@ const updateMetrics = (
 
 /**
  * Recalculates the entire list of unassigned students and updates the welcome screen.
- * This is a robust, self-correcting approach.
+ * This is a robust, self-correcting approach that runs on any student change.
  */
 const regenerateWelcomeScreen = async () => {
   const welcomeRef = db.collection("display").doc("officeTV");
-  const studentsQuery = db.collection("students").where("assignedTo", "==", "Unassigned");
+  
+  // Query for the 20 most recent students who are unassigned.
+  // This ensures the list is always fresh and relevant.
+  const studentsQuery = db.collection("students")
+    .where("assignedTo", "==", "Unassigned")
+    .orderBy("timestamp", "desc")
+    .limit(20);
   
   try {
     const querySnapshot = await studentsQuery.get();
@@ -83,6 +90,7 @@ export const onStudentChange = onDocumentWritten(
 
     // --- Regenerate Welcome Screen on ANY change ---
     // This is a simple and robust way to ensure the list is always accurate.
+    // The function itself now contains the logic to only get recent, unassigned students.
     const welcomeScreenPromise = regenerateWelcomeScreen();
 
     // --- Handle Metrics ---
