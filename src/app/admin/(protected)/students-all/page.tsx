@@ -27,6 +27,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { counselorNames, studyDestinationOptions } from '@/lib/data.tsx';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -46,6 +47,21 @@ interface FilterHistoryItem {
 
 const FILTER_HISTORY_KEY = 'filterHistory';
 
+// A simple debounce hook to prevent firing search queries on every keystroke
+const useDebouncedValue = (value: string, delay: number) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+  return debouncedValue;
+};
+
+
 export default function StudentsAllPage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -61,6 +77,10 @@ export default function StudentsAllPage() {
   const [feeStatusFilter, setFeeStatusFilter] = useState('all');
   const [counselorFilter, setCounselorFilter] = useState('all');
   const [destinationFilter, setDestinationFilter] = useState('all');
+
+  // State for search
+  const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebouncedValue(searchTerm, 500);
 
   const { toast } = useToast();
 
@@ -93,24 +113,33 @@ export default function StudentsAllPage() {
     preferredStudyDestination: destinationFilter,
   }), [visaStatusFilter, feeStatusFilter, counselorFilter, destinationFilter]);
 
-  const fetchStudents = useCallback(async (pageDirection: 'next' | 'prev' | 'first' = 'first', newFilters = filters) => {
+  const fetchStudents = useCallback(async (pageDirection: 'next' | 'prev' | 'first' = 'first', currentFilters = filters, currentSearchTerm = debouncedSearchTerm) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const constraints: QueryConstraint[] = [orderBy('timestamp', 'desc')];
+      const constraints: QueryConstraint[] = [];
       
-      if (newFilters.visaStatus !== 'all') {
-        constraints.push(where('visaStatus', '==', newFilters.visaStatus));
+      const searchLower = currentSearchTerm.toLowerCase();
+      if (searchLower) {
+        constraints.push(orderBy('searchableName'));
+        constraints.push(where('searchableName', '>=', searchLower));
+        constraints.push(where('searchableName', '<=', searchLower + '\uf8ff'));
+      } else {
+        constraints.push(orderBy('timestamp', 'desc'));
       }
-      if (newFilters.serviceFeeStatus !== 'all') {
-        constraints.push(where('serviceFeeStatus', '==', newFilters.serviceFeeStatus));
+      
+      if (currentFilters.visaStatus !== 'all') {
+        constraints.push(where('visaStatus', '==', currentFilters.visaStatus));
       }
-      if (newFilters.assignedTo !== 'all') {
-        constraints.push(where('assignedTo', '==', newFilters.assignedTo));
+      if (currentFilters.serviceFeeStatus !== 'all') {
+        constraints.push(where('serviceFeeStatus', '==', currentFilters.serviceFeeStatus));
       }
-      if (newFilters.preferredStudyDestination !== 'all') {
-        constraints.push(where('preferredStudyDestination', '==', newFilters.preferredStudyDestination));
+      if (currentFilters.assignedTo !== 'all') {
+        constraints.push(where('assignedTo', '==', currentFilters.assignedTo));
+      }
+      if (currentFilters.preferredStudyDestination !== 'all') {
+        constraints.push(where('preferredStudyDestination', '==', currentFilters.preferredStudyDestination));
       }
 
       let q: Query<DocumentData>;
@@ -127,7 +156,7 @@ export default function StudentsAllPage() {
       const documentSnapshots = await getDocs(q);
       
       if(pageDirection === 'first') {
-        addHistoryItem(newFilters);
+        addHistoryItem(currentFilters);
       }
 
       const studentData: Student[] = documentSnapshots.docs.map(doc => ({
@@ -138,10 +167,8 @@ export default function StudentsAllPage() {
         visaStatusUpdateDate: doc.data().visaStatusUpdateDate?.toDate(),
       })) as Student[];
 
-      if (studentData.length === 0 && pageDirection !== 'first' && isDataLoaded) {
-        toast({ title: "No more students", description: `You have reached the ${pageDirection === 'next' ? 'end' : 'beginning'} of the list.` });
-        setIsLoading(false);
-        return;
+      if (studentData.length === 0 && (pageDirection !== 'first' || searchLower) && isDataLoaded) {
+         toast({ title: "No more students", description: `You have reached the end of the list for this query.` });
       }
 
       if (pageDirection === 'next') setCurrentPage(p => p + 1);
@@ -162,16 +189,20 @@ export default function StudentsAllPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [lastVisible, firstVisible, isDataLoaded, currentPage, toast, filters, addHistoryItem]);
+  }, [lastVisible, firstVisible, isDataLoaded, currentPage, toast, filters, debouncedSearchTerm]);
   
   const handleFilterChange = () => {
-    fetchStudents('first', {
-        visaStatus: visaStatusFilter,
-        serviceFeeStatus: feeStatusFilter,
-        assignedTo: counselorFilter,
-        preferredStudyDestination: destinationFilter,
-    });
+    setSearchTerm(''); // Reset search term when applying new filters
+    fetchStudents('first', filters, '');
   };
+
+  // Effect to handle searching
+  useEffect(() => {
+    // Only trigger search if data has been loaded at least once or if search term is cleared
+    if (isDataLoaded) {
+      fetchStudents('first', filters, debouncedSearchTerm);
+    }
+  }, [debouncedSearchTerm, isDataLoaded, filters]); // removed fetchStudents from dependency array
 
   const renderFilterHistory = () => {
     if (history.length === 0) {
@@ -201,7 +232,7 @@ export default function StudentsAllPage() {
         <CardHeader>
           <CardTitle className="flex items-center"><Database className="mr-2" /> All Student Records</CardTitle>
           <CardDescription>
-            Filter and view all student data. Click 'Load Students' to begin or 'Apply Filters' to refine your search.
+            Filter and search all student data. Click 'Load Students' to begin or 'Apply Filters' to refine your search.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -266,6 +297,16 @@ export default function StudentsAllPage() {
             </div>
           ) : (
             <div className="space-y-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search by name..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full max-w-sm pl-10"
+                />
+              </div>
+
               {error && (
                 <Alert variant="destructive">
                   <AlertTriangle className="h-4 w-4" />
