@@ -25,14 +25,14 @@ import { Student, allEducationLevels, englishTestOptions, studyDestinationOption
 import { collection, addDoc, updateDoc, doc, serverTimestamp, Timestamp, deleteDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CalendarIcon, Loader2, BookUser, Mail, Phone, GraduationCap, Languages, Target, StickyNote, Users, CalendarDays, CircleDollarSign, Briefcase, ShieldQuestion, FilePenLine, Trash2, X } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { Badge } from "../ui/badge";
-import { Separator } from "../ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 
 const studentSchema = z.object({
@@ -44,7 +44,7 @@ const studentSchema = z.object({
   preferredStudyDestination: z.string().optional(),
   additionalNotes: z.string().max(500, "Notes are too long.").optional(),
   visaStatus: z.enum(['Pending', 'Approved', 'Rejected', 'Not Applied']),
-  serviceFeeStatus: z.enum(['Paid', 'Unpaid', 'Partial']),
+  serviceFeeStatus: z.enum(['Paid', 'Unpaid']),
   assignedTo: z.string().min(2, 'Assigned to must be at least 2 characters'),
   emergencyContact: z.string().optional(),
   collegeUniversityName: z.string().optional(),
@@ -114,7 +114,7 @@ export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: Stude
   const serviceFeeStatus = form.watch('serviceFeeStatus');
   const visaStatus = form.watch('visaStatus');
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (student) {
       form.reset({
         ...defaultValues,
@@ -125,6 +125,20 @@ export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: Stude
       setIsEditing(isNewStudent); // Automatically enter edit mode for new students
     }
   }, [student, form, isNewStudent]);
+
+  useEffect(() => {
+      if (serviceFeeStatus === 'Paid' && !form.getValues('serviceFeePaidDate')) {
+        form.setValue('serviceFeePaidDate', new Date(), { shouldValidate: true, shouldDirty: true });
+      } else if (serviceFeeStatus === 'Unpaid') {
+        form.setValue('serviceFeePaidDate', null);
+      }
+      
+      if (visaStatus !== 'Not Applied' && !form.getValues('visaStatusUpdateDate')) {
+        form.setValue('visaStatusUpdateDate', new Date(), { shouldValidate: true, shouldDirty: true });
+      } else if (visaStatus === 'Not Applied') {
+        form.setValue('visaStatusUpdateDate', null);
+      }
+  }, [serviceFeeStatus, visaStatus, form]);
 
   const onSubmit = async (data: StudentFormValues) => {
     setIsLoading(true);
@@ -188,7 +202,6 @@ export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: Stude
   const getFeeStatusBadgeVariant = (status?: Student['serviceFeeStatus']) => {
     switch (status) {
         case 'Paid': return 'default';
-        case 'Partial': return 'secondary';
         case 'Unpaid': return 'outline';
         default: return 'outline';
     }
@@ -219,7 +232,7 @@ export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: Stude
           {visaStatus && visaStatus !== 'Not Applied' && <FormField control={form.control} name="visaStatusUpdateDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Visa Status Date</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? format(field.value, "PPP") : <span>Pick date</span>}<CalendarIcon className="ml-auto h-4 w-4" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0"><Calendar mode="single" selected={field.value || undefined} onSelect={field.onChange} /></PopoverContent></Popover><FormMessage /></FormItem>)}/>}
        </div>
        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-           <FormField control={form.control} name="serviceFeeStatus" render={({ field }) => ( <FormItem><FormLabel>Service Fee</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger></FormControl><SelectContent>{['Unpaid', 'Partial', 'Paid'].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem> )}/>
+           <FormField control={form.control} name="serviceFeeStatus" render={({ field }) => ( <FormItem><FormLabel>Service Fee</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger></FormControl><SelectContent>{['Unpaid', 'Paid'].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem> )}/>
            {serviceFeeStatus === 'Paid' && <FormField control={form.control} name="serviceFeePaidDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Fee Paid Date</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? format(field.value, "PPP") : <span>Pick date</span>}<CalendarIcon className="ml-auto h-4 w-4" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0"><Calendar mode="single" selected={field.value || undefined} onSelect={field.onChange} /></PopoverContent></Popover><FormMessage /></FormItem>)}/>}
        </div>
        <FormField control={form.control} name="additionalNotes" render={({ field }) => ( <FormItem><FormLabel className="flex items-center"><StickyNote className="mr-2 h-4 w-4 text-accent"/>Additional Notes</FormLabel><FormControl><Textarea rows={3} {...field} /></FormControl><FormMessage /></FormItem> )}/>
@@ -308,38 +321,39 @@ export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: Stude
                 </div>
             </div>
         </CardHeader>
-        <CardContent className="space-y-6 flex-grow overflow-y-auto p-4 sm:p-6 pr-2 sm:pr-4">
-             <div className="space-y-4">
-                <h3 className="font-semibold text-lg text-primary">Personal & Contact Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <DetailItem icon={Mail} label="Email" value={student?.email} />
-                  <DetailItem icon={Phone} label="Mobile Number" value={student?.mobileNumber} />
-                  <DetailItem icon={Phone} label="Emergency Contact" value={student?.emergencyContact} />
-                  <DetailItem icon={Briefcase} label="College/University" value={student?.collegeUniversityName} />
-                </div>
-              </div>
-              <Separator />
-              <div className="space-y-4">
-                 <h3 className="font-semibold text-lg text-primary">Academic & Study Preferences</h3>
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <CardContent className="flex-grow space-y-4 p-6 overflow-y-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                {/* Left Column: Student Provided Data */}
+                <div className="space-y-4">
+                    <h3 className="font-semibold text-lg text-primary border-b pb-2">Student Information</h3>
+                    <DetailItem icon={Mail} label="Email" value={student?.email} />
+                    <DetailItem icon={Phone} label="Mobile Number" value={student?.mobileNumber} />
+                    <DetailItem icon={Phone} label="Emergency Contact" value={student?.emergencyContact} />
+                    <Separator className="my-4"/>
                     <DetailItem icon={GraduationCap} label="Last Completed Education" value={student?.lastCompletedEducation} />
                     <DetailItem icon={Languages} label="English Proficiency Test" value={student?.englishProficiencyTest} />
                     <DetailItem icon={Target} label="Preferred Study Destination" value={student?.preferredStudyDestination} />
-                 </div>
-                 <DetailItem icon={StickyNote} label="Additional Notes" value={<p className="whitespace-pre-wrap">{student?.additionalNotes}</p>} />
-              </div>
-               <Separator />
-               <div className="space-y-4">
-                 <h3 className="font-semibold text-lg text-primary">Internal Records</h3>
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Assigned To is now in the header */}
-                    <DetailItem icon={ShieldQuestion} label="Visa Status" value={<Badge variant={getVisaStatusBadgeVariant(student?.visaStatus)}>{student?.visaStatus}</Badge>} />
-                    {displayVisaStatusDate && <DetailItem icon={CalendarDays} label="Visa Status Date" value={format(displayVisaStatusDate, 'PPP')} />}
-                    <DetailItem icon={CircleDollarSign} label="Service Fee Status" value={<Badge variant={getFeeStatusBadgeVariant(student?.serviceFeeStatus)}>{student?.serviceFeeStatus}</Badge>} />
-                    {displayServiceFeeDate && <DetailItem icon={CalendarDays} label="Fee Paid Date" value={format(displayServiceFeeDate, 'PPP')} />}
-                    <DetailItem icon={CalendarDays} label="Date Added" value={displayTimestamp ? format(displayTimestamp, 'PPP, p') : 'N/A'} />
-                 </div>
-              </div>
+                    <DetailItem icon={Briefcase} label="College/University" value={student?.collegeUniversityName} />
+                </div>
+
+                {/* Right Column: Internal Data */}
+                <div className="space-y-4">
+                    <h3 className="font-semibold text-lg text-primary border-b pb-2">Internal Records</h3>
+                    <div className="p-4 bg-muted/50 rounded-lg space-y-4">
+                        <DetailItem icon={ShieldQuestion} label="Visa Status" value={<Badge variant={getVisaStatusBadgeVariant(student?.visaStatus)}>{student?.visaStatus}</Badge>} />
+                        {displayVisaStatusDate && <DetailItem icon={CalendarDays} label="Visa Status Date" value={format(displayVisaStatusDate, 'PPP')} />}
+                        <Separator />
+                        <DetailItem icon={CircleDollarSign} label="Service Fee Status" value={<Badge variant={getFeeStatusBadgeVariant(student?.serviceFeeStatus)}>{student?.serviceFeeStatus}</Badge>} />
+                        {displayServiceFeeDate && <DetailItem icon={CalendarDays} label="Fee Paid Date" value={format(displayServiceFeeDate, 'PPP')} />}
+                    </div>
+                     <DetailItem icon={CalendarDays} label="Date Added" value={displayTimestamp ? format(displayTimestamp, 'PPP, p') : 'N/A'} />
+                </div>
+                 {/* Full-width notes section */}
+                 <div className="md:col-span-2">
+                     <Separator className="my-2"/>
+                     <DetailItem icon={StickyNote} label="Additional Notes" value={<p className="text-sm text-foreground/80 whitespace-pre-wrap">{student?.additionalNotes}</p>} />
+                </div>
+            </div>
         </CardContent>
          <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
             <AlertDialogContent>
