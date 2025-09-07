@@ -10,6 +10,22 @@ import type { Student } from '@/lib/data';
 import { Card, CardHeader } from '@/components/ui/card';
 import { Users, Phone } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from '@/hooks/use-toast';
+
+// A simple debounce hook
+const useDebouncedValue = (value: string, delay: number) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+  return debouncedValue;
+};
+
 
 export default function StudentManagementPage() {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
@@ -17,50 +33,59 @@ export default function StudentManagementPage() {
   
   const [recentStudents, setRecentStudents] = useState<Student[]>([]);
   const [remoteStudents, setRemoteStudents] = useState<Student[]>([]);
-  const [loadingRecent, setLoadingRecent] = useState(true);
-  const [loadingRemote, setLoadingRemote] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebouncedValue(searchTerm, 500);
+  const { toast } = useToast();
 
   useEffect(() => {
-    // Fetch recent students
-    const recentConstraints: QueryConstraint[] = [orderBy('timestamp', 'desc'), limit(20)];
-    const recentQuery = query(collection(db, 'students'), ...recentConstraints);
+    setLoading(true);
+    
+    // Base constraints
+    const recentBaseConstraints: QueryConstraint[] = [orderBy('timestamp', 'desc')];
+    const remoteBaseConstraints: QueryConstraint[] = [where('inquiryType', 'in', ['visit', 'phone']), where('assignedTo', '==', 'Unassigned'), orderBy('timestamp', 'desc')];
+    
+    const searchLower = debouncedSearchTerm.toLowerCase();
+    
+    if (searchLower) {
+        // If searching, apply search constraints to both queries
+        recentBaseConstraints.unshift(orderBy('searchableName'));
+        recentBaseConstraints.push(where('searchableName', '>=', searchLower), where('searchableName', '<=', searchLower + '\uf8ff'));
+        
+        remoteBaseConstraints.unshift(orderBy('searchableName'));
+        remoteBaseConstraints.push(where('searchableName', '>=', searchLower), where('searchableName', '<=', searchLower + '\uf8ff'));
+    } else {
+        // If not searching, apply limit
+        recentBaseConstraints.push(limit(20));
+        remoteBaseConstraints.push(limit(20));
+    }
+
+    const recentQuery = query(collection(db, 'students'), ...recentBaseConstraints);
+    const remoteQuery = query(collection(db, 'students'), ...remoteBaseConstraints);
     
     const unsubRecent = onSnapshot(recentQuery, (querySnapshot) => {
-      const studentData: Student[] = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        studentData.push({ id: doc.id, ...data, timestamp: data.timestamp?.toDate() } as Student);
-      });
+      const studentData: Student[] = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), timestamp: doc.data().timestamp?.toDate() } as Student));
       setRecentStudents(studentData);
-      setLoadingRecent(false);
+      setLoading(false);
     }, (error) => {
       console.error("Error fetching recent students:", error);
-      setLoadingRecent(false);
+      toast({ title: "Error", description: "Could not fetch recent students.", variant: "destructive" });
+      setLoading(false);
     });
 
-    // Fetch remote inquiry students
-    const remoteConstraints: QueryConstraint[] = [where('inquiryType', 'in', ['visit', 'phone']), where('assignedTo', '==', 'Unassigned'), orderBy('timestamp', 'desc')];
-    const remoteQuery = query(collection(db, 'students'), ...remoteConstraints);
-    
     const unsubRemote = onSnapshot(remoteQuery, (querySnapshot) => {
-      const studentData: Student[] = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        studentData.push({ id: doc.id, ...data, timestamp: data.timestamp?.toDate() } as Student);
-      });
+      const studentData: Student[] = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), timestamp: doc.data().timestamp?.toDate() } as Student));
       setRemoteStudents(studentData);
-      setLoadingRemote(false);
     }, (error) => {
       console.error("Error fetching remote students:", error);
-      setLoadingRemote(false);
+      toast({ title: "Error", description: "Could not fetch remote inquiries.", variant: "destructive" });
     });
 
     return () => {
       unsubRecent();
       unsubRemote();
     };
-  }, []);
+  }, [debouncedSearchTerm, toast]);
 
   const handleRowSelect = (student: Student) => {
     setSelectedStudent(student);
@@ -93,14 +118,6 @@ export default function StudentManagementPage() {
     };
   }, []);
 
-  const filteredRecentStudents = recentStudents.filter(student =>
-    student.fullName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const filteredRemoteStudents = remoteStudents.filter(student =>
-    student.fullName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7 xl:grid-cols-3">
@@ -114,24 +131,24 @@ export default function StudentManagementPage() {
                       </TabsList>
                       <TabsContent value="recent" className="m-0">
                           <DataTable 
-                            students={filteredRecentStudents} 
-                            loading={loadingRecent}
+                            students={recentStudents} 
+                            loading={loading}
                             onRowSelect={handleRowSelect} 
                             selectedStudentId={selectedStudent?.id}
                             searchTerm={searchTerm}
                             onSearchChange={setSearchTerm}
-                            searchPlaceholder="Search recent students..."
+                            searchPlaceholder="Search all students..."
                           />
                       </TabsContent>
                       <TabsContent value="remote" className="m-0">
                           <DataTable 
-                            students={filteredRemoteStudents} 
-                            loading={loadingRemote}
+                            students={remoteStudents} 
+                            loading={loading}
                             onRowSelect={handleRowSelect} 
                             selectedStudentId={selectedStudent?.id}
                             searchTerm={searchTerm}
                             onSearchChange={setSearchTerm}
-                            searchPlaceholder="Search remote inquiries..."
+                            searchPlaceholder="Search all students..."
                            />
                       </TabsContent>
                   </Tabs>

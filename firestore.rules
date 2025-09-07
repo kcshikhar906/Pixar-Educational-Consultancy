@@ -17,30 +17,30 @@ service cloud.firestore {
 
     // Rules for the 'students' collection
     match /students/{studentId} {
-      // Admins can perform any action on any student document.
-      allow read, write, delete: if isRole('admin');
+      // Admins can read, write, create, and delete any student document.
+      allow read, write: if isRole('admin');
       
-      // Counselors can read student documents assigned to them.
-      allow get: if isRole('counselor') && resource.data.assignedTo == getCounselorName();
+      // Counselors can get/read a specific student document.
+      allow get: if isRole('counselor');
 
-      // Counselors can update student documents assigned to them.
-      allow update: if isRole('counselor') && request.resource.data.assignedTo == getCounselorName();
+      // Counselors can update a student document ONLY IF it is assigned to them.
+      allow update: if isRole('counselor') && resource.data.assignedTo == getCounselorName();
 
-      // Allow counselors to list students filtered by their name.
-      // This supports the dashboard and search functionality.
+      // Allow counselors to list students, enabling both the dashboard view and the search functionality.
       allow list: if isRole('counselor') && request.query.where.assignedTo == getCounselorName();
     }
 
     // Rules for the 'counselors' collection
     match /counselors/{counselorId} {
-      // Admins can read/write any counselor document.
+      // An admin can access any counselor document.
       allow read, write: if isRole('admin');
-      // A counselor can read their own document to verify their role/name.
-      allow get: if request.auth.uid == counselorId;
+      
+      // A counselor can read their OWN document to verify their role and name.
+      allow get: if isRole('counselor') && request.auth.uid == counselorId;
     }
 
     // Rules for other collections (e.g., display, metrics)
-    // Allow read for any authenticated user.
+    // Allow read for any authenticated user (admin or counselor).
     // Allow write only for admins.
     match /{collection}/{docId} {
         allow read: if request.auth != null;
