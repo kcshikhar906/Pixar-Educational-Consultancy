@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   collection,
   query,
@@ -10,6 +10,7 @@ import {
   orderBy,
   QueryConstraint,
   limit,
+  getDocs,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Student } from '@/lib/data';
@@ -21,6 +22,22 @@ import Image from 'next/image';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+
+// A simple debounce hook
+const useDebouncedValue = (value: string, delay: number) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+  return debouncedValue;
+};
+
 
 interface CounselorDashboardProps {
   counselorName: string;
@@ -32,47 +49,68 @@ export default function CounselorDashboard({ counselorName, onLogout }: Counselo
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebouncedValue(searchTerm, 500);
+  const { toast } = useToast();
 
-  useEffect(() => {
+  const fetchStudents = useCallback(async () => {
     if (!counselorName) return;
 
     setLoading(true);
-
-    const constraints: QueryConstraint[] = [
-      where('assignedTo', '==', counselorName),
-      orderBy('timestamp', 'desc'),
-      limit(15) // Fetch only the 15 most recent students.
-    ];
+    setError(null);
     
-    const q = query(collection(db, 'students'), ...constraints);
+    try {
+        const constraints: QueryConstraint[] = [
+            where('assignedTo', '==', counselorName)
+        ];
 
-    const unsubscribe = onSnapshot(
-      q,
-      (querySnapshot) => {
+        const searchLower = debouncedSearchTerm.toLowerCase();
+        if (searchLower) {
+            constraints.push(orderBy('searchableName'));
+            constraints.push(where('searchableName', '>=', searchLower));
+            constraints.push(where('searchableName', '<=', searchLower + '\uf8ff'));
+        } else {
+            constraints.push(orderBy('timestamp', 'desc'));
+            constraints.push(limit(15));
+        }
+
+        const q = query(collection(db, 'students'), ...constraints);
+        const querySnapshot = await getDocs(q);
+
         const studentData: Student[] = [];
         querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          studentData.push({
+            const data = doc.data();
+            studentData.push({
             id: doc.id,
             ...data,
             timestamp: data.timestamp?.toDate(),
-          } as Student);
+            } as Student);
         });
+
+        if (studentData.length === 0 && searchLower) {
+          toast({ title: "No results", description: `No students found matching "${debouncedSearchTerm}".`});
+        }
         
         setStudents(studentData);
-        setLoading(false);
-        setError(null);
-      },
-      (err: any) => {
-        console.error("Firestore Error:", err);
-        setError("Could not load your assigned students. Please check your connection or contact an admin.");
-        setLoading(false);
-      }
-    );
-    
-    return () => unsubscribe();
 
-  }, [counselorName]);
+    } catch (err: any) {
+        console.error("Firestore Error:", err);
+        let errorMessage = "Could not load your assigned students. Please check your connection or contact an admin.";
+        if (err.code === 'failed-precondition') {
+            errorMessage = "A required database index is missing. Please contact your administrator to create the necessary Firestore index for searching.";
+        }
+        setError(errorMessage);
+    } finally {
+        setLoading(false);
+    }
+  }, [counselorName, debouncedSearchTerm, toast]);
+
+
+  useEffect(() => {
+    // This effect triggers fetching when the component mounts or the search term changes
+    fetchStudents();
+  }, [fetchStudents]);
+
 
   const handleRowSelect = (student: Student) => {
     setSelectedStudent(student);
@@ -80,6 +118,12 @@ export default function CounselorDashboard({ counselorName, onLogout }: Counselo
 
   const handleDeselect = () => {
     setSelectedStudent(null);
+  };
+  
+  const handleFormSubmitSuccess = () => {
+      handleDeselect();
+      // Refetch the data to show the latest changes
+      fetchStudents();
   };
 
   return (
@@ -107,7 +151,15 @@ export default function CounselorDashboard({ counselorName, onLogout }: Counselo
                     <AlertDescription>{error}</AlertDescription>
                 </Alert>
               ) : (
-                <DataTable students={students} allStudentsForSearch={students} onRowSelect={handleRowSelect} selectedStudentId={selectedStudent?.id} loading={loading} />
+                <DataTable
+                    students={students}
+                    onRowSelect={handleRowSelect}
+                    selectedStudentId={selectedStudent?.id}
+                    loading={loading}
+                    searchTerm={searchTerm}
+                    onSearchChange={setSearchTerm}
+                    searchPlaceholder="Search assigned students..."
+                 />
               )}
             </Card>
           </div>
@@ -116,7 +168,7 @@ export default function CounselorDashboard({ counselorName, onLogout }: Counselo
               <StudentForm
                 student={selectedStudent}
                 onFormClose={handleDeselect}
-                onFormSubmitSuccess={handleDeselect}
+                onFormSubmitSuccess={handleFormSubmitSuccess}
               />
             ) : (
               <Card className="h-full flex items-center justify-center bg-background border-dashed shadow-none">

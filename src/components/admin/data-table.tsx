@@ -21,22 +21,12 @@ interface DataTableProps {
   onRowSelect: (student: Student) => void;
   selectedStudentId?: string | null;
   loading: boolean;
+  searchTerm: string;
+  onSearchChange: (value: string) => void;
   searchPlaceholder?: string;
 }
 
-export function DataTable({ students, onRowSelect, selectedStudentId, loading, searchPlaceholder = "Search by name..." }: DataTableProps) {
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const displayedStudents = useMemo(() => {
-    const sourceList = students || []; // Ensure sourceList is always an array
-    const searchLower = searchTerm.toLowerCase();
-    if (!searchLower) {
-      return sourceList;
-    }
-    return sourceList.filter(student =>
-      student.fullName.toLowerCase().includes(searchLower)
-    );
-  }, [searchTerm, students]);
+export function DataTable({ students, onRowSelect, selectedStudentId, loading, searchTerm, onSearchChange, searchPlaceholder = "Search by name..." }: DataTableProps) {
 
   const getRelativeDate = (date: any) => {
     if (!date) return 'No date';
@@ -80,7 +70,7 @@ export function DataTable({ students, onRowSelect, selectedStudentId, loading, s
             <Input
               placeholder={searchPlaceholder}
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => onSearchChange(e.target.value)}
               className="w-full pl-10 pr-10"
             />
             {searchTerm && (
@@ -88,7 +78,7 @@ export function DataTable({ students, onRowSelect, selectedStudentId, loading, s
                     variant="ghost"
                     size="icon"
                     className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full"
-                    onClick={() => setSearchTerm('')}
+                    onClick={() => onSearchChange('')}
                 >
                     <X className="h-4 w-4" />
                 </Button>
@@ -108,8 +98,8 @@ export function DataTable({ students, onRowSelect, selectedStudentId, loading, s
                   </TableCell>
                 </TableRow>
               ))
-            ) : displayedStudents.length > 0 ? (
-              displayedStudents.map((student) => (
+            ) : students.length > 0 ? (
+              students.map((student) => (
                 <TableRow
                   key={student.id}
                   onClick={() => onRowSelect(student)}
@@ -142,7 +132,7 @@ export function DataTable({ students, onRowSelect, selectedStudentId, loading, s
             ) : (
               <TableRow>
                 <TableCell className="h-24 text-center">
-                  No students found.
+                  {searchTerm ? `No students found for "${searchTerm}".` : "No students found."}
                 </TableCell>
               </TableRow>
             )}
