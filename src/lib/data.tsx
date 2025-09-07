@@ -65,20 +65,13 @@ export interface Student {
 }
 
 export const counselorNames = [
-  'Unassigned', 
-  'Pradeep Khadka', 
+  'Unassigned',
   'Pawan Acharya',
-  'Mujal Amatya', 
-  'Sabina Thapa', 
-  'Shyam Babu Ojha', 
+  'Mujal Amatya',
+  'Sabina Thapa',
+  'Shyam Babu Ojha',
   'Mamata Chapagain',
-  'Sonima Rijal',
-  'Sujata Nepal',
-  'Anisha Thapa',
-  'Saubhana Bhandari',
-  'Sunita Khadka',
-  'Shikhar KC',
-  'Ram Babu Ojha'
+  'Pradeep Khadka'
 ];
 
 export interface Testimonial {

@@ -23,22 +23,13 @@ import fs from 'fs';
 import path from 'path';
 
 // --- Configuration ---
-// !!! IMPORTANT: REVIEW AND EDIT THIS MAPPING TO BE ACCURATE FOR YOUR DATA !!!
+// !!! IMPORTANT: This mapping has been updated to ONLY include the 6 specified counselors.
 const nameMapping: { [oldName: string]: string } = {
-  // Add all old name to new name mappings here
-  // "Old Name in Database": "New Full Name",
   "Pawan Sir": "Pawan Acharya",
   "Mujal Sir": "Mujal Amatya",
   "Sabina Mam": "Sabina Thapa",
   "Shyam Sir": "Shyam Babu Ojha",
   "Mamta Miss": "Mamata Chapagain",
-  "Sonima Mam": "Sonima Rijal",
-  "Sujata Mam": "Sujata Nepal",
-  "Anisha Mam": "Anisha Thapa",
-  "Saubhana Mam": "Saubhana Bhandari",
-  "Sunita Mam": "Sunita Khadka",
-  "Shikhar Sir": "Shikhar KC",
-  "Ram Sir": "Ram Babu Ojha",
   "Pradeep Sir": "Pradeep Khadka"
 };
 
