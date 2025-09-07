@@ -18,27 +18,24 @@ import { formatDistanceToNowStrict, isToday } from 'date-fns';
 
 interface DataTableProps {
   students: Student[];
-  allStudentsForSearch: Student[]; // This will now be the same as students for counselors.
   onRowSelect: (student: Student) => void;
   selectedStudentId?: string | null;
   loading: boolean;
 }
 
-export function DataTable({ students, allStudentsForSearch, onRowSelect, selectedStudentId, loading }: DataTableProps) {
+export function DataTable({ students, onRowSelect, selectedStudentId, loading }: DataTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
 
   const displayedStudents = useMemo(() => {
+    const sourceList = students || []; // Ensure sourceList is always an array
     const searchLower = searchTerm.toLowerCase();
-    // For counselors, `allStudentsForSearch` is the same as `students` (the limited list).
-    // The search now filters this visible list.
-    const sourceList = allStudentsForSearch || students;
     if (!searchLower) {
       return sourceList;
     }
     return sourceList.filter(student =>
       student.fullName.toLowerCase().includes(searchLower)
     );
-  }, [searchTerm, students, allStudentsForSearch]);
+  }, [searchTerm, students]);
 
   const getRelativeDate = (date: any) => {
     if (!date) return 'No date';
@@ -110,7 +107,7 @@ export function DataTable({ students, allStudentsForSearch, onRowSelect, selecte
                   </TableCell>
                 </TableRow>
               ))
-            ) : displayedStudents.length > 0 ? (
+            ) : displayedStudents && displayedStudents.length > 0 ? (
               displayedStudents.map((student) => (
                 <TableRow
                   key={student.id}
