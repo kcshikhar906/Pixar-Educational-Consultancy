@@ -22,8 +22,26 @@ import {DocumentData, DocumentSnapshot} from "firebase-admin/firestore";
 // Initialize Firebase Admin SDK
 admin.initializeApp();
 
-// Explicitly connect to the 'pixareducation' database. This is the crucial fix.
+// Explicitly connect to the 'pixareducation' database.
 const db = admin.firestore();
+
+// Name mapping to consolidate old names to new full names for metrics
+const counselorNameMapping: {[oldName: string]: string} = {
+  "Pawan Sir": "Pawan Acharya",
+  "Mujal Sir": "Mujal Amatya",
+  "Sabina Mam": "Sabina Thapa",
+  "Shyam Sir": "Shyam Babu Ojha",
+  "Mamta Miss": "Mamata Chapagain",
+  "Pradeep Sir": "Pradeep Khadka",
+};
+
+// Helper to normalize and map counselor names
+const getNormalizedCounselorName = (name: string | undefined | null): string => {
+    if (!name) return "Unassigned";
+    const trimmedName = name.trim();
+    // Return the new full name if the input is an old name, otherwise return the name as is.
+    return counselorNameMapping[trimmedName] || trimmedName;
+};
 
 
 // Helper to normalize strings to Title Case for consistency
@@ -123,7 +141,7 @@ export const onStudentChange = onDocumentWritten(
         console.log(`Processing DELETE for student: ${before.fullName}`);
         const dest = toTitleCase(before.preferredStudyDestination);
         const visa = toTitleCase(before.visaStatus);
-        const coun = toTitleCase(before.assignedTo);
+        const coun = getNormalizedCounselorName(before.assignedTo);
         const fee = toTitleCase(before.serviceFeeStatus);
         const edu = toTitleCase(before.lastCompletedEducation);
         const test = toTitleCase(before.englishProficiencyTest);
@@ -161,7 +179,7 @@ export const onStudentChange = onDocumentWritten(
         console.log(`Processing CREATE for student: ${after.fullName}`);
         const dest = toTitleCase(after.preferredStudyDestination);
         const visa = toTitleCase(after.visaStatus);
-        const coun = toTitleCase(after.assignedTo);
+        const coun = getNormalizedCounselorName(after.assignedTo);
         const fee = toTitleCase(after.serviceFeeStatus);
         const edu = toTitleCase(after.lastCompletedEducation);
         const test = toTitleCase(after.englishProficiencyTest);
@@ -225,8 +243,8 @@ export const onStudentChange = onDocumentWritten(
         };
       }
       if (changed("assignedTo")) {
-        const oldVal = toTitleCase(before.assignedTo);
-        const newVal = toTitleCase(after.assignedTo);
+        const oldVal = getNormalizedCounselorName(before.assignedTo);
+        const newVal = getNormalizedCounselorName(after.assignedTo);
         data.studentsByCounselor = {
           ...data.studentsByCounselor,
           [oldVal]: decrement(data.studentsByCounselor?.[oldVal]),
@@ -267,3 +285,5 @@ export const onStudentChange = onDocumentWritten(
     console.log(`Function finished for studentId: ${event.params.studentId}`);
   }
 );
+
+    

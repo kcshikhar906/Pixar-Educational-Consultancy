@@ -1,49 +1,62 @@
 
 rules_version = '2';
+
+// The 'pixareducation' database
 service cloud.firestore {
-  match /databases/{database}/documents {
-
-    // Helper function to get user's role
-    function getUserRole(userId) {
-      return get(/databases/$(database)/documents/counselors/$(userId)).data.role;
-    }
-
-    // Helper function to get user's name
-    function getUserName(userId) {
-      return get(/databases/$(database)/documents/counselors/$(userId)).data.name;
-    }
-
-    // Rules for the counselors collection
-    match /counselors/{userId} {
-      // Admins can manage counselor roles
-      allow read, write: if getUserRole(request.auth.uid) == 'admin';
-      // A counselor can read their own profile
-      allow get: if request.auth.uid == userId;
-    }
-
-    // Rules for the students collection
-    match /students/{studentId} {
-      // Anyone can create a student record (e.g., from the contact form)
-      allow create: if request.auth == null || request.auth.uid != null;
-
-      // Admins can read/write any single student document
-      allow get, update, delete: if getUserRole(request.auth.uid) == 'admin';
-      
-      // Counselors can read/write a single student document IF it's assigned to them
-      allow get, update: if getUserName(request.auth.uid) == resource.data.assignedTo;
-
-      // --- THIS IS THE CRITICAL FIX FOR THE QUERY ---
-      // Define who can LIST (query) documents
-      allow list: if 
-        // Admins can list all students
-        getUserRole(request.auth.uid) == 'admin' ||
-        // Counselors can list students IF the query's "where" clause is filtering by their own name
-        (getUserRole(request.auth.uid) == 'counselor' && request.query.where.assignedTo == getUserName(request.auth.uid));
+  match /databases/pixareducation/documents {
+  
+    // Helper function to check if a user is an authenticated counselor or admin
+    function isCounselorOrAdmin() {
+      return request.auth != null && exists(/databases/$(database)/documents/counselors/$(request.auth.uid));
     }
     
-    // Default deny all other collections
-    match /{document=**} {
-      allow read, write: if false;
+    // Helper function to check if a user is a super admin
+    function isSuperAdmin() {
+      return request.auth != null && get(/databases/$(database)/documents/counselors/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Rules for the 'counselors' collection
+    match /counselors/{userId} {
+      // Only authenticated users who are admins OR are accessing their own document can read.
+      allow read: if isSuperAdmin() || request.auth.uid == userId;
+      // Only admins can create or update counselor profiles.
+      allow write: if isSuperAdmin();
+    }
+
+    // Rules for the 'students' collection
+    match /students/{studentId} {
+      // Allow any authenticated counselor/admin to create a student record.
+      allow create: if isCounselorOrAdmin();
+
+      // Allow read/update access if user is a Super Admin OR if the student is assigned to them.
+      allow read, update: if isSuperAdmin() || (isCounselorOrAdmin() && resource.data.assignedTo == request.auth.token.name);
+      
+      // Only super admins can delete student records.
+      allow delete: if isSuperAdmin();
+    }
+    
+    // Rule to allow the counselor dashboard query. This is crucial.
+    // It allows a user to LIST students if the query they are making filters
+    // by their own name from their auth token.
+    match /students/{studentId} {
+        allow list: if isSuperAdmin() || (isCounselorOrAdmin() && request.query.where.assignedTo == request.auth.token.name);
+    }
+    
+    // Rules for other collections like 'metrics' and 'display'
+    match /metrics/{docId} {
+      // Only allow super admins to read aggregated metrics.
+      allow read: if isSuperAdmin();
+      // Writes to metrics are handled by backend Cloud Functions, so client writes are disallowed.
+      allow write: if false;
+    }
+    
+    match /display/{docId} {
+        // Allow anyone to read the display data for the welcome screen.
+        allow read: if true;
+        // Writes are handled by backend Cloud Functions.
+        allow write: if false;
     }
   }
 }
+
+    
