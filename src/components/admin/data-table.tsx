@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Student } from '@/lib/data.tsx';
 import {
   Table,
@@ -13,39 +13,31 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Search, AlertTriangle, UserPlus, X, Users } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { formatDistanceToNowStrict, isToday, format } from 'date-fns';
-
-// A simple debounce hook to prevent firing search queries on every keystroke
-const useDebouncedValue = (value: string, delay: number) => {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-  return debouncedValue;
-};
-
+import { Search, UserPlus, X, Users } from 'lucide-react';
+import { formatDistanceToNowStrict, isToday } from 'date-fns';
 
 interface DataTableProps {
   students: Student[];
+  allStudentsForSearch: Student[]; // Full list for searching
   onRowSelect: (student: Student) => void;
   selectedStudentId?: string | null;
   loading: boolean;
 }
 
-export function DataTable({ students, onRowSelect, selectedStudentId, loading }: DataTableProps) {
+export function DataTable({ students, allStudentsForSearch, onRowSelect, selectedStudentId, loading }: DataTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  const debouncedSearchTerm = useDebouncedValue(searchTerm, 300);
 
-  const filteredStudents = students.filter(student =>
-    student.fullName.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
-  );
+  const displayedStudents = useMemo(() => {
+    const searchLower = searchTerm.toLowerCase();
+    if (!searchLower) {
+      // If no search term, show the limited list of 15 passed in props
+      return students;
+    }
+    // If there is a search term, filter the *entire* list of assigned students
+    return allStudentsForSearch.filter(student =>
+      student.fullName.toLowerCase().includes(searchLower)
+    );
+  }, [searchTerm, students, allStudentsForSearch]);
 
   const getRelativeDate = (date: any) => {
     if (!date) return 'No date';
@@ -69,7 +61,8 @@ export function DataTable({ students, onRowSelect, selectedStudentId, loading }:
 
   const getInquiryTypeBadge = (student: Student) => {
     if (student.inquiryType === 'visit' && student.appointmentDate) {
-        return <Badge variant="secondary" className="py-0.5 px-1.5 text-xs">Visit: {format(safeToDate(student.appointmentDate)!, 'dd MMM')}</Badge>;
+        const appointmentDate = safeToDate(student.appointmentDate);
+        return <Badge variant="secondary" className="py-0.5 px-1.5 text-xs">Visit: {appointmentDate ? new Date(appointmentDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short'}) : 'Date Invalid'}</Badge>;
     }
     if (student.inquiryType === 'phone') {
         return <Badge variant="secondary" className="py-0.5 px-1.5 text-xs">Phone Call</Badge>;
@@ -116,8 +109,8 @@ export function DataTable({ students, onRowSelect, selectedStudentId, loading }:
                   </TableCell>
                 </TableRow>
               ))
-            ) : filteredStudents.length > 0 ? (
-              filteredStudents.map((student) => (
+            ) : displayedStudents.length > 0 ? (
+              displayedStudents.map((student) => (
                 <TableRow
                   key={student.id}
                   onClick={() => onRowSelect(student)}

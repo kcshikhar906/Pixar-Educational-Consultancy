@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   collection,
   query,
@@ -15,10 +15,11 @@ import type { Student } from '@/lib/data';
 import { DataTable } from '@/components/admin/data-table';
 import { StudentForm } from '@/components/admin/student-form';
 import { Card } from '@/components/ui/card';
-import { Users, LogOut } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Users } from 'lucide-react';
 import Image from 'next/image';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { LogOut } from 'lucide-react';
 
 interface CounselorDashboardProps {
   counselorName: string;
@@ -30,6 +31,9 @@ export default function CounselorDashboard({ counselorName, onLogout }: Counselo
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // This will store all students for searching.
+  const [allAssignedStudents, setAllAssignedStudents] = useState<Student[]>([]);
 
   useEffect(() => {
     if (!counselorName) return;
@@ -55,7 +59,13 @@ export default function CounselorDashboard({ counselorName, onLogout }: Counselo
             timestamp: data.timestamp?.toDate(),
           } as Student);
         });
-        setStudents(studentData);
+        
+        // Store all students for searching purposes
+        setAllAssignedStudents(studentData);
+
+        // Limit the initial display to 15 students
+        setStudents(studentData.slice(0, 15));
+
         setLoading(false);
         setError(null);
       },
@@ -103,7 +113,7 @@ export default function CounselorDashboard({ counselorName, onLogout }: Counselo
                     <AlertDescription>{error}</AlertDescription>
                 </Alert>
               ) : (
-                <DataTable students={students} onRowSelect={handleRowSelect} selectedStudentId={selectedStudent?.id} loading={loading} />
+                <DataTable students={students} allStudentsForSearch={allAssignedStudents} onRowSelect={handleRowSelect} selectedStudentId={selectedStudent?.id} loading={loading} />
               )}
             </Card>
           </div>
