@@ -24,7 +24,7 @@ import { useToast } from '@/hooks/use-toast';
 import CounselorDashboard from './counselor-dashboard/page'; // Import the new counselor dashboard
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
-  const [user, loading, error] = useAuthState(auth);
+  const [user, loading] = useAuthState(auth);
   const router = useRouter();
   const { toast } = useToast();
   const [userRole, setUserRole] = useState<string | null>(null);
@@ -32,32 +32,32 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const [isCheckingRole, setIsCheckingRole] = useState(true);
 
   useEffect(() => {
+    if (loading) {
+      setIsCheckingRole(true);
+      return;
+    }
+    if (!user) {
+      router.push('/admin/login');
+      return;
+    }
+
     const checkUserRole = async () => {
-      if (user) {
-        try {
-          const userDocRef = doc(db, 'counselors', user.uid);
-          const userDocSnap = await getDoc(userDocRef);
-          if (userDocSnap.exists()) {
-            const userData = userDocSnap.data();
-            setUserRole(userData.role);
-            setUserName(userData.name);
-          } else {
-            // This user is authenticated but has no role document.
-            // Log them out for security.
-            toast({ title: 'Access Denied', description: 'You do not have permissions to access this area.', variant: 'destructive'});
-            await signOut(auth);
-            router.push('/admin/login');
-          }
-        } catch (e) {
-            console.error("Error fetching user role:", e);
-            toast({ title: 'Error', description: 'Could not verify your user role.', variant: 'destructive'});
-            await signOut(auth);
-        } finally {
-            setIsCheckingRole(false);
+      try {
+        const userDocRef = doc(db, 'counselors', user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+        if (userDocSnap.exists()) {
+          const userData = userDocSnap.data();
+          setUserRole(userData.role);
+          setUserName(userData.name);
+        } else {
+          toast({ title: 'Access Denied', description: 'You do not have permissions to access this area.', variant: 'destructive'});
+          await signOut(auth);
         }
-      } else if (!loading) {
-          // If no user and not loading, push to login
-          router.push('/admin/login');
+      } catch (e) {
+          console.error("Error fetching user role:", e);
+          toast({ title: 'Error', description: 'Could not verify your user role.', variant: 'destructive'});
+          await signOut(auth);
+      } finally {
           setIsCheckingRole(false);
       }
     };
@@ -99,38 +99,41 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     );
   }
 
-  if (user && userRole) {
-    if (userRole === 'admin') {
-      return (
-        <div className="bg-muted/40 min-h-screen">
-            <AdminHeader onAddNew={handleAddNewStudent} />
-            {children}
-            <AlertDialog open={isWarningActive}>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle className="flex items-center">
-                    <Timer className="mr-2" /> Session Timeout Warning
-                  </AlertDialogTitle>
-                  <AlertDialogDescription>
-                    You have been inactive for a while. For your security, you will be logged out automatically in 2 minutes.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogAction onClick={reset} className="bg-primary hover:bg-primary/90">
-                    Stay Logged In
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-        </div>
-      );
-    } else if (userRole === 'counselor') {
-      // Render the counselor-specific dashboard directly
-      return <CounselorDashboard counselorName={userName || 'Counselor'} />;
-    }
+  if (userRole === 'admin') {
+    return (
+      <div className="bg-muted/40 min-h-screen">
+          <AdminHeader onAddNew={handleAddNewStudent} />
+          {children}
+          <AlertDialog open={isWarningActive}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="flex items-center">
+                  <Timer className="mr-2" /> Session Timeout Warning
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  You have been inactive for a while. For your security, you will be logged out automatically in 2 minutes.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogAction onClick={reset} className="bg-primary hover:bg-primary/90">
+                  Stay Logged In
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+      </div>
+    );
+  }
+  
+  if (userRole === 'counselor') {
+    return <CounselorDashboard counselorName={userName || 'Counselor'} />;
   }
 
-  // If user is not authenticated or has no role, they will be redirected by the useEffect.
-  // This return is a fallback.
-  return null; 
+  // This fallback will show the loader until a role is determined or the user is redirected.
+  return (
+    <div className="flex h-screen w-full items-center justify-center bg-background">
+      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <p className="ml-2">Verifying authentication...</p>
+    </div>
+  );
 }

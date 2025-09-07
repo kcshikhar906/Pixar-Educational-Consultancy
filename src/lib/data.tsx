@@ -59,6 +59,9 @@ export interface Student {
   visaStatusUpdateDate?: Timestamp | null;
   emergencyContact?: string;
   collegeUniversityName?: string;
+  // Fields for remote inquiries
+  appointmentDate?: Timestamp | null;
+  inquiryType?: 'office_walk_in' | 'visit' | 'phone';
 }
 
 export const counselorNames = [
@@ -69,6 +72,13 @@ export const counselorNames = [
   'Sabina Thapa', 
   'Shyam Babu Ojha', 
   'Mamata Chapagain',
+  'Sonima Rijal',
+  'Sujata Nepal',
+  'Anisha Thapa',
+  'Saubhana Bhandari',
+  'Sunita Khadka',
+  'Shikhar KC',
+  'Ram Babu Ojha'
 ];
 
 export interface Testimonial {
