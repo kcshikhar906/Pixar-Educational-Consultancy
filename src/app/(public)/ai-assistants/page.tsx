@@ -235,7 +235,7 @@ export default function SmartToolsPage() {
     if (!docChecklistResult || !docChecklistResult.checklist) return;
     const userName = docChecklistForm.getValues('userName');
     const doc = new jsPDF();
-    const logoSrc = '/logo.png'; 
+    const logoSrc = '/navbar.png'; 
 
     const addPageElementsAndWatermark = () => {
       const pageWidth = doc.internal.pageSize.getWidth();
