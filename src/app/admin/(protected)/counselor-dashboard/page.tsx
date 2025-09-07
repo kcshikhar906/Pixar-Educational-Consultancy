@@ -61,91 +61,86 @@ export default function CounselorDashboard({ counselorName, onLogout }: Counselo
     [counselorName]
   );
 
-  const searchStudents = useCallback(async () => {
-    if (!counselorName || !debouncedSearchTerm) return;
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const searchLower = debouncedSearchTerm.toLowerCase();
-      const constraints: QueryConstraint[] = [
-        where('assignedTo', '==', counselorName),
-        orderBy('searchableName'),
-        where('searchableName', '>=', searchLower),
-        where('searchableName', '<=', searchLower + '\uf8ff')
-      ];
-
-      const q = query(collection(db, 'students'), ...constraints);
-      const querySnapshot = await getDocs(q);
-      const studentData: Student[] = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        timestamp: doc.data().timestamp?.toDate(),
-      } as Student));
-
-      if (studentData.length === 0) {
-        toast({ title: "No results", description: `No students found matching "${debouncedSearchTerm}".` });
-      }
-      setStudents(studentData);
-    } catch (err: any) {
-      console.error("Firestore Search Error:", err);
-      let errorMessage = "Could not perform search. Please check your connection or contact an admin.";
-      if (err.code === 'failed-precondition') {
-        errorMessage = "A required database index is missing for search. Please contact your administrator.";
-      }
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  }, [counselorName, debouncedSearchTerm, toast]);
-
-
   useEffect(() => {
     if (!counselorName) return;
 
-    // If there's a search term, use the one-time search function
-    if (debouncedSearchTerm) {
-      searchStudents();
-      return; // Stop here and don't set up the real-time listener
-    }
-    
-    // Otherwise, set up the real-time listener for the default view
     setLoading(true);
     setError(null);
+    
+    // This function will be returned by useEffect to unsubscribe from the listener
+    let unsubscribe: () => void = () => {};
 
-    const q = query(
-      collection(db, 'students'),
-      where('assignedTo', '==', counselorName),
-      orderBy('timestamp', 'desc'),
-      limit(15)
-    );
+    if (debouncedSearchTerm) {
+      // One-time search query
+      const searchStudents = async () => {
+          try {
+              const searchLower = debouncedSearchTerm.toLowerCase();
+              const constraints: QueryConstraint[] = [
+                  where('assignedTo', '==', counselorName),
+                  orderBy('searchableName'),
+                  where('searchableName', '>=', searchLower),
+                  where('searchableName', '<=', searchLower + '\uf8ff')
+              ];
 
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const studentData: Student[] = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        studentData.push({
-          id: doc.id,
-          ...data,
-          timestamp: data.timestamp?.toDate(),
-        } as Student);
+              const q = query(collection(db, 'students'), ...constraints);
+              const querySnapshot = await getDocs(q);
+              const studentData: Student[] = querySnapshot.docs.map(doc => ({
+                  id: doc.id,
+                  ...doc.data(),
+                  timestamp: doc.data().timestamp?.toDate(),
+              } as Student));
+
+              if (studentData.length === 0) {
+                  toast({ title: "No results", description: `No students found matching "${debouncedSearchTerm}".` });
+              }
+              setStudents(studentData);
+          } catch (err: any) {
+              console.error("Firestore Search Error:", err);
+              let errorMessage = "Could not perform search. Please check your connection or contact an admin.";
+              if (err.code === 'failed-precondition') {
+                  errorMessage = "A required database index is missing for search. Please contact your administrator.";
+              }
+              setError(errorMessage);
+          } finally {
+              setLoading(false);
+          }
+      };
+      searchStudents();
+    } else {
+      // Real-time listener for the default view
+      const q = query(
+        collection(db, 'students'),
+        where('assignedTo', '==', counselorName),
+        orderBy('timestamp', 'desc'),
+        limit(15)
+      );
+
+      unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const studentData: Student[] = [];
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          studentData.push({
+            id: doc.id,
+            ...data,
+            timestamp: data.timestamp?.toDate(),
+          } as Student);
+        });
+        setStudents(studentData);
+        setLoading(false);
+      }, (err: any) => {
+        console.error("Firestore Snapshot Error:", err);
+        let errorMessage = "Could not load your assigned students. Please check your connection or contact an admin.";
+        if (err.code === 'permission-denied') {
+          errorMessage = "You do not have permission to view this data. Please contact an admin.";
+        }
+        setError(errorMessage);
+        setLoading(false);
       });
-      setStudents(studentData);
-      setLoading(false);
-    }, (err: any) => {
-      console.error("Firestore Snapshot Error:", err);
-      let errorMessage = "Could not load your assigned students. Please check your connection or contact an admin.";
-      if (err.code === 'permission-denied') {
-        errorMessage = "You do not have permission to view this data. Please contact an admin.";
-      }
-      setError(errorMessage);
-      setLoading(false);
-    });
+    }
 
-    // Cleanup function to unsubscribe from the listener when the component unmounts
+    // Cleanup function to unsubscribe from the listener when the component unmounts or dependencies change
     return () => unsubscribe();
-  }, [counselorName, debouncedSearchTerm, searchStudents]);
+  }, [counselorName, debouncedSearchTerm, toast]);
 
 
   const handleRowSelect = (student: Student) => {

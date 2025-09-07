@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { collection, query, where, orderBy, limit, onSnapshot, QueryConstraint } from 'firebase/firestore';
+import { collection, query, where, orderBy, limit, onSnapshot, getDocs, QueryConstraint } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { DataTable } from '@/components/admin/data-table';
 import { StudentForm } from '@/components/admin/student-form';
@@ -48,19 +48,19 @@ export default function StudentManagementPage() {
 
   // This logic correctly filters the recent list AFTER fetching.
   const recentStudentsToDisplay = useMemo(() => {
+    if (debouncedSearchTerm) return allRecentStudents; // Show all search results
     const remoteStudentIds = new Set(remoteStudents.map(s => s.id));
     return allRecentStudents.filter(s => !remoteStudentIds.has(s.id));
-  }, [allRecentStudents, remoteStudents]);
+  }, [allRecentStudents, remoteStudents, debouncedSearchTerm]);
 
 
   useEffect(() => {
+    if (activeTab === null) return; // Prevent running queries before tab is set
+
     setLoading(true);
     const searchLower = debouncedSearchTerm.toLowerCase();
 
-    let unsubRecent: () => void;
-    let unsubRemote: () => void;
-
-    // This query is for the "Remote Inquiries" tab. It correctly fetches unassigned remote leads.
+    // Setup listener for remote inquiries (always active)
     const remoteQuery = query(
         collection(db, 'students'), 
         where('assignedTo', '==', 'Unassigned'), 
@@ -68,7 +68,7 @@ export default function StudentManagementPage() {
         orderBy('timestamp', 'desc'), 
         limit(20)
     );
-    unsubRemote = onSnapshot(remoteQuery, (querySnapshot) => {
+    const unsubRemote = onSnapshot(remoteQuery, (querySnapshot) => {
         const studentData: Student[] = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), timestamp: doc.data().timestamp?.toDate() } as Student));
         setRemoteStudents(studentData);
     }, (error) => {
@@ -76,10 +76,10 @@ export default function StudentManagementPage() {
         toast({ title: "Error", description: "Could not fetch remote inquiries.", variant: "destructive" });
     });
 
+    let unsubRecent: () => void = () => {};
 
-    // This logic handles searching vs. default view.
+    // Logic for recent/walk-in tab or search results
     if (searchLower) {
-        // If searching, query all students by name.
         const searchQuery = query(
             collection(db, 'students'),
             orderBy('searchableName'),
@@ -87,18 +87,18 @@ export default function StudentManagementPage() {
             where('searchableName', '<=', searchLower + '\uf8ff')
         );
       
-        unsubRecent = onSnapshot(searchQuery, (querySnapshot) => {
+        // Use getDocs for one-time search fetch
+        getDocs(searchQuery).then(querySnapshot => {
             const studentData: Student[] = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), timestamp: doc.data().timestamp?.toDate() } as Student));
             setAllRecentStudents(studentData);
-            setActiveTab('recent'); // Switch to recent tab to show search results
+            if(activeTab !== 'recent') setActiveTab('recent'); // Switch to recent tab to show results
             setLoading(false);
-        }, (error) => {
+        }).catch(error => {
             console.error("Error during search:", error);
             toast({ title: "Search Error", description: "Could not perform search.", variant: "destructive" });
             setLoading(false);
         });
     } else {
-        // If not searching, fetch the 20 newest students for the "Recent / Walk-ins" list.
         const recentQuery = query(collection(db, 'students'), orderBy('timestamp', 'desc'), limit(20));
         unsubRecent = onSnapshot(recentQuery, (querySnapshot) => {
             const studentData: Student[] = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), timestamp: doc.data().timestamp?.toDate() } as Student));
@@ -113,11 +113,11 @@ export default function StudentManagementPage() {
     
     // Cleanup function
     return () => {
-      if (unsubRecent) unsubRecent();
-      if (unsubRemote) unsubRemote();
+      unsubRecent();
+      unsubRemote();
     };
 
-  }, [debouncedSearchTerm, toast]);
+  }, [debouncedSearchTerm, toast, activeTab]);
 
   useEffect(() => {
     const handleOpenNewStudentForm = () => {

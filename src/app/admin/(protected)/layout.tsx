@@ -21,7 +21,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
-import CounselorDashboard from './counselor-dashboard/page'; // Import the new counselor dashboard
+import CounselorDashboard from './counselor-dashboard/page';
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const [user, loading] = useAuthState(auth);
@@ -71,8 +71,11 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     // Navigate away first to ensure listeners are detached cleanly before sign-out
     router.push('/admin/login'); 
     try {
-      await signOut(auth);
-      toast({ title: 'Logged Out', description: 'You have been successfully logged out.' });
+      // Small delay to allow component unmount to complete before sign out
+      setTimeout(async () => {
+        await signOut(auth);
+        toast({ title: 'Logged Out', description: 'You have been successfully logged out.' });
+      }, 100);
     } catch (error) {
       console.error('Logout error:', error);
       toast({ title: 'Logout Failed', description: 'An error occurred during logout.', variant: 'destructive' });
