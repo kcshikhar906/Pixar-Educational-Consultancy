@@ -126,7 +126,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       );
     } else if (userRole === 'counselor') {
       // Render the counselor-specific dashboard directly
-      return <CounselorDashboard counselorName={userName || ''} />;
+      return <CounselorDashboard counselorName={userName || 'Counselor'} />;
     }
   }
 
