@@ -7,7 +7,7 @@ import {
   query,
   where,
   orderBy,
-  onSnapshot,
+  getDocs, // Changed from onSnapshot for one-time fetch to generate index link
   Query,
   DocumentData,
   QueryConstraint,
@@ -40,16 +40,16 @@ export default function CounselorDashboard({ counselorName }: CounselorDashboard
   useEffect(() => {
     if (!counselorName) return;
 
-    setLoading(true);
-    const constraints: QueryConstraint[] = [
-      where('assignedTo', '==', counselorName),
-      orderBy('timestamp', 'desc'),
-    ];
-    const q = query(collection(db, 'students'), ...constraints);
+    const fetchStudents = async () => {
+      setLoading(true);
+      try {
+        const constraints: QueryConstraint[] = [
+          where('assignedTo', '==', counselorName),
+          orderBy('timestamp', 'desc'),
+        ];
+        const q = query(collection(db, 'students'), ...constraints);
 
-    const unsubscribe = onSnapshot(
-      q,
-      (querySnapshot) => {
+        const querySnapshot = await getDocs(q); // Using getDocs to trigger the index error
         const studentData: Student[] = [];
         querySnapshot.forEach((doc) => {
           const data = doc.data();
@@ -60,16 +60,25 @@ export default function CounselorDashboard({ counselorName }: CounselorDashboard
           } as Student);
         });
         setStudents(studentData);
-        setLoading(false);
-      },
-      (err) => {
+      } catch (err: any) {
         console.error("Firestore Error:", err);
-        setError("Could not load your assigned students. Please check your connection or contact an admin.");
+        if (err.code === 'failed-precondition') {
+             const firestoreError = "The query requires an index. You can create it here: " + (err.message.match(/https?:\/\/[^\s]+/g) || [])[0];
+             setError("A database index is required. Please check the browser console (F12) for a link to create it automatically.");
+             console.error(firestoreError); // This will log the error with the clickable link
+        } else {
+            setError("Could not load your assigned students. Please check your connection or contact an admin.");
+        }
+      } finally {
         setLoading(false);
       }
-    );
+    };
+    
+    fetchStudents();
+    
+    // Since we are not using a real-time listener now, we return an empty cleanup function.
+    return () => {};
 
-    return () => unsubscribe();
   }, [counselorName]);
 
   const handleRowSelect = (student: Student) => {
@@ -112,7 +121,7 @@ export default function CounselorDashboard({ counselorName }: CounselorDashboard
             <Card className="h-full">
               {error ? (
                 <Alert variant="destructive" className="m-4">
-                    <AlertTitle>Error</AlertTitle>
+                    <AlertTitle>Error Loading Data</AlertTitle>
                     <AlertDescription>{error}</AlertDescription>
                 </Alert>
               ) : (
