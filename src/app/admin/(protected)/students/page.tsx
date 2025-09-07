@@ -19,6 +19,7 @@ export default function StudentManagementPage() {
   const [remoteStudents, setRemoteStudents] = useState<Student[]>([]);
   const [loadingRecent, setLoadingRecent] = useState(true);
   const [loadingRemote, setLoadingRemote] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     // Fetch recent students
@@ -92,6 +93,14 @@ export default function StudentManagementPage() {
     };
   }, []);
 
+  const filteredRecentStudents = recentStudents.filter(student =>
+    student.fullName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredRemoteStudents = remoteStudents.filter(student =>
+    student.fullName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7 xl:grid-cols-3">
@@ -105,19 +114,23 @@ export default function StudentManagementPage() {
                       </TabsList>
                       <TabsContent value="recent" className="m-0">
                           <DataTable 
-                            students={recentStudents} 
+                            students={filteredRecentStudents} 
                             loading={loadingRecent}
                             onRowSelect={handleRowSelect} 
                             selectedStudentId={selectedStudent?.id}
+                            searchTerm={searchTerm}
+                            onSearchChange={setSearchTerm}
                             searchPlaceholder="Search recent students..."
                           />
                       </TabsContent>
                       <TabsContent value="remote" className="m-0">
                           <DataTable 
-                            students={remoteStudents} 
+                            students={filteredRemoteStudents} 
                             loading={loadingRemote}
                             onRowSelect={handleRowSelect} 
                             selectedStudentId={selectedStudent?.id}
+                            searchTerm={searchTerm}
+                            onSearchChange={setSearchTerm}
                             searchPlaceholder="Search remote inquiries..."
                            />
                       </TabsContent>
