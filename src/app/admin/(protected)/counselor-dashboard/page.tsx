@@ -9,6 +9,7 @@ import {
   onSnapshot,
   orderBy,
   QueryConstraint,
+  limit,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Student } from '@/lib/data';
@@ -32,9 +33,6 @@ export default function CounselorDashboard({ counselorName, onLogout }: Counselo
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // This will store all students for searching.
-  const [allAssignedStudents, setAllAssignedStudents] = useState<Student[]>([]);
-
   useEffect(() => {
     if (!counselorName) return;
 
@@ -42,7 +40,8 @@ export default function CounselorDashboard({ counselorName, onLogout }: Counselo
 
     const constraints: QueryConstraint[] = [
       where('assignedTo', '==', counselorName),
-      orderBy('timestamp', 'desc')
+      orderBy('timestamp', 'desc'),
+      limit(15) // Fetch only the 15 most recent students.
     ];
     
     const q = query(collection(db, 'students'), ...constraints);
@@ -60,12 +59,7 @@ export default function CounselorDashboard({ counselorName, onLogout }: Counselo
           } as Student);
         });
         
-        // Store all students for searching purposes
-        setAllAssignedStudents(studentData);
-
-        // Limit the initial display to 15 students
-        setStudents(studentData.slice(0, 15));
-
+        setStudents(studentData);
         setLoading(false);
         setError(null);
       },
@@ -113,7 +107,7 @@ export default function CounselorDashboard({ counselorName, onLogout }: Counselo
                     <AlertDescription>{error}</AlertDescription>
                 </Alert>
               ) : (
-                <DataTable students={students} allStudentsForSearch={allAssignedStudents} onRowSelect={handleRowSelect} selectedStudentId={selectedStudent?.id} loading={loading} />
+                <DataTable students={students} allStudentsForSearch={students} onRowSelect={handleRowSelect} selectedStudentId={selectedStudent?.id} loading={loading} />
               )}
             </Card>
           </div>

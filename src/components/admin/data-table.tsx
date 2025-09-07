@@ -18,7 +18,7 @@ import { formatDistanceToNowStrict, isToday } from 'date-fns';
 
 interface DataTableProps {
   students: Student[];
-  allStudentsForSearch: Student[]; // Full list for searching
+  allStudentsForSearch: Student[]; // This will now be the same as students for counselors.
   onRowSelect: (student: Student) => void;
   selectedStudentId?: string | null;
   loading: boolean;
@@ -29,12 +29,13 @@ export function DataTable({ students, allStudentsForSearch, onRowSelect, selecte
 
   const displayedStudents = useMemo(() => {
     const searchLower = searchTerm.toLowerCase();
+    // For counselors, `allStudentsForSearch` is the same as `students` (the limited list).
+    // The search now filters this visible list.
+    const sourceList = allStudentsForSearch || students;
     if (!searchLower) {
-      // If no search term, show the limited list of 15 passed in props
-      return students;
+      return sourceList;
     }
-    // If there is a search term, filter the *entire* list of assigned students
-    return allStudentsForSearch.filter(student =>
+    return sourceList.filter(student =>
       student.fullName.toLowerCase().includes(searchLower)
     );
   }, [searchTerm, students, allStudentsForSearch]);
