@@ -31,7 +31,7 @@ export default function StudentManagementPage() {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [activeTab, setActiveTab] = useState('recent');
   
-  const [recentStudents, setRecentStudents] = useState<Student[]>([]);
+  const [allRecentStudents, setAllRecentStudents] = useState<Student[]>([]);
   const [remoteStudents, setRemoteStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -46,79 +46,78 @@ export default function StudentManagementPage() {
     setSelectedStudent(null);
   }
 
-  const studentsToDisplay = useMemo(() => {
-    return activeTab === 'recent' ? recentStudents : remoteStudents;
-  }, [activeTab, recentStudents, remoteStudents]);
+  // This logic correctly filters the recent list AFTER fetching.
+  const recentStudentsToDisplay = useMemo(() => {
+    const remoteStudentIds = new Set(remoteStudents.map(s => s.id));
+    return allRecentStudents.filter(s => !remoteStudentIds.has(s.id));
+  }, [allRecentStudents, remoteStudents]);
+
 
   useEffect(() => {
-    if (!activeTab) return;
-
     setLoading(true);
     const searchLower = debouncedSearchTerm.toLowerCase();
 
-    // Base query for remote inquiries (unassigned only)
-    const baseRemoteQueryConstraints: QueryConstraint[] = [
-      where('inquiryType', 'in', ['visit', 'phone']),
-      where('assignedTo', '==', 'Unassigned'),
-      orderBy('timestamp', 'desc')
-    ];
-     
-    // Base query for recent/walk-in students
-    const baseRecentQueryConstraints: QueryConstraint[] = [
-        where('inquiryType', '==', 'office_walk_in'),
-        orderBy('timestamp', 'desc')
-    ];
+    let unsubRecent: () => void;
+    let unsubRemote: () => void;
 
-    
-    // Apply search or limit
+    // This query is for the "Remote Inquiries" tab. It correctly fetches unassigned remote leads.
+    const remoteQuery = query(
+        collection(db, 'students'), 
+        where('assignedTo', '==', 'Unassigned'), 
+        where('inquiryType', 'in', ['visit', 'phone']), 
+        orderBy('timestamp', 'desc'), 
+        limit(20)
+    );
+    unsubRemote = onSnapshot(remoteQuery, (querySnapshot) => {
+        const studentData: Student[] = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), timestamp: doc.data().timestamp?.toDate() } as Student));
+        setRemoteStudents(studentData);
+    }, (error) => {
+        console.error("Error fetching remote students:", error);
+        toast({ title: "Error", description: "Could not fetch remote inquiries.", variant: "destructive" });
+    });
+
+
+    // This logic handles searching vs. default view.
     if (searchLower) {
-      const allStudentsQuery = query(
+        // If searching, query all students by name.
+        const searchQuery = query(
             collection(db, 'students'),
             orderBy('searchableName'),
             where('searchableName', '>=', searchLower),
             where('searchableName', '<=', searchLower + '\uf8ff')
         );
       
-        const unsubSearch = onSnapshot(allStudentsQuery, (querySnapshot) => {
+        unsubRecent = onSnapshot(searchQuery, (querySnapshot) => {
             const studentData: Student[] = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), timestamp: doc.data().timestamp?.toDate() } as Student));
-            setRecentStudents(studentData); 
-            setActiveTab('recent'); 
+            setAllRecentStudents(studentData);
+            setActiveTab('recent'); // Switch to recent tab to show search results
             setLoading(false);
         }, (error) => {
             console.error("Error during search:", error);
             toast({ title: "Search Error", description: "Could not perform search.", variant: "destructive" });
             setLoading(false);
         });
-        return () => unsubSearch();
     } else {
-      const recentQuery = query(collection(db, 'students'), ...baseRecentQueryConstraints, limit(20));
-      const unsubRecent = onSnapshot(recentQuery, (querySnapshot) => {
-        const studentData: Student[] = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), timestamp: doc.data().timestamp?.toDate() } as Student));
-        setRecentStudents(studentData);
-        setLoading(false);
-      }, (error) => {
-        console.error("Error fetching recent students:", error);
-        toast({ title: "Error", description: "Could not fetch recent students.", variant: "destructive" });
-        setLoading(false);
-      });
-
-      const remoteQuery = query(collection(db, 'students'), ...baseRemoteQueryConstraints, limit(20));
-      const unsubRemote = onSnapshot(remoteQuery, (querySnapshot) => {
-        const studentData: Student[] = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), timestamp: doc.data().timestamp?.toDate() } as Student));
-        setRemoteStudents(studentData);
-        setLoading(false);
-      }, (error) => {
-        console.error("Error fetching remote students:", error);
-        toast({ title: "Error", description: "Could not fetch remote inquiries.", variant: "destructive" });
-        setLoading(false);
-      });
-
-      return () => {
-        unsubRecent();
-        unsubRemote();
-      };
+        // If not searching, fetch the 20 newest students for the "Recent / Walk-ins" list.
+        const recentQuery = query(collection(db, 'students'), orderBy('timestamp', 'desc'), limit(20));
+        unsubRecent = onSnapshot(recentQuery, (querySnapshot) => {
+            const studentData: Student[] = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), timestamp: doc.data().timestamp?.toDate() } as Student));
+            setAllRecentStudents(studentData);
+            setLoading(false);
+        }, (error) => {
+            console.error("Error fetching recent students:", error);
+            toast({ title: "Error", description: "Could not fetch recent students.", variant: "destructive" });
+            setLoading(false);
+        });
     }
-  }, [activeTab, debouncedSearchTerm, toast]);
+    
+    // Cleanup function
+    return () => {
+      if (unsubRecent) unsubRecent();
+      if (unsubRemote) unsubRemote();
+    };
+
+  }, [debouncedSearchTerm, toast]);
 
   useEffect(() => {
     const handleOpenNewStudentForm = () => {
@@ -131,6 +130,7 @@ export default function StudentManagementPage() {
         visaStatus: 'Not Applied',
         serviceFeeStatus: 'Unpaid',
         assignedTo: 'Unassigned',
+        inquiryType: 'office_walk_in',
       };
       setSelectedStudent(newStudent);
       setActiveTab('recent'); // Switch to recent tab when adding a new student
@@ -156,7 +156,7 @@ export default function StudentManagementPage() {
                       </TabsList>
                       <TabsContent value="recent" className="m-0">
                           <DataTable 
-                            students={recentStudents} 
+                            students={recentStudentsToDisplay} 
                             loading={loading}
                             onRowSelect={handleRowSelect} 
                             selectedStudentId={selectedStudent?.id}
