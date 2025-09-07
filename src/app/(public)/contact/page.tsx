@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import SectionTitle from '@/components/ui/section-title';
-import { Mail, MapPin, Phone, Send, Loader2, BookUser, StickyNote, Target, Languages, GraduationCap, CalendarIcon as CalendarIconLucide, Users, BookCopy, NotebookPen, ExternalLink, MessageSquare } from 'lucide-react';
+import { Mail, MapPin, Phone, Send, Loader2, BookUser, StickyNote, Target, Languages, GraduationCap, CalendarIcon as CalendarIconLucide, Users, BookCopy, NotebookPen, ExternalLink, MessageSquare, Building, Home, PhoneCall, CalendarPlus } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from 'react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
@@ -22,10 +22,17 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { Separator } from '@/components/ui/separator';
-import { addStudent } from '@/app/actions'; // Import the server action
+import { addStudent } from '@/app/actions';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { AnimatePresence, motion } from 'framer-motion';
 
-// Schema for General Contact Form
+// Schema for General Contact Form with conditional logic
 const generalContactFormSchema = z.object({
+  connectionType: z.enum(['office', 'remote'], {
+    required_error: "Please select how you are connecting with us.",
+  }),
+  followUpType: z.enum(['visit', 'phone']).optional(),
+  appointmentDate: z.date().optional().nullable(),
   name: z.string().min(2, "Name must be at least 2 characters.").max(50, "Name is too long."),
   email: z.string().email("Invalid email address."),
   phoneNumber: z.string().min(7, "Phone number seems too short.").max(15, "Phone number seems too long.").regex(/^\+?[0-9\s-()]*$/, "Invalid phone number format."),
@@ -33,7 +40,25 @@ const generalContactFormSchema = z.object({
   englishProficiencyTest: z.string().min(1, "Please select an option for English proficiency test."),
   preferredStudyDestination: z.string().min(1, "Please select your preferred study destination."),
   additionalNotes: z.string().max(500, "Additional notes are too long.").optional(),
+}).refine(data => {
+  if (data.connectionType === 'remote' && !data.followUpType) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Please select a follow-up option.",
+  path: ["followUpType"],
+}).refine(data => {
+    if (data.followUpType === 'visit' && !data.appointmentDate) {
+        return false;
+    }
+    return true;
+}, {
+    message: "Please select a preferred date for your office visit.",
+    path: ["appointmentDate"],
 });
+
+
 type GeneralContactFormValues = z.infer<typeof generalContactFormSchema>;
 
 
@@ -142,6 +167,7 @@ export default function ContactPage() {
     defaultValues: {
       name: '', email: '', phoneNumber: '', lastCompletedEducation: '',
       englishProficiencyTest: '', preferredStudyDestination: '', additionalNotes: '',
+      connectionType: undefined, followUpType: undefined, appointmentDate: null,
     },
   });
 
@@ -152,6 +178,9 @@ export default function ContactPage() {
       preferredStartDate: undefined, additionalNotes: '',
     },
   });
+
+  const connectionType = generalContactForm.watch('connectionType');
+  const followUpType = generalContactForm.watch('followUpType');
 
   async function onGeneralContactSubmit(values: GeneralContactFormValues) {
     setIsGeneralSubmitting(true);
@@ -207,6 +236,76 @@ export default function ContactPage() {
                 <Form {...generalContactForm}>
                   <form onSubmit={generalContactForm.handleSubmit(onGeneralContactSubmit)}>
                     <CardContent className="space-y-4">
+                       <FormField
+                          control={generalContactForm.control}
+                          name="connectionType"
+                          render={({ field }) => (
+                            <FormItem className="space-y-3 p-4 bg-muted/50 rounded-lg">
+                              <FormLabel className="text-base font-semibold text-primary">How are you connecting with us today?</FormLabel>
+                              <FormControl>
+                                <RadioGroup
+                                  onValueChange={field.onChange}
+                                  defaultValue={field.value}
+                                  className="flex flex-col space-y-2"
+                                >
+                                  <FormItem className="flex items-center space-x-3 space-y-0">
+                                    <FormControl><RadioGroupItem value="office" /></FormControl>
+                                    <FormLabel className="font-normal flex items-center gap-2"><Building className="h-4 w-4"/>I'm at the Pixar Edu Office</FormLabel>
+                                  </FormItem>
+                                  <FormItem className="flex items-center space-x-3 space-y-0">
+                                    <FormControl><RadioGroupItem value="remote" /></FormControl>
+                                    <FormLabel className="font-normal flex items-center gap-2"><Home className="h-4 w-4"/>From Home / Remotely</FormLabel>
+                                  </FormItem>
+                                </RadioGroup>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <AnimatePresence>
+                        {connectionType === 'remote' && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.3 }}
+                                className="space-y-4 p-4 border-l-4 border-accent bg-accent/10 rounded-r-lg overflow-hidden"
+                            >
+                                <FormField
+                                    control={generalContactForm.control}
+                                    name="followUpType"
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-2">
+                                            <FormLabel className="font-semibold">How would you like us to follow up?</FormLabel>
+                                            <FormControl>
+                                                <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex gap-4 pt-1">
+                                                    <FormItem className="flex items-center space-x-2"><FormControl><RadioGroupItem value="visit" /></FormControl><FormLabel className="font-normal flex items-center gap-1"><CalendarPlus className="h-4 w-4"/>Schedule Office Visit</FormLabel></FormItem>
+                                                    <FormItem className="flex items-center space-x-2"><FormControl><RadioGroupItem value="phone" /></FormControl><FormLabel className="font-normal flex items-center gap-1"><PhoneCall className="h-4 w-4"/>Request Phone Counselling</FormLabel></FormItem>
+                                                </RadioGroup>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                {followUpType === 'visit' && (
+                                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}>
+                                         <FormField control={generalContactForm.control} name="appointmentDate" render={({ field }) => (
+                                            <FormItem className="flex flex-col"><FormLabel>Preferred Visit Date</FormLabel>
+                                                <Popover><PopoverTrigger asChild><FormControl>
+                                                    <Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
+                                                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                                        <CalendarIconLucide className="ml-auto h-4 w-4 opacity-50" />
+                                                    </Button>
+                                                </FormControl></PopoverTrigger>
+                                                <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1 )) } initialFocus /></PopoverContent>
+                                                </Popover><FormMessage />
+                                            </FormItem>
+                                         )}/>
+                                     </motion.div>
+                                )}
+                            </motion.div>
+                        )}
+                        </AnimatePresence>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <FormField control={generalContactForm.control} name="name" render={({ field }) => (
                             <FormItem><FormLabel className="flex items-center"><BookUser className="mr-2 h-4 w-4 text-accent" />Full Name</FormLabel><FormControl><Input placeholder="e.g., Jane Doe" {...field} /></FormControl><FormMessage /></FormItem>
