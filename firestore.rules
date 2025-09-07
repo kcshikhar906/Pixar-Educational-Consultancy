@@ -1,42 +1,48 @@
 rules_version = '2';
 
 service cloud.firestore {
-  match /databases/{database}/documents {
-  
-    // Helper function to check if a user has a specific role
-    function isRole(role) {
-      return exists(/databases/$(database)/documents/counselors/$(request.auth.uid)) &&
-             get(/databases/$(database)/documents/counselors/$(request.auth.uid)).data.role == role;
+  match /databases/pixareducation/documents {
+    
+    // Helper function to check if the user is a logged-in admin
+    function isAdmin() {
+      return request.auth != null && get(/databases/$(database)/documents/counselors/$(request.auth.uid)).data.role == 'admin';
     }
-
-    // Helper function to get the name of the logged-in counselor
-    function getCounselorName() {
+    
+    // Helper function to check if the user is a logged-in counselor
+    function isCounselor() {
+      return request.auth != null && get(/databases/$(database)/documents/counselors/$(request.auth.uid)).data.role == 'counselor';
+    }
+    
+    // Helper function to get the full name of the logged-in counselor
+    function counselorName() {
       return get(/databases/$(database)/documents/counselors/$(request.auth.uid)).data.name;
     }
-
+    
     // Rules for the 'students' collection
     match /students/{studentId} {
-      // Admins can read, write, create, and delete any student document.
-      allow read, write: if isRole('admin');
+      // Allow read/write for admins
+      // Allow read for a counselor if they are assigned to the student
+      allow read: if isAdmin() || (isCounselor() && resource.data.assignedTo == counselorName());
       
-      // Counselors can read a specific student document ONLY if it's assigned to them.
-      allow get: if isRole('counselor') && resource.data.assignedTo == getCounselorName();
+      // Allow create/update for admins
+      // Allow update for a counselor if they are assigned to that student
+      allow write: if isAdmin() || (isCounselor() && request.resource.data.assignedTo == counselorName());
       
-      // Counselors can list students ONLY if the query filters by their name.
-      // This is the crucial rule for the counselor dashboard query.
-      allow list: if isRole('counselor') && request.query.where.assignedTo == getCounselorName();
+      // Allow counselors to list students assigned to them
+      allow list: if isAdmin() || (isCounselor() && request.query.where.assignedTo == counselorName());
     }
-
-    // Rules for the 'counselors' collection (Admin only access)
-    match /counselors/{counselorId} {
-      allow read, write: if isRole('admin');
+    
+    // Rules for the 'counselors' collection
+    match /counselors/{userId} {
+      // Only admins can read/write counselor roles to prevent privilege escalation
+      // A user can read their own role
+      allow read: if isAdmin() || request.auth.uid == userId;
+      allow write: if isAdmin();
     }
-
-    // Rules for other collections (e.g., display, metrics)
-    // Allow read for authenticated users, write only for admins.
-    match /{collection}/{docId} {
-        allow read: if request.auth != null;
-        allow write: if isRole('admin');
+    
+    // Default deny for all other collections unless specified
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

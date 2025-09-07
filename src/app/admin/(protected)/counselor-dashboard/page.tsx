@@ -103,7 +103,7 @@ export default function CounselorDashboard({ counselorName, onLogout }: Counselo
                     <AlertDescription>{error}</AlertDescription>
                 </Alert>
               ) : (
-                <DataTable onRowSelect={handleRowSelect} selectedStudentId={selectedStudent?.id} filterMode="recent" />
+                <DataTable students={students} onRowSelect={handleRowSelect} selectedStudentId={selectedStudent?.id} loading={loading} />
               )}
             </Card>
           </div>
