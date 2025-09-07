@@ -21,9 +21,10 @@ interface DataTableProps {
   onRowSelect: (student: Student) => void;
   selectedStudentId?: string | null;
   loading: boolean;
+  searchPlaceholder?: string;
 }
 
-export function DataTable({ students, onRowSelect, selectedStudentId, loading }: DataTableProps) {
+export function DataTable({ students, onRowSelect, selectedStudentId, loading, searchPlaceholder = "Search by name..." }: DataTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
 
   const displayedStudents = useMemo(() => {
@@ -73,11 +74,11 @@ export function DataTable({ students, onRowSelect, selectedStudentId, loading }:
 
   return (
     <div className="space-y-4">
-      <div className="px-4 pt-2 space-y-2">
+      <div className="px-4 pt-4 space-y-2">
         <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by name..."
+              placeholder={searchPlaceholder}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-10"
@@ -107,7 +108,7 @@ export function DataTable({ students, onRowSelect, selectedStudentId, loading }:
                   </TableCell>
                 </TableRow>
               ))
-            ) : displayedStudents && displayedStudents.length > 0 ? (
+            ) : displayedStudents.length > 0 ? (
               displayedStudents.map((student) => (
                 <TableRow
                   key={student.id}

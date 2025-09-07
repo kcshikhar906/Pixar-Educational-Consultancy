@@ -2,17 +2,64 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { collection, query, where, orderBy, limit, onSnapshot, QueryConstraint } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import { DataTable } from '@/components/admin/data-table';
 import { StudentForm } from '@/components/admin/student-form';
 import type { Student } from '@/lib/data';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Users, Phone, CalendarCheck2 } from 'lucide-react';
+import { Card, CardHeader } from '@/components/ui/card';
+import { Users, Phone } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
 
 export default function StudentManagementPage() {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [activeTab, setActiveTab] = useState('recent');
+  
+  const [recentStudents, setRecentStudents] = useState<Student[]>([]);
+  const [remoteStudents, setRemoteStudents] = useState<Student[]>([]);
+  const [loadingRecent, setLoadingRecent] = useState(true);
+  const [loadingRemote, setLoadingRemote] = useState(true);
+
+  useEffect(() => {
+    // Fetch recent students
+    const recentConstraints: QueryConstraint[] = [orderBy('timestamp', 'desc'), limit(20)];
+    const recentQuery = query(collection(db, 'students'), ...recentConstraints);
+    
+    const unsubRecent = onSnapshot(recentQuery, (querySnapshot) => {
+      const studentData: Student[] = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        studentData.push({ id: doc.id, ...data, timestamp: data.timestamp?.toDate() } as Student);
+      });
+      setRecentStudents(studentData);
+      setLoadingRecent(false);
+    }, (error) => {
+      console.error("Error fetching recent students:", error);
+      setLoadingRecent(false);
+    });
+
+    // Fetch remote inquiry students
+    const remoteConstraints: QueryConstraint[] = [where('inquiryType', 'in', ['visit', 'phone']), where('assignedTo', '==', 'Unassigned'), orderBy('timestamp', 'desc')];
+    const remoteQuery = query(collection(db, 'students'), ...remoteConstraints);
+    
+    const unsubRemote = onSnapshot(remoteQuery, (querySnapshot) => {
+      const studentData: Student[] = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        studentData.push({ id: doc.id, ...data, timestamp: data.timestamp?.toDate() } as Student);
+      });
+      setRemoteStudents(studentData);
+      setLoadingRemote(false);
+    }, (error) => {
+      console.error("Error fetching remote students:", error);
+      setLoadingRemote(false);
+    });
+
+    return () => {
+      unsubRecent();
+      unsubRemote();
+    };
+  }, []);
 
   const handleRowSelect = (student: Student) => {
     setSelectedStudent(student);
@@ -45,7 +92,6 @@ export default function StudentManagementPage() {
     };
   }, []);
 
-
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7 xl:grid-cols-3">
@@ -58,16 +104,22 @@ export default function StudentManagementPage() {
                           <TabsTrigger value="remote"><Phone className="mr-2 h-4 w-4" />Remote Inquiries</TabsTrigger>
                       </TabsList>
                       <TabsContent value="recent" className="m-0">
-                          <CardDescription className="px-4 pt-2 pb-0 text-xs">
-                            Showing the 20 newest students. Use the search bar to find any student.
-                          </CardDescription>
-                          <DataTable onRowSelect={handleRowSelect} selectedStudentId={selectedStudent?.id} filterMode="recent" />
+                          <DataTable 
+                            students={recentStudents} 
+                            loading={loadingRecent}
+                            onRowSelect={handleRowSelect} 
+                            selectedStudentId={selectedStudent?.id}
+                            searchPlaceholder="Search recent students..."
+                          />
                       </TabsContent>
                       <TabsContent value="remote" className="m-0">
-                           <CardDescription className="px-4 pt-2 pb-0 text-xs">
-                            Showing all unassigned remote inquiries. Assign to a counselor to remove from this list.
-                          </CardDescription>
-                          <DataTable onRowSelect={handleRowSelect} selectedStudentId={selectedStudent?.id} filterMode="remote" />
+                          <DataTable 
+                            students={remoteStudents} 
+                            loading={loadingRemote}
+                            onRowSelect={handleRowSelect} 
+                            selectedStudentId={selectedStudent?.id}
+                            searchPlaceholder="Search remote inquiries..."
+                           />
                       </TabsContent>
                   </Tabs>
               </CardHeader>
@@ -76,7 +128,7 @@ export default function StudentManagementPage() {
           <div className="lg:col-span-4 xl:col-span-2">
             {selectedStudent ? (
               <StudentForm 
-                student={selectedStudent.id ? selectedStudent : null} 
+                student={student.id ? selectedStudent : null} 
                 onFormClose={handleDeselect} 
                 onFormSubmitSuccess={handleDeselect}
               />
