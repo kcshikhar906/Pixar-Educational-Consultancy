@@ -51,13 +51,16 @@ export default function StudentManagementPage() {
   }, [activeTab, recentStudents, remoteStudents]);
 
   useEffect(() => {
+    // Add a guard clause to prevent running with undefined state
+    if (!activeTab) return;
+
     setLoading(true);
     const searchLower = debouncedSearchTerm.toLowerCase();
 
     // Base query for recent/walk-in students
     const baseRecentQueryConstraints: QueryConstraint[] = [
-        where('inquiryType', 'in', ['office_walk_in', null, undefined]),
-        orderBy('timestamp', 'desc')
+      where('inquiryType', 'not-in', ['visit', 'phone']),
+      orderBy('timestamp', 'desc')
     ];
      
     // Base query for remote inquiries (unassigned only)
@@ -69,6 +72,7 @@ export default function StudentManagementPage() {
     
     // Apply search or limit
     if (searchLower) {
+      // If searching, create a new query from scratch that searches all students
       const allStudentsQuery = query(
             collection(db, 'students'),
             orderBy('searchableName'),
@@ -117,7 +121,7 @@ export default function StudentManagementPage() {
         unsubRemote();
       };
     }
-  }, [debouncedSearchTerm, toast]);
+  }, [debouncedSearchTerm, toast, activeTab]);
 
   useEffect(() => {
     const handleOpenNewStudentForm = () => {
@@ -165,7 +169,7 @@ export default function StudentManagementPage() {
                           />
                       </TabsContent>
                       <TabsContent value="remote" className="m-0">
-                          <DataTable 
+                           <DataTable 
                             students={remoteStudents} 
                             loading={loading}
                             onRowSelect={handleRowSelect} 
