@@ -15,11 +15,10 @@ import Image from 'next/image';
 export default function LoginPage() {
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
-  const [loginType, setLoginType] = useState<'admin' | 'counselor' | null>(null);
+  const [view, setView] = useState<'selection' | 'login'>('selection');
 
   useEffect(() => {
     if (user) {
-      // Redirect based on role in the future. For now, just go to admin.
       router.replace('/admin');
     }
   }, [user, router]);
@@ -49,18 +48,19 @@ export default function LoginPage() {
             <Button
               variant="outline"
               className="h-20 text-lg flex-col gap-2"
-              onClick={() => setLoginType('admin')}
+              onClick={() => setView('login')}
             >
               <Shield className="h-6 w-6" />
-              Super Admin Login
+              Admin / Counselor Login
             </Button>
+            {/* This button is kept for layout but could be used for other roles in the future */}
             <Button
               variant="outline"
               className="h-20 text-lg flex-col gap-2"
-              onClick={() => setLoginType('counselor')}
+              disabled
             >
                 <UserCheck className="h-6 w-6" />
-              Counselor Login
+              Student Login (Coming Soon)
             </Button>
         </div>
     </motion.div>
@@ -75,10 +75,7 @@ export default function LoginPage() {
       transition={{ duration: 0.3, ease: "easeInOut" }}
       className="w-full"
     >
-       <LoginForm
-        loginType={loginType || 'admin'}
-        onBack={() => setLoginType(null)}
-      />
+       <LoginForm onBack={() => setView('selection')} />
     </motion.div>
   );
 
@@ -87,7 +84,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md overflow-hidden">
         <CardContent className="p-6">
             <AnimatePresence mode="wait">
-                {loginType ? renderLoginForm() : renderInitialSelection()}
+                {view === 'login' ? renderLoginForm() : renderInitialSelection()}
             </AnimatePresence>
         </CardContent>
       </Card>
