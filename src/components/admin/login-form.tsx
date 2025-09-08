@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, ArrowLeft, Mail, KeyRound, UserCheck } from 'lucide-react';
+import { Loader2, ArrowLeft, Mail, KeyRound } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const loginSchema = z.object({
@@ -27,7 +27,7 @@ const resetSchema = z.object({
 type ResetFormValues = z.infer<typeof resetSchema>;
 
 interface LoginFormProps {
-    onBack: () => void;
+    onBack: () => void; // Kept for potential future use, but not currently active
 }
 
 export function LoginForm({ onBack }: LoginFormProps) {
@@ -90,7 +90,7 @@ export function LoginForm({ onBack }: LoginFormProps) {
   };
 
   const LoginView = (
-    <motion.div key="login" initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 50 }} transition={{ duration: 0.3 }}>
+    <motion.div key="login" initial={{ opacity: 0, x: 0 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 50 }} transition={{ duration: 0.3 }}>
       <h2 className="text-xl font-bold text-center mb-1 text-primary">Admin / Counselor Login</h2>
       <p className="text-center text-muted-foreground text-sm mb-6">Enter your credentials to access the portal.</p>
       <Form {...loginForm}>
@@ -107,9 +107,6 @@ export function LoginForm({ onBack }: LoginFormProps) {
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Login
-          </Button>
-          <Button variant="ghost" size="sm" className="w-full text-muted-foreground" onClick={onBack} type="button">
-            <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
           </Button>
         </form>
       </Form>
