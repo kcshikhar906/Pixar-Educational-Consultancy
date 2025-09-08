@@ -117,7 +117,11 @@ const EmailDialog = ({ student }: { student: Student }) => {
         const template = emailTemplates[selectedTemplate];
         const subject = encodeURIComponent(template.subject);
         const body = encodeURIComponent(template.body(student.fullName));
-        setMailtoLink(`mailto:${student.email}?subject=${subject}&body=${body}`);
+        
+        // Construct the Gmail URL
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${student.email}&su=${subject}&body=${body}`;
+        setMailtoLink(gmailUrl);
+
     }, [selectedTemplate, student]);
 
     return (
@@ -125,7 +129,7 @@ const EmailDialog = ({ student }: { student: Student }) => {
             <DialogHeader>
                 <DialogTitle>Send Email to {student.fullName}</DialogTitle>
                 <DialogDescription>
-                    Select a template to generate a pre-filled email. This will open in your default email client.
+                    Select a template to generate a pre-filled email. This will open in a new Gmail tab.
                 </DialogDescription>
             </DialogHeader>
             <div className="py-4 space-y-4">
@@ -155,7 +159,7 @@ const EmailDialog = ({ student }: { student: Student }) => {
             <DialogFooter>
                 <Button asChild>
                     <a href={mailtoLink} target="_blank" rel="noopener noreferrer">
-                        <Send className="mr-2 h-4 w-4" /> Open in Email App
+                        <Send className="mr-2 h-4 w-4" /> Compose in Gmail
                     </a>
                 </Button>
             </DialogFooter>
@@ -522,4 +526,3 @@ export function StudentForm({ student, onFormClose, onFormSubmitSuccess }: Stude
   );
 }
 
-    
