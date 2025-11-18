@@ -111,8 +111,11 @@ const increment = (currentValue: number | undefined) => {
  * @return {admin.firestore.FieldValue} The FieldValue decrement operation.
  */
 const decrement = (currentValue: number | undefined) => {
-  const value = currentValue === undefined || currentValue <= 0 ? 0 : -1;
-  return admin.firestore.FieldValue.increment(value);
+  // Ensure we don't go below zero.
+  if (currentValue === undefined || currentValue <= 0) {
+    return admin.firestore.FieldValue.increment(0);
+  }
+  return admin.firestore.FieldValue.increment(-1);
 };
 
 
@@ -145,32 +148,36 @@ export const onStudentChange = onDocumentWritten(
         const fee = toTitleCase(before.serviceFeeStatus);
         const edu = toTitleCase(before.lastCompletedEducation);
         const test = toTitleCase(before.englishProficiencyTest);
-
+        
         data.totalStudents = decrement(data.totalStudents);
-        data.studentsByDestination = {
-          ...data.studentsByDestination,
-          [dest]: decrement(data.studentsByDestination?.[dest]),
-        };
-        data.visaStatusCounts = {
-          ...data.visaStatusCounts,
-          [visa]: decrement(data.visaStatusCounts?.[visa]),
-        };
-        data.studentsByCounselor = {
-          ...data.studentsByCounselor,
-          [coun]: decrement(data.studentsByCounselor?.[coun]),
-        };
-        data.serviceFeeStatusCounts = {
-          ...data.serviceFeeStatusCounts,
-          [fee]: decrement(data.serviceFeeStatusCounts?.[fee]),
-        };
-        data.studentsByEducation = {
-          ...data.studentsByEducation,
-          [edu]: decrement(data.studentsByEducation?.[edu]),
-        };
-        data.studentsByEnglishTest = {
-          ...data.studentsByEnglishTest,
-          [test]: decrement(data.studentsByEnglishTest?.[test]),
-        };
+        
+        if (dest && data.studentsByDestination?.[dest]) {
+          data.studentsByDestination[dest] = decrement(data.studentsByDestination[dest]);
+        }
+        if (visa && data.visaStatusCounts?.[visa]) {
+          data.visaStatusCounts[visa] = decrement(data.visaStatusCounts[visa]);
+        }
+        if (coun && data.studentsByCounselor?.[coun]) {
+          data.studentsByCounselor[coun] = decrement(data.studentsByCounselor[coun]);
+        }
+        if (fee && data.serviceFeeStatusCounts?.[fee]) {
+          data.serviceFeeStatusCounts[fee] = decrement(data.serviceFeeStatusCounts[fee]);
+        }
+        if (edu && data.studentsByEducation?.[edu]) {
+          data.studentsByEducation[edu] = decrement(data.studentsByEducation[edu]);
+        }
+        if (test && data.studentsByEnglishTest?.[test]) {
+          data.studentsByEnglishTest[test] = decrement(data.studentsByEnglishTest[test]);
+        }
+        
+        // Handle monthly admissions decrement (more complex)
+        if (before.timestamp) {
+            const date = before.timestamp.toDate();
+            const monthYear = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+            if (data.monthlyAdmissions?.[monthYear]) {
+                data.monthlyAdmissions[monthYear] = decrement(data.monthlyAdmissions[monthYear]);
+            }
+        }
         return data;
       }
 
@@ -285,5 +292,3 @@ export const onStudentChange = onDocumentWritten(
     console.log(`Function finished for studentId: ${event.params.studentId}`);
   }
 );
-
-    
