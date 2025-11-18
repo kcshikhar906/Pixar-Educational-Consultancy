@@ -125,7 +125,7 @@ const officeLocations: OfficeLocation[] = [
     name: "Head Office (Kathmandu)",
     address: "New Baneshwor, Kathmandu, Nepal, 44600",
     email: "info@pixaredu.com",
-    phone: "+977 9761859757 / +97715907327",
+    phone: "015907326 / 015907327",
     whatsappLink: "https://wa.me/+9779761859757",
     mapEmbedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3197.165484604168!2d85.3327993749223!3d27.686924426392938!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb19a84379c423%3A0xef4effecef07815d!2sPIXAR%20EDUCATIONAL%20CONSULTANCY!5e1!3m2!1sen!2sau!4v1749691561992!5m2!1sen!2sau",
   },

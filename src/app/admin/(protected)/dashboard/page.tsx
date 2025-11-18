@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { collection, onSnapshot, query, orderBy, Timestamp, FirestoreError, getDocs, doc } from 'firebase/firestore';
+import { collection, onSnapshot, query, Timestamp, FirestoreError, getDocs, doc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
@@ -143,34 +143,6 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [isCachedData, setIsCachedData] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
-
-  const fetchAndSetStats = useCallback(async (force = false) => {
-    setLoading(true);
-    setIsCachedData(false);
-    setError(null);
-    try {
-        const metricsDocRef = doc(db, 'metrics', 'dashboard');
-        const metricsDocSnap = await getDocs(query(collection(db, 'metrics'), where('__name__', '==', 'dashboard')));
-
-        if (!metricsDocSnap.empty) {
-            const data = metricsDocSnap.docs[0].data() as DashboardStats;
-            setStats(data);
-            setLastUpdated(Date.now());
-        } else {
-            // Fallback if the metrics doc doesn't exist
-            setError("no-summary-doc");
-        }
-    } catch (err: any) {
-        if (err.code === 'permission-denied') {
-            setError('permission-denied');
-        } else {
-            console.error("Error fetching metrics document:", err);
-            setError("An unknown error occurred while loading dashboard data.");
-        }
-    } finally {
-        setLoading(false);
-    }
-  }, []);
 
   useEffect(() => {
       // Use a real-time listener for the metrics document
