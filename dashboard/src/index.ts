@@ -24,7 +24,7 @@ admin.initializeApp();
 
 // Explicitly connect to the 'pixareducation' database.
 const db = admin.firestore();
-
+console.log('=== onStudentChange TRIGGER LOADED ===');
 // Name mapping to consolidate old names to new full names for metrics
 const counselorNameMapping: {[oldName: string]: string} = {
   "Pawan Sir": "Pawan Acharya",
@@ -37,10 +37,10 @@ const counselorNameMapping: {[oldName: string]: string} = {
 
 // Helper to normalize and map counselor names
 const getNormalizedCounselorName = (name: string | undefined | null): string => {
-    if (!name) return "Unassigned";
-    const trimmedName = name.trim();
-    // Return the new full name if the input is an old name, otherwise return the name as is.
-    return counselorNameMapping[trimmedName] || toTitleCase(trimmedName);
+  if (!name) return "Unassigned";
+  const trimmedName = name.trim();
+  // Return the new full name if the input is an old name, otherwise return the name as is.
+  return counselorNameMapping[trimmedName] || toTitleCase(trimmedName);
 };
 
 
@@ -148,9 +148,9 @@ export const onStudentChange = onDocumentWritten(
         const fee = toTitleCase(before.serviceFeeStatus);
         const edu = toTitleCase(before.lastCompletedEducation);
         const test = toTitleCase(before.englishProficiencyTest);
-        
+
         data.totalStudents = decrement(data.totalStudents);
-        
+
         if (dest && data.studentsByDestination?.[dest]) {
           data.studentsByDestination[dest] = decrement(data.studentsByDestination[dest]);
         }
@@ -169,14 +169,14 @@ export const onStudentChange = onDocumentWritten(
         if (test && data.studentsByEnglishTest?.[test]) {
           data.studentsByEnglishTest[test] = decrement(data.studentsByEnglishTest[test]);
         }
-        
+
         // Handle monthly admissions decrement (more complex)
         if (before.timestamp) {
-            const date = before.timestamp.toDate();
-            const monthYear = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-            if (data.monthlyAdmissions?.[monthYear]) {
-                data.monthlyAdmissions[monthYear] = decrement(data.monthlyAdmissions[monthYear]);
-            }
+          const date = before.timestamp.toDate();
+          const monthYear = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+          if (data.monthlyAdmissions?.[monthYear]) {
+            data.monthlyAdmissions[monthYear] = decrement(data.monthlyAdmissions[monthYear]);
+          }
         }
         return data;
       }
