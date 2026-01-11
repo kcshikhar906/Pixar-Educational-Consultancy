@@ -28,7 +28,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { counselorNames, studyDestinationOptions } from '@/lib/data.tsx';
+import { counselorNames, studyDestinationOptions } from '@/lib/data';
 import { formatDistanceToNow } from 'date-fns';
 
 const PAGE_SIZE = 50;
@@ -71,7 +71,7 @@ export default function StudentsAllPage() {
   const [isDataLoaded, setIsDataLoaded] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [history, setHistory] = useState<FilterHistoryItem[]>([]);
-  
+
   // State for filters
   const [visaStatusFilter, setVisaStatusFilter] = useState('all');
   const [feeStatusFilter, setFeeStatusFilter] = useState('all');
@@ -91,7 +91,7 @@ export default function StudentsAllPage() {
         setHistory(JSON.parse(storedHistory));
       }
     } catch (error) {
-        console.error("Could not load filter history from localStorage", error);
+      console.error("Could not load filter history from localStorage", error);
     }
   }, []);
 
@@ -99,13 +99,13 @@ export default function StudentsAllPage() {
     const newItem = { filters, timestamp: Date.now() };
     const newHistory = [newItem, ...history].slice(0, 5); // Keep last 5
     setHistory(newHistory);
-     try {
-        localStorage.setItem(FILTER_HISTORY_KEY, JSON.stringify(newHistory));
+    try {
+      localStorage.setItem(FILTER_HISTORY_KEY, JSON.stringify(newHistory));
     } catch (error) {
-        console.error("Could not save filter history to localStorage", error);
+      console.error("Could not save filter history to localStorage", error);
     }
   };
-  
+
   const filters = useMemo(() => ({
     visaStatus: visaStatusFilter,
     serviceFeeStatus: feeStatusFilter,
@@ -119,7 +119,7 @@ export default function StudentsAllPage() {
 
     try {
       const constraints: QueryConstraint[] = [];
-      
+
       const searchLower = currentSearchTerm.toLowerCase();
       if (searchLower) {
         constraints.push(orderBy('searchableName'));
@@ -128,7 +128,7 @@ export default function StudentsAllPage() {
       } else {
         constraints.push(orderBy('timestamp', 'desc'));
       }
-      
+
       if (currentFilters.visaStatus !== 'all') {
         constraints.push(where('visaStatus', '==', currentFilters.visaStatus));
       }
@@ -154,8 +154,8 @@ export default function StudentsAllPage() {
       }
 
       const documentSnapshots = await getDocs(q);
-      
-      if(pageDirection === 'first') {
+
+      if (pageDirection === 'first') {
         addHistoryItem(currentFilters);
       }
 
@@ -168,12 +168,12 @@ export default function StudentsAllPage() {
       })) as Student[];
 
       if (studentData.length === 0 && (pageDirection !== 'first' || searchLower) && isDataLoaded) {
-         toast({ title: "No more students", description: `You have reached the end of the list for this query.` });
+        toast({ title: "No more students", description: `You have reached the end of the list for this query.` });
       }
 
       if (pageDirection === 'next') setCurrentPage(p => p + 1);
       if (pageDirection === 'prev' && currentPage > 1) setCurrentPage(p => p - 1);
-      
+
       setStudents(studentData);
       setFirstVisible(documentSnapshots.docs[0] || null);
       setLastVisible(documentSnapshots.docs[documentSnapshots.docs.length - 1] || null);
@@ -190,7 +190,7 @@ export default function StudentsAllPage() {
       setIsLoading(false);
     }
   }, [lastVisible, firstVisible, isDataLoaded, currentPage, toast, filters, debouncedSearchTerm]);
-  
+
   const handleFilterChange = () => {
     setSearchTerm(''); // Reset search term when applying new filters
     fetchStudents('first', filters, '');
@@ -238,56 +238,56 @@ export default function StudentsAllPage() {
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6 p-4 border rounded-lg bg-muted/50">
             <div className="space-y-1">
-                <Label htmlFor="visaStatus">Visa Status</Label>
-                <Select value={visaStatusFilter} onValueChange={setVisaStatusFilter}>
-                    <SelectTrigger id="visaStatus"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All</SelectItem>
-                        <SelectItem value="Not Applied">Not Applied</SelectItem>
-                        <SelectItem value="Pending">Pending</SelectItem>
-                        <SelectItem value="Approved">Approved</SelectItem>
-                        <SelectItem value="Rejected">Rejected</SelectItem>
-                    </SelectContent>
-                </Select>
+              <Label htmlFor="visaStatus">Visa Status</Label>
+              <Select value={visaStatusFilter} onValueChange={setVisaStatusFilter}>
+                <SelectTrigger id="visaStatus"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="Not Applied">Not Applied</SelectItem>
+                  <SelectItem value="Pending">Pending</SelectItem>
+                  <SelectItem value="Approved">Approved</SelectItem>
+                  <SelectItem value="Rejected">Rejected</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-1">
-                <Label htmlFor="feeStatus">Fee Status</Label>
-                <Select value={feeStatusFilter} onValueChange={setFeeStatusFilter}>
-                    <SelectTrigger id="feeStatus"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All</SelectItem>
-                        <SelectItem value="Unpaid">Unpaid</SelectItem>
-                        <SelectItem value="Paid">Paid</SelectItem>
-                    </SelectContent>
-                </Select>
+              <Label htmlFor="feeStatus">Fee Status</Label>
+              <Select value={feeStatusFilter} onValueChange={setFeeStatusFilter}>
+                <SelectTrigger id="feeStatus"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="Unpaid">Unpaid</SelectItem>
+                  <SelectItem value="Paid">Paid</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-1">
-                <Label htmlFor="counselor">Assigned To</Label>
-                <Select value={counselorFilter} onValueChange={setCounselorFilter}>
-                    <SelectTrigger id="counselor"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                         <SelectItem value="all">All</SelectItem>
-                        {counselorNames.map(name => <SelectItem key={name} value={name}>{name}</SelectItem>)}
-                    </SelectContent>
-                </Select>
+              <Label htmlFor="counselor">Assigned To</Label>
+              <Select value={counselorFilter} onValueChange={setCounselorFilter}>
+                <SelectTrigger id="counselor"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  {counselorNames.map(name => <SelectItem key={name} value={name}>{name}</SelectItem>)}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-1">
-                <Label htmlFor="destination">Destination</Label>
-                <Select value={destinationFilter} onValueChange={setDestinationFilter}>
-                    <SelectTrigger id="destination"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                         <SelectItem value="all">All</SelectItem>
-                        {studyDestinationOptions.map(option => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}
-                    </SelectContent>
-                </Select>
+              <Label htmlFor="destination">Destination</Label>
+              <Select value={destinationFilter} onValueChange={setDestinationFilter}>
+                <SelectTrigger id="destination"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  {studyDestinationOptions.map(option => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
             </div>
-             <div className="flex items-end">
-                <Button onClick={handleFilterChange} disabled={isLoading || !isDataLoaded} className="w-full">
-                    <Search className="mr-2 h-4 w-4" /> Apply Filters
-                </Button>
+            <div className="flex items-end">
+              <Button onClick={handleFilterChange} disabled={isLoading || !isDataLoaded} className="w-full">
+                <Search className="mr-2 h-4 w-4" /> Apply Filters
+              </Button>
             </div>
           </div>
-          
+
           {!isDataLoaded ? (
             <div className="text-center py-12">
               <Button onClick={() => fetchStudents('first')} disabled={isLoading}>
@@ -315,31 +315,31 @@ export default function StudentsAllPage() {
                 </Alert>
               )}
               {isLoading ? (
-                 <div className="flex items-center justify-center h-96">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                 </div>
+                <div className="flex items-center justify-center h-96">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
               ) : (
                 <StudentsAllTable data={students} />
               )}
               <div className="flex items-center justify-between space-x-2 py-4">
                 <span className="text-sm text-muted-foreground">Page {currentPage}</span>
                 <div className="space-x-2">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => fetchStudents('prev')}
-                        disabled={isLoading || currentPage === 1}
-                    >
-                        Previous
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => fetchStudents('next')}
-                        disabled={isLoading || students.length < PAGE_SIZE}
-                    >
-                        Next
-                    </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fetchStudents('prev')}
+                    disabled={isLoading || currentPage === 1}
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fetchStudents('next')}
+                    disabled={isLoading || students.length < PAGE_SIZE}
+                  >
+                    Next
+                  </Button>
                 </div>
               </div>
             </div>
@@ -349,13 +349,13 @@ export default function StudentsAllPage() {
 
       <div className="mt-8">
         <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center"><History className="mr-2 h-5 w-5" /> Filter History</CardTitle>
-                <CardDescription>History of the last 5 filters applied on this browser.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                {renderFilterHistory()}
-            </CardContent>
+          <CardHeader>
+            <CardTitle className="flex items-center"><History className="mr-2 h-5 w-5" /> Filter History</CardTitle>
+            <CardDescription>History of the last 5 filters applied on this browser.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {renderFilterHistory()}
+          </CardContent>
         </Card>
       </div>
     </main>

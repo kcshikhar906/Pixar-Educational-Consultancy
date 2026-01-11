@@ -5,8 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { ExternalLink } from 'lucide-react';
-import { countryData } from '@/lib/data.tsx';
-import type { CountryInfo, University } from '@/lib/data.tsx';
+import { countryData } from '@/lib/data';
+import type { CountryInfo, University } from '@/lib/data';
 import React from 'react'; // Import React
 
 interface CountryPageProps {
@@ -31,7 +31,7 @@ export default function CountryPage({ params }: { params: { country: string } })
 
   return (
     <div className="space-y-12 md:space-y-16">
-      <header 
+      <header
         className="relative h-[300px] md:h-[400px] rounded-lg overflow-hidden shadow-xl"
       >
         <Image
@@ -72,49 +72,49 @@ export default function CountryPage({ params }: { params: { country: string } })
       </section>
 
       <section className="bg-secondary/50 py-16 rounded-lg shadow-inner">
-         <div className="container mx-auto px-4">
-            <SectionTitle title={`Top Universities in ${countryInfo.name}`} />
-            <Card className="shadow-xl bg-card">
-              <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="font-semibold text-primary">University</TableHead>
-                        <TableHead className="font-semibold text-primary">City</TableHead>
-                        <TableHead className="font-semibold text-primary">Focus Area</TableHead>
-                        <TableHead className="font-semibold text-primary text-right">Website</TableHead>
+        <div className="container mx-auto px-4">
+          <SectionTitle title={`Top Universities in ${countryInfo.name}`} />
+          <Card className="shadow-xl bg-card">
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="font-semibold text-primary">University</TableHead>
+                      <TableHead className="font-semibold text-primary">City</TableHead>
+                      <TableHead className="font-semibold text-primary">Focus Area</TableHead>
+                      <TableHead className="font-semibold text-primary text-right">Website</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {countryInfo.topUniversities.map((uni: University) => (
+                      <TableRow key={uni.name}>
+                        <TableCell className="font-medium text-foreground">{uni.name}</TableCell>
+                        <TableCell className="text-foreground/80">{uni.city}</TableCell>
+                        <TableCell className="text-foreground/80">{uni.countryFocus}</TableCell>
+                        <TableCell className="text-right">
+                          <Button variant="ghost" size="sm" asChild className="text-accent hover:text-accent-foreground">
+                            <a href={uni.website} target="_blank" rel="noopener noreferrer">
+                              Visit <ExternalLink className="ml-1 h-4 w-4" />
+                            </a>
+                          </Button>
+                        </TableCell>
                       </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {countryInfo.topUniversities.map((uni: University) => (
-                        <TableRow key={uni.name}>
-                          <TableCell className="font-medium text-foreground">{uni.name}</TableCell>
-                          <TableCell className="text-foreground/80">{uni.city}</TableCell>
-                          <TableCell className="text-foreground/80">{uni.countryFocus}</TableCell>
-                          <TableCell className="text-right">
-                            <Button variant="ghost" size="sm" asChild className="text-accent hover:text-accent-foreground">
-                              <a href={uni.website} target="_blank" rel="noopener noreferrer">
-                                Visit <ExternalLink className="ml-1 h-4 w-4" />
-                              </a>
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </section>
 
       <section className="text-center">
         <SectionTitle title="Ready to Explore?" subtitle={`Find out more about your study options in ${countryInfo.name}.`} />
         <a href="/contact">
-            <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                Speak to an Advisor
-            </Button>
+          <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
+            Speak to an Advisor
+          </Button>
         </a>
       </section>
     </div>

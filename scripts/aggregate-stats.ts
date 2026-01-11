@@ -44,7 +44,7 @@ try {
   }
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const serviceAccount = require(SERVICE_ACCOUNT_PATH);
-  
+
   initializeApp({
     credential: cert(serviceAccount),
     databaseURL: `https://${serviceAccount.project_id}.firebaseio.com`,
@@ -61,7 +61,7 @@ const db = getFirestore(DATABASE_ID);
 console.log(`✅ Connected to Firestore database: ${DATABASE_ID}`);
 
 // Name mapping to consolidate old names to new full names for metrics
-const counselorNameMapping: {[oldName: string]: string} = {
+const counselorNameMapping: { [oldName: string]: string } = {
   "Pawan Sir": "Pawan Acharya",
   "Mujal Sir": "Mujal Amatya",
   "Sabina Mam": "Sabina Thapa",
@@ -80,10 +80,10 @@ const toTitleCase = (str: string | undefined | null): string => {
 
 // Helper to normalize and map counselor names
 const getNormalizedCounselorName = (name: string | undefined | null): string => {
-    if (!name) return "Unassigned";
-    const trimmedName = name.trim();
-    // Return the new full name if the input is an old name, otherwise return the name as is.
-    return counselorNameMapping[trimmedName] || toTitleCase(trimmedName);
+  if (!name) return "Unassigned";
+  const trimmedName = name.trim();
+  // Return the new full name if the input is an old name, otherwise return the name as is.
+  return counselorNameMapping[trimmedName] || toTitleCase(trimmedName);
 };
 
 
@@ -92,12 +92,12 @@ async function aggregateStudentStats() {
 
   try {
     const studentsSnapshot = await db.collection('students').get();
-    
+
     if (studentsSnapshot.empty) {
       console.log('⚠️ No student records found. Cannot generate dashboard stats.');
       return;
     }
-    
+
     console.log(`🔍 Processing ${studentsSnapshot.size} student records...`);
 
     // Initialize stats object
@@ -115,16 +115,16 @@ async function aggregateStudentStats() {
     const twelveMonthsAgo = new Date();
     twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
 
-    studentsSnapshot.forEach(doc => {
+    studentsSnapshot.docs.forEach((doc: FirebaseFirestore.QueryDocumentSnapshot) => {
       const student = doc.data();
-      
+
       // Increment total students
       stats.totalStudents++;
 
       // Count by country
       const country = toTitleCase(student.preferredStudyDestination);
       stats.studentsByDestination[country] = (stats.studentsByDestination[country] || 0) + 1;
-      
+
       // Count by visa status
       const visaStatus = toTitleCase(student.visaStatus);
       stats.visaStatusCounts[visaStatus] = (stats.visaStatusCounts[visaStatus] || 0) + 1;
@@ -133,8 +133,8 @@ async function aggregateStudentStats() {
       if (student.timestamp && student.timestamp.toDate) {
         const date = student.timestamp.toDate();
         if (date > twelveMonthsAgo) {
-            const monthYear = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-            stats.monthlyAdmissions[monthYear] = (stats.monthlyAdmissions[monthYear] || 0) + 1;
+          const monthYear = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+          stats.monthlyAdmissions[monthYear] = (stats.monthlyAdmissions[monthYear] || 0) + 1;
         }
       }
 
@@ -149,7 +149,7 @@ async function aggregateStudentStats() {
       // Count by education level
       const education = toTitleCase(student.lastCompletedEducation);
       stats.studentsByEducation[education] = (stats.studentsByEducation[education] || 0) + 1;
-      
+
       // Count by English test status
       const test = toTitleCase(student.englishProficiencyTest);
       stats.studentsByEnglishTest[test] = (stats.studentsByEnglishTest[test] || 0) + 1;
@@ -171,5 +171,3 @@ async function aggregateStudentStats() {
 aggregateStudentStats().catch(error => {
   console.error("❌ An unexpected error occurred during the script execution:", error);
 });
-
-    

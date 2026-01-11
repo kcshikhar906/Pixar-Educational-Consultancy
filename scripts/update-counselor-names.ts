@@ -44,7 +44,7 @@ try {
   }
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const serviceAccount = require(SERVICE_ACCOUNT_PATH);
-  
+
   initializeApp({
     credential: cert(serviceAccount),
     databaseURL: `https://${serviceAccount.project_id}.firebaseio.com`,
@@ -72,12 +72,12 @@ async function updateCounselorNames() {
       return;
     }
 
-    const batches = [];
+    const batches: FirebaseFirestore.WriteBatch[] = [];
     let currentBatch = db.batch();
     let recordsToUpdateCount = 0;
     const oldNames = Object.keys(nameMapping);
 
-    snapshot.forEach((doc, index) => {
+    snapshot.docs.forEach((doc: FirebaseFirestore.QueryDocumentSnapshot, index: number) => {
       const studentData = doc.data();
       const currentAssignedTo = studentData.assignedTo;
 
@@ -96,17 +96,17 @@ async function updateCounselorNames() {
     });
 
     if (recordsToUpdateCount === 0) {
-        console.log('✅ No student records with old counselor names found. No updates needed.');
-        return;
+      console.log('✅ No student records with old counselor names found. No updates needed.');
+      return;
     }
 
     console.log(`🔍 Found ${snapshot.size} total records. Preparing to update ${recordsToUpdateCount} records in ${batches.length} batch(es)...`);
 
     for (let i = 0; i < batches.length; i++) {
-        console.log(`- - - - - - - - - - - - - - - - - - - -`);
-        console.log(`🔵 Committing Batch ${i + 1} of ${batches.length}...`);
-        await batches[i].commit();
-        console.log(`✅ Successfully committed Batch ${i + 1}.`);
+      console.log(`- - - - - - - - - - - - - - - - - - - -`);
+      console.log(`🔵 Committing Batch ${i + 1} of ${batches.length}...`);
+      await batches[i].commit();
+      console.log(`✅ Successfully committed Batch ${i + 1}.`);
     }
 
     console.log(`✅ Successfully updated all necessary student records.`);

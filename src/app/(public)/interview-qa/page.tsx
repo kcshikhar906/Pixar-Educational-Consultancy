@@ -158,7 +158,7 @@ const interviewData: CountryQnA[] = [
           },
         ],
       },
-       {
+      {
         categoryTitle: 'Post-Study Intentions',
         icon: HomeIcon,
         questions: [
@@ -436,7 +436,7 @@ export default function InterviewQAPage() {
                 <CardContent>
                   <Accordion type="multiple" className="w-full space-y-4">
                     {country.questionCategories.map((category, catIndex) => (
-                       <AccordionItem key={`${country.countrySlug}-cat-${catIndex}`} value={`${country.countrySlug}-cat-${catIndex}`} className="border border-border bg-background/30 shadow-sm rounded-lg hover:shadow-md">
+                      <AccordionItem key={`${country.countrySlug}-cat-${catIndex}`} value={`${country.countrySlug}-cat-${catIndex}`} className="border border-border bg-background/30 shadow-sm rounded-lg hover:shadow-md">
                         <AccordionTrigger className="text-lg font-medium text-primary hover:text-accent px-4 py-3 text-left">
                           <category.icon className="mr-2 h-5 w-5" /> {category.categoryTitle}
                         </AccordionTrigger>
@@ -447,7 +447,7 @@ export default function InterviewQAPage() {
                               <p className="text-sm text-foreground/80 mt-1 pl-4 italic"><strong>Example Answer:</strong> {qna.answer}</p>
                               {qna.tips && qna.tips.length > 0 && (
                                 <div className="mt-2 pl-4">
-                                  <h5 className="text-xs font-semibold text-accent flex items-center"><Lightbulb className="h-3 w-3 mr-1"/>Tips:</h5>
+                                  <h5 className="text-xs font-semibold text-accent flex items-center"><Lightbulb className="h-3 w-3 mr-1" />Tips:</h5>
                                   <ul className="list-disc list-inside space-y-0.5 text-xs text-foreground/70 ml-4">
                                     {qna.tips.map((tip, tipIdx) => (
                                       <li key={tipIdx}>{tip}</li>
@@ -479,7 +479,7 @@ export default function InterviewQAPage() {
             </TabsContent>
           ))}
         </Tabs>
-        
+
         <Card className="mt-12 shadow-lg bg-card">
           <CardHeader>
             <CardTitle className="font-headline text-accent flex items-center">
@@ -491,18 +491,18 @@ export default function InterviewQAPage() {
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 text-foreground/80 text-sm">
               {generalInterviewTips.map((tip, index) => (
                 <li key={index} className="flex items-start">
-                    <Eye className="h-4 w-4 text-primary mr-2 mt-0.5 flex-shrink-0"/>
-                    <span>{tip}</span>
+                  <Eye className="h-4 w-4 text-primary mr-2 mt-0.5 flex-shrink-0" />
+                  <span>{tip}</span>
                 </li>
               ))}
             </ul>
             <div className="mt-8 text-center">
-                <Button asChild variant="solid" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                    <Link href="/contact?service=visa_interview_preparation">
-                        Book Unlimited Mock Interview Sessions <Users className="ml-2 h-4 w-4"/>
-                    </Link>
-                </Button>
-                <p className="text-xs text-muted-foreground mt-2">Pixar Educational Consultancy is proud to be the only consultancy in Nepal offering unlimited visa interview preparation for U.S. aspirants!</p>
+              <Button asChild variant="default" className="bg-primary text-primary-foreground hover:bg-primary/90">
+                <Link href="/contact?service=visa_interview_preparation">
+                  Book Unlimited Mock Interview Sessions <Users className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+              <p className="text-xs text-muted-foreground mt-2">Pixar Educational Consultancy is proud to be the only consultancy in Nepal offering unlimited visa interview preparation for U.S. aspirants!</p>
             </div>
           </CardContent>
         </Card>
@@ -511,4 +511,3 @@ export default function InterviewQAPage() {
   );
 }
 
-    

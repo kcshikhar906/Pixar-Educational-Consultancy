@@ -1,11 +1,11 @@
 'use client';
 import Image from 'next/image';
-import Link from 'next/link'; 
+import Link from 'next/link';
 import SectionTitle from '@/components/ui/section-title';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Award, Users, Handshake, CheckCircle } from 'lucide-react';
-import { teamMembers, accreditations } from '@/lib/data.tsx'; 
-import type { TeamMember, Accreditation } from '@/lib/data.tsx'; 
+import { teamMembers, accreditations } from '@/lib/data';
+import type { TeamMember, Accreditation } from '@/lib/data';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { cn } from '@/lib/utils';
 import InteractiveTimeline from '@/components/about/InteractiveTimeline';
@@ -30,9 +30,9 @@ export default function AboutPage() {
 
 
   const renderTeamMemberCard = (member: TeamMember, index: number) => {
-    const isPradeep = member.id === 'team-13'; 
-    const imageSizeClass = isPradeep ? "w-24 h-24" : "w-28 h-28 sm:w-32 sm:h-32"; 
-    const bioLineClampClass = isPradeep ? "line-clamp-3" : "line-clamp-2"; 
+    const isPradeep = member.id === 'team-13';
+    const imageSizeClass = isPradeep ? "w-24 h-24" : "w-28 h-28 sm:w-32 sm:h-32";
+    const bioLineClampClass = isPradeep ? "line-clamp-3" : "line-clamp-2";
 
     const animatedBorderContainerBaseClasses = "relative mx-auto shadow-sm transition-all duration-300 ease-out group-hover:shadow-lg group-hover:scale-105";
 
@@ -42,10 +42,10 @@ export default function AboutPage() {
         <div className="pt-4 px-4">
           <div className={cn(
             animatedBorderContainerBaseClasses,
-            "team-image-animated-border-container", 
-            imageSizeClass 
+            "team-image-animated-border-container",
+            imageSizeClass
           )} style={{ '--animation-index': index } as React.CSSProperties} >
-            <div className="team-image-content-wrapper"> 
+            <div className="team-image-content-wrapper">
               <Image
                 src={member.imageUrl}
                 alt={member.name}
@@ -95,7 +95,7 @@ export default function AboutPage() {
               <Link href="/country-guides#australia" className="hover:underline text-accent">Australia 🇦🇺</Link>,{' '}
               <Link href="/country-guides#uk" className="hover:underline text-accent">UK 🇬🇧</Link>,{' '}
               <Link href="/country-guides#canada" className="hover:underline text-accent">Canada 🇨🇦</Link>, and{' '}
-              <Link href="/country-guides#new-zealand" className="hover:underline text-accent">New Zealand 🇳🇿</Link>. 
+              <Link href="/country-guides#new-zealand" className="hover:underline text-accent">New Zealand 🇳🇿</Link>.
               Established in 2013, we have been at the forefront of student visa counselling for over a decade, helping countless Nepali students unlock life-changing opportunities in these leading study destinations.
             </p>
             <p className="text-foreground/70">
@@ -111,8 +111,8 @@ export default function AboutPage() {
       {/* Our Journey Timeline Section */}
       <section ref={s2Ref} className={cn("bg-secondary/30 py-16 rounded-lg shadow-inner transition-all duration-700 ease-out", s2Visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")}>
         <div className="container mx-auto px-4">
-            <SectionTitle title="Our Journey Since 2013" subtitle="A timeline of our commitment to student success." />
-            <InteractiveTimeline />
+          <SectionTitle title="Our Journey Since 2013" subtitle="A timeline of our commitment to student success." />
+          <InteractiveTimeline />
         </div>
       </section>
 
@@ -120,35 +120,35 @@ export default function AboutPage() {
       <section ref={s3Ref} className={cn("transition-all duration-700 ease-out", s3Visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")}>
         <SectionTitle title="Why Choose Pixar Edu?" subtitle="Dedicated to your success in global education." />
         <div className="grid md:grid-cols-2 gap-8">
-            {whyChooseUsPoints.map((point, index) => {
-              const [cardRef, cardVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.2 });
-              return (
-                <div key={index} ref={cardRef} className={cn("transition-all duration-500 ease-out", cardVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")} style={{transitionDelay: `${index * 100}ms`}}>
-                  <Card className="bg-card shadow-lg hover:shadow-xl transition-shadow h-full">
-                    <CardHeader className="flex flex-row items-center space-x-4">
-                      <point.icon className="h-10 w-10 text-primary flex-shrink-0" />
-                      <CardTitle className="text-xl font-headline text-primary">{point.text.split(':')[0]}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-foreground/80">{point.text.split(':').slice(1).join(':').trim()}</p>
-                    </CardContent>
-                  </Card>
-                </div>
-              );
-            })}
-          </div>
+          {whyChooseUsPoints.map((point, index) => {
+            const [cardRef, cardVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.2 });
+            return (
+              <div key={index} ref={cardRef} className={cn("transition-all duration-500 ease-out", cardVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")} style={{ transitionDelay: `${index * 100}ms` }}>
+                <Card className="bg-card shadow-lg hover:shadow-xl transition-shadow h-full">
+                  <CardHeader className="flex flex-row items-center space-x-4">
+                    <point.icon className="h-10 w-10 text-primary flex-shrink-0" />
+                    <CardTitle className="text-xl font-headline text-primary">{point.text.split(':')[0]}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-foreground/80">{point.text.split(':').slice(1).join(':').trim()}</p>
+                  </CardContent>
+                </Card>
+              </div>
+            );
+          })}
+        </div>
       </section>
-      
+
       {/* Team Section */}
       <section ref={s4Ref} className={cn("bg-primary/10 py-16 rounded-lg shadow-inner transition-all duration-700 ease-out", s4Visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")}>
         <div className="container mx-auto px-4">
           <SectionTitle title="Meet Our Expert Team" subtitle="Dedicated professionals passionate about your educational journey." />
-          
+
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
             {firstRowTeamMembers.map((member: TeamMember, index: number) => {
-               const [cardRef, cardVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
+              const [cardRef, cardVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
               return (
-                <div key={member.id} ref={cardRef} className={cn("transition-all duration-500 ease-out", cardVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")} style={{transitionDelay: `${index * 100}ms`}}>
+                <div key={member.id} ref={cardRef} className={cn("transition-all duration-500 ease-out", cardVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")} style={{ transitionDelay: `${index * 100}ms` }}>
                   {renderTeamMemberCard(member, index)}
                 </div>
               );
@@ -160,7 +160,7 @@ export default function AboutPage() {
               {secondRowTeamMembers.map((member: TeamMember, index: number) => {
                 const [cardRef, cardVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
                 return (
-                  <div key={member.id} ref={cardRef} className={cn("transition-all duration-500 ease-out", cardVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")} style={{transitionDelay: `${(index + 6) * 80}ms`}}>
+                  <div key={member.id} ref={cardRef} className={cn("transition-all duration-500 ease-out", cardVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")} style={{ transitionDelay: `${(index + 6) * 80}ms` }}>
                     {renderTeamMemberCard(member, index + 6)}
                   </div>
                 );
@@ -170,11 +170,11 @@ export default function AboutPage() {
 
           {lastRowTeamMember && (
             <div className="mt-8 flex justify-center">
-               <div className="w-full max-w-xs">
+              <div className="w-full max-w-xs">
                 {(() => {
                   const [cardRef, cardVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
                   return (
-                    <div ref={cardRef} className={cn("transition-all duration-500 ease-out", cardVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")} style={{transitionDelay: `${12 * 70}ms`}}>
+                    <div ref={cardRef} className={cn("transition-all duration-500 ease-out", cardVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")} style={{ transitionDelay: `${12 * 70}ms` }}>
                       {renderTeamMemberCard(lastRowTeamMember, 12)}
                     </div>
                   );
@@ -194,11 +194,11 @@ export default function AboutPage() {
               {accreditations.map((accred: Accreditation, index: number) => {
                 const [itemRef, itemVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
                 return (
-                  <div key={accred.id} ref={itemRef} className={cn("transition-all duration-500 ease-out", itemVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")} style={{transitionDelay: `${index * 70}ms`}}>
-                    <div className="text-center p-4 rounded-lg bg-card shadow-md hover:shadow-lg transition-shadow h-full flex flex-col items-center justify-start group"> 
-                      <div className="relative w-full h-32 mb-4"> 
+                  <div key={accred.id} ref={itemRef} className={cn("transition-all duration-500 ease-out", itemVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")} style={{ transitionDelay: `${index * 70}ms` }}>
+                    <div className="text-center p-4 rounded-lg bg-card shadow-md hover:shadow-lg transition-shadow h-full flex flex-col items-center justify-start group">
+                      <div className="relative w-full h-32 mb-4">
                         <Image
-                          src={accred.logoUrl} 
+                          src={accred.logoUrl}
                           alt={accred.name}
                           layout="fill"
                           objectFit="contain"
@@ -206,7 +206,7 @@ export default function AboutPage() {
                           className="transition-transform duration-300 ease-out group-hover:scale-105"
                         />
                       </div>
-                      <div className="mt-auto w-full"> 
+                      <div className="mt-auto w-full">
                         <h4 className="font-semibold text-primary text-sm">{accred.name}</h4>
                         <p className="text-xs text-foreground/70">{accred.issuingBody}</p>
                       </div>

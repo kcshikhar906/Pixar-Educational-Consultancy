@@ -8,7 +8,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 import SectionTitle from '@/components/ui/section-title';
 import { ArrowRight, CheckCircle, Star, Loader2, Sparkles, MapPin, BookOpen, University as UniversityIconLucide, Info as InfoIcon, Search, ExternalLink, Wand2, Briefcase, DollarSign, ClipboardCheck, CalendarDays, Award as AwardIconFromData, Clock, ChevronLeft, ChevronRight, GraduationCap, Building2, Globe, FileText, Users, Award } from 'lucide-react';
 import { testimonials, services, fieldsOfStudy, gpaScaleOptions, educationLevelOptions, upcomingIntakeData } from '@/lib/data';
-import type { Testimonial, Service, IntakeInfo } from '@/lib/data.tsx';
+import type { Testimonial, Service, IntakeInfo } from '@/lib/data';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -72,7 +72,7 @@ function calculateTimeRemaining(targetDateString: string): TimeRemaining {
 
   let totalMonths = 0;
   let tempDate = new Date(now);
-  while(addMonths(tempDate, 1) <= targetDate) {
+  while (addMonths(tempDate, 1) <= targetDate) {
     tempDate = addMonths(tempDate, 1);
     totalMonths++;
   }
@@ -80,7 +80,7 @@ function calculateTimeRemaining(targetDateString: string): TimeRemaining {
   const dateAfterFullMonths = addMonths(now, totalMonths);
   let totalWeeks = 0;
   if (dateAfterFullMonths < targetDate) {
-      totalWeeks = differenceInCalendarWeeks(targetDate, dateAfterFullMonths, { weekStartsOn: 1 });
+    totalWeeks = differenceInCalendarWeeks(targetDate, dateAfterFullMonths, { weekStartsOn: 1 });
   }
   if (totalWeeks < 0) totalWeeks = 0;
 
@@ -95,8 +95,8 @@ function calculateTimeRemaining(targetDateString: string): TimeRemaining {
 
   if (parts.length === 0) {
     const days = differenceInDays(targetDate, now);
-    if (days < 7 && days >=0) {
-        return { displayText: "Upcoming (less than 1 week)" };
+    if (days < 7 && days >= 0) {
+      return { displayText: "Upcoming (less than 1 week)" };
     }
     return { displayText: "Upcoming soon" };
   }
@@ -122,10 +122,10 @@ export default function HomePage() {
 
   const heroTitleRef = useRef<HTMLDivElement>(null);
   const taglineRef = useRef<HTMLHeadingElement>(null);
-  
+
   const svgStageRef = useRef<SVGSVGElement>(null);
-  const heroBackgroundPathRef = useRef<SVGPathElement>(null); 
-  const heroAnimatedElementRef = useRef<SVGGElement>(null); 
+  const heroBackgroundPathRef = useRef<SVGPathElement>(null);
+  const heroAnimatedElementRef = useRef<SVGGElement>(null);
 
   const [heroSectionRef, isHeroSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.05, initialVisible: true });
   const [pathwaySearchSectionRef, isPathwaySearchSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.02, initialVisible: false });
@@ -190,7 +190,7 @@ export default function HomePage() {
         ease: 'power2.in',
         onComplete: () => {
           currentIdx = (currentIdx + 1) % taglines.length;
-          setCurrentTaglineText(taglines[currentIdx]); 
+          setCurrentTaglineText(taglines[currentIdx]);
           gsap.fromTo(
             taglineRef.current,
             { autoAlpha: 0, y: 20 },
@@ -201,30 +201,30 @@ export default function HomePage() {
     }, cycleTime);
     return () => clearInterval(intervalId);
   }, [heroAnimated]);
-  
- useEffect(() => {
+
+  useEffect(() => {
     if (heroAnimated && heroAnimatedElementRef.current && heroBackgroundPathRef.current && svgStageRef.current) {
       gsap.to(svgStageRef.current, {
         opacity: 1,
         duration: 1.5,
-        delay: 0.5, 
+        delay: 0.5,
         ease: "power1.inOut"
       });
 
       gsap.to(heroAnimatedElementRef.current, {
-        duration: 12, 
-        repeat: -1,   
-        ease: "linear", 
+        duration: 12,
+        repeat: -1,
+        ease: "linear",
         motionPath: {
           path: heroBackgroundPathRef.current,
           align: heroBackgroundPathRef.current,
-          alignOrigin: [0.5, 0.5], 
+          alignOrigin: [0.5, 0.5],
           autoRotate: true,
         }
       });
     }
   }, [heroAnimated]);
-  
+
   useEffect(() => {
     const newIntakeTimes: Record<string, TimeRemaining> = {};
     upcomingIntakeData.forEach(intake => {
@@ -267,10 +267,10 @@ export default function HomePage() {
     setPathwayError(null);
 
     if (!showResultsArea) {
-        setShowResultsArea(true);
-        requestAnimationFrame(() => {
-            setResultsContainerAnimatedIn(true);
-        });
+      setShowResultsArea(true);
+      requestAnimationFrame(() => {
+        setResultsContainerAnimatedIn(true);
+      });
     }
     setIsLoadingPathway(true);
 
@@ -303,12 +303,12 @@ export default function HomePage() {
   };
 
   const renderPathwayForm = () => (
-     <Card className={cn(
-        "shadow-xl bg-card w-full",
-     )}>
+    <Card className={cn(
+      "shadow-2xl bg-card/60 backdrop-blur-xl border border-white/20 w-full overflow-hidden transition-all hover:shadow-[0_20px_50px_rgba(8,_112,_184,_0.1)]",
+    )}>
       <CardHeader>
         <CardTitle className="font-headline text-primary flex items-center">
-          <Search className="mr-2 h-6 w-6"/> Plan Your Study Pathway
+          <Search className="mr-2 h-6 w-6" /> Plan Your Study Pathway
         </CardTitle>
         <CardDescription>
           Tell us your preferences to discover suitable university options.
@@ -322,7 +322,7 @@ export default function HomePage() {
               name="country"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="flex items-center"><MapPin className="mr-2 h-4 w-4 text-accent"/>Country</FormLabel>
+                  <FormLabel className="flex items-center"><MapPin className="mr-2 h-4 w-4 text-accent" />Country</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl><SelectTrigger><SelectValue placeholder="Select a country" /></SelectTrigger></FormControl>
                     <SelectContent>
@@ -340,7 +340,7 @@ export default function HomePage() {
               name="fieldOfStudy"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="flex items-center"><BookOpen className="mr-2 h-4 w-4 text-accent"/>Field of Study</FormLabel>
+                  <FormLabel className="flex items-center"><BookOpen className="mr-2 h-4 w-4 text-accent" />Field of Study</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl><SelectTrigger><SelectValue placeholder="Select a field" /></SelectTrigger></FormControl>
                     <SelectContent>
@@ -358,7 +358,7 @@ export default function HomePage() {
               name="gpa"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="flex items-center"><AwardIconFromData className="mr-2 h-4 w-4 text-accent"/>GPA / Academic Standing</FormLabel>
+                  <FormLabel className="flex items-center"><AwardIconFromData className="mr-2 h-4 w-4 text-accent" />GPA / Academic Standing</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl><SelectTrigger><SelectValue placeholder="Select GPA" /></SelectTrigger></FormControl>
                     <SelectContent>
@@ -376,7 +376,7 @@ export default function HomePage() {
               name="targetEducationLevel"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="flex items-center"><UniversityIconLucide className="mr-2 h-4 w-4 text-accent"/>Target Education Level</FormLabel>
+                  <FormLabel className="flex items-center"><UniversityIconLucide className="mr-2 h-4 w-4 text-accent" />Target Education Level</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl><SelectTrigger><SelectValue placeholder="Select target level" /></SelectTrigger></FormControl>
                     <SelectContent>
@@ -420,7 +420,7 @@ export default function HomePage() {
         className={cn(
           "relative py-20 md:py-32 rounded-lg shadow-xl overflow-hidden",
           isHeroSectionVisible ? "opacity-100" : "opacity-0",
-          "transition-opacity duration-1000 ease-out bg-card" 
+          "transition-opacity duration-1000 ease-out bg-card"
         )}
       >
         <Image
@@ -432,37 +432,37 @@ export default function HomePage() {
           priority
         />
         <div className="absolute inset-0 bg-black opacity-70 z-10"></div>
-        
+
         {/* GSAP Motion Path Background Animation Layer */}
         <div className="absolute inset-0 z-20 overflow-hidden pointer-events-none">
-          <svg 
-            id="svg-stage" 
+          <svg
+            id="svg-stage"
             ref={svgStageRef}
-            xmlns="http://www.w3.org/2000/svg" 
-            viewBox="-40 -180 1250 1100" 
-            opacity="0" 
-            className="w-full h-full" 
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="-40 -180 1250 1100"
+            opacity="0"
+            className="w-full h-full"
             preserveAspectRatio="xMidYMid slice"
           >
             <defs>
               <linearGradient id="grad" x1="154" x2="160" y1="49" y2="132" gradientUnits="userSpaceOnUse">
-                <stop offset="0" stopColor="hsl(var(--primary) / 0.6)"></stop> 
+                <stop offset="0" stopColor="hsl(var(--primary) / 0.6)"></stop>
                 <stop offset="1" stopColor="hsl(var(--accent) / 0.6)"></stop>
               </linearGradient>
             </defs>
-            <path 
+            <path
               ref={heroBackgroundPathRef}
-              className="mp" 
-              fill="none" 
-              stroke="transparent" 
-              strokeWidth="2" 
+              className="mp"
+              fill="none"
+              stroke="transparent"
+              strokeWidth="2"
               d="M-92 17.713c154.32 237.253 348.7 486.913 585.407 466.93 137.542-17.257 247.733-123.595 279.259-239.307 27.368-100.43-21.323-229.59-140.017-241.76-118.693-12.172-208.268 98.897-231.122 199.803-34.673 151.333 12.324 312.301 125.096 429.074C639.395 749.225 815.268 819.528 995 819"
             />
-            <g ref={heroAnimatedElementRef} className="plane"> 
-              <path fill="url(#grad)" opacity="0.3" d="m82.8 35 215.9 94.6L79 92l3.8-57Z"/>
-              <path fill="url(#grad)" d="m82.8 35 52-23.5 163.9 118.1-216-94.5Z"/>
-              <path fill="url(#grad)" opacity="0.3" d="m76.8 107.1 214.4 19.6L74.7 131l2.1-23.9Z"/>
-              <path fill="url(#grad)" d="M298.8 130.4 1.9 103.3l54-45 242.9 72.1Z"/>
+            <g ref={heroAnimatedElementRef} className="plane">
+              <path fill="url(#grad)" opacity="0.3" d="m82.8 35 215.9 94.6L79 92l3.8-57Z" />
+              <path fill="url(#grad)" d="m82.8 35 52-23.5 163.9 118.1-216-94.5Z" />
+              <path fill="url(#grad)" opacity="0.3" d="m76.8 107.1 214.4 19.6L74.7 131l2.1-23.9Z" />
+              <path fill="url(#grad)" d="M298.8 130.4 1.9 103.3l54-45 242.9 72.1Z" />
             </g>
           </svg>
         </div>
@@ -472,23 +472,22 @@ export default function HomePage() {
           <div
             ref={heroTitleRef}
             className={`text-5xl md:text-7xl font-headline font-bold text-primary-foreground mb-4`}
-            style={{ opacity: 0 }} 
+            style={{ opacity: 0 }}
           >
             Pixar Education
           </div>
           <h1
             ref={taglineRef}
             className={cn(
-              "text-4xl md:text-5xl font-headline font-bold text-primary-foreground mb-6 h-[5rem] md:min-h-[6rem] flex items-center justify-center"
+              "text-4xl md:text-6xl font-headline font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-100 to-white mb-8 h-[5rem] md:min-h-[7rem] flex items-center justify-center drop-shadow-md"
             )}
-            style={{ opacity: 0 }} 
+            style={{ opacity: 0 }}
           >
             <span>{currentTaglineText}</span>
           </h1>
           <p
-            className={`text-lg md:text-xl text-primary-foreground/90 max-w-3xl mx-auto mb-10 transition-all ease-out duration-700 delay-200 ${
-              heroAnimated ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-            }`}
+            className={`text-lg md:text-xl text-primary-foreground/90 max-w-3xl mx-auto mb-10 transition-all ease-out duration-700 delay-200 ${heroAnimated ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+              }`}
           >
             Your trusted partner for international studies, guiding Nepali students to success in the{' '}
             <Link href="/country-guides#usa" className="hover:underline text-blue-300">USA 🇺🇸</Link>,{' '}
@@ -499,15 +498,15 @@ export default function HomePage() {
             Start your adventure today!
           </p>
           <div
-             className={cn(
+            className={cn(
               "flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4 items-center justify-center",
               `transition-all ease-out duration-700 delay-300 ${heroAnimated ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`
             )}
           >
-            <Button size="lg" asChild className="w-full sm:w-auto bg-background text-primary hover:bg-background/90 shadow-lg">
+            <Button size="lg" asChild className="w-full sm:w-auto bg-background/95 backdrop-blur-sm text-primary hover:bg-white hover:scale-105 transition-all duration-300 shadow-xl border border-primary/20 h-14 px-8 text-lg rounded-full">
               <a href="#pathway-search-section">Plan Your Pathway <ArrowRight className="ml-2 h-5 w-5" /></a>
             </Button>
-            <Button size="lg" variant="outline" asChild className="w-full sm:w-auto border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10 shadow-lg bg-accent text-accent-foreground hover:bg-accent/90">
+            <Button size="lg" variant="outline" asChild className="w-full sm:w-auto border-white/20 text-white hover:bg-white/10 backdrop-blur-sm shadow-xl bg-accent/80 hover:bg-accent hover:scale-105 transition-all duration-300 h-14 px-8 text-lg rounded-full">
               <Link href="/ai-assistants">Use our Smart Tools <Wand2 className="ml-2 h-5 w-5" /></Link>
             </Button>
           </div>
@@ -525,141 +524,141 @@ export default function HomePage() {
       >
         <SectionTitle title="Pathway Quick Search" subtitle="Find universities matching your interests instantly." />
         <div className={cn(
-            "items-start gap-8",
-            showResultsArea ? "grid grid-cols-1 md:grid-cols-3" : "max-w-4xl mx-auto" 
+          "items-start gap-8",
+          showResultsArea ? "grid grid-cols-1 md:grid-cols-3" : "max-w-4xl mx-auto"
         )}>
           <div className={cn(
-            showResultsArea ? "md:col-span-1 w-full" : "w-full" 
-           )}>
+            showResultsArea ? "md:col-span-1 w-full" : "w-full"
+          )}>
             {renderPathwayForm()}
           </div>
 
           {showResultsArea && (
             <div className={cn(
-                "md:col-span-2 flex flex-col w-full", 
-                "transition-all duration-700 ease-out",
-                resultsContainerAnimatedIn ? "opacity-100" : "opacity-0 pointer-events-none"
+              "md:col-span-2 flex flex-col w-full",
+              "transition-all duration-700 ease-out",
+              resultsContainerAnimatedIn ? "opacity-100" : "opacity-0 pointer-events-none"
             )}>
-                {isLoadingPathway && (
-                  <Card className="shadow-xl bg-card flex flex-col flex-grow w-full p-6 space-y-4">
-                    <div className="flex flex-col items-center justify-center text-center">
-                      <Loader2 className="h-10 w-10 text-primary animate-spin" />
-                      <p className="text-lg font-semibold text-primary mt-3">{currentLoadingMessage}</p>
-                      <p className="text-sm text-muted-foreground">Our AI is crafting your personalized university list...</p>
-                    </div>
-                    <div className="space-y-4 pt-4">
-                      {[...Array(3)].map((_, i) => (
-                        <div key={i} className="space-y-2 p-4 border rounded-lg bg-background/50">
-                          <Skeleton className="h-5 w-3/4" />
-                          <Skeleton className="h-4 w-1/2" />
-                          <div className="flex gap-4 pt-2">
-                             <Skeleton className="h-4 w-1/3" />
-                             <Skeleton className="h-4 w-1/3" />
-                          </div>
+              {isLoadingPathway && (
+                <Card className="shadow-xl bg-card flex flex-col flex-grow w-full p-6 space-y-4">
+                  <div className="flex flex-col items-center justify-center text-center">
+                    <Loader2 className="h-10 w-10 text-primary animate-spin" />
+                    <p className="text-lg font-semibold text-primary mt-3">{currentLoadingMessage}</p>
+                    <p className="text-sm text-muted-foreground">Our AI is crafting your personalized university list...</p>
+                  </div>
+                  <div className="space-y-4 pt-4">
+                    {[...Array(3)].map((_, i) => (
+                      <div key={i} className="space-y-2 p-4 border rounded-lg bg-background/50">
+                        <Skeleton className="h-5 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                        <div className="flex gap-4 pt-2">
+                          <Skeleton className="h-4 w-1/3" />
+                          <Skeleton className="h-4 w-1/3" />
                         </div>
-                      ))}
-                    </div>
-                  </Card>
-                )}
-                {pathwayError && !isLoadingPathway && (
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              )}
+              {pathwayError && !isLoadingPathway && (
                 <Alert variant="destructive" className="bg-card w-full">
-                    <InfoIcon className="h-4 w-4" />
-                    <AlertTitle>Error</AlertTitle>
-                    <AlertDescription>{pathwayError}</AlertDescription>
+                  <InfoIcon className="h-4 w-4" />
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription>{pathwayError}</AlertDescription>
                 </Alert>
-                )}
-                {pathwayResult && !isLoadingPathway && (
+              )}
+              {pathwayResult && !isLoadingPathway && (
                 <Card className="shadow-xl bg-card flex flex-col flex-grow w-full">
-                    <CardHeader>
+                  <CardHeader>
                     <CardTitle className="font-headline text-accent flex items-center">
-                        <Sparkles className="mr-2 h-6 w-6" /> University Suggestions
+                      <Sparkles className="mr-2 h-6 w-6" /> University Suggestions
                     </CardTitle>
                     <CardDescription>
-                        For {pathwayForm.getValues('country')} - {pathwayForm.getValues('fieldOfStudy')} (GPA: {pathwayForm.getValues('gpa')}, Level: {pathwayForm.getValues('targetEducationLevel')}).
-                        {pathwayResult.searchSummary && <span className="block mt-1 text-xs italic">{pathwayResult.searchSummary}</span>}
+                      For {pathwayForm.getValues('country')} - {pathwayForm.getValues('fieldOfStudy')} (GPA: {pathwayForm.getValues('gpa')}, Level: {pathwayForm.getValues('targetEducationLevel')}).
+                      {pathwayResult.searchSummary && <span className="block mt-1 text-xs italic">{pathwayResult.searchSummary}</span>}
                     </CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex-grow overflow-y-auto space-y-4 max-h-96 md:max-h-[calc(100vh-300px)] p-6 w-full">
+                  </CardHeader>
+                  <CardContent className="flex-grow overflow-y-auto space-y-4 max-h-96 md:max-h-[calc(100vh-300px)] p-6 w-full">
                     {universitySuggestions.length > 0 ? (
-                        <ul className="space-y-4">
+                      <ul className="space-y-4">
                         {universitySuggestions.map((uni: UniversitySuggestion, index: number) => (
-                            <li key={index} className="p-4 border rounded-lg bg-background/50 hover:shadow-md transition-shadow">
-                                <div className="flex-1">
-                                    <h4 className="font-semibold text-primary flex items-center text-lg mb-1">
-                                        <UniversityIconLucide className="mr-2 h-5 w-5 text-accent flex-shrink-0" />
-                                        {uni.name}
-                                    </h4>
-                                    <p className="text-xs text-muted-foreground mb-2 ml-7">{uni.category || 'N/A'}</p>
+                          <li key={index} className="p-4 border rounded-lg bg-background/50 hover:shadow-md transition-shadow">
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-primary flex items-center text-lg mb-1">
+                                <UniversityIconLucide className="mr-2 h-5 w-5 text-accent flex-shrink-0" />
+                                {uni.name}
+                              </h4>
+                              <p className="text-xs text-muted-foreground mb-2 ml-7">{uni.category || 'N/A'}</p>
 
-                                    {uni.reasoning && (
-                                        <p className="text-sm text-foreground/80 my-2 pl-1 flex items-start border-l-2 border-accent/50 ml-6 pl-3">
-                                            <InfoIcon className="mr-2 h-4 w-4 text-accent flex-shrink-0 mt-1" />
-                                            <span className="italic">{uni.reasoning}</span>
-                                        </p>
-                                    )}
+                              {uni.reasoning && (
+                                <p className="text-sm text-foreground/80 my-2 pl-1 flex items-start border-l-2 border-accent/50 ml-6 pl-3">
+                                  <InfoIcon className="mr-2 h-4 w-4 text-accent flex-shrink-0 mt-1" />
+                                  <span className="italic">{uni.reasoning}</span>
+                                </p>
+                              )}
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-sm mb-3">
-                                        <div className="flex items-start" title="University Location">
-                                            <MapPin className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0 mt-0.5" />
-                                            <span className="text-foreground/80">{uni.location || 'N/A'}</span>
-                                        </div>
-                                        <div className="flex items-start" title="University Type">
-                                            <Briefcase className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0 mt-0.5" />
-                                            <span className="text-foreground/80">Type: {uni.type || 'N/A'}</span>
-                                        </div>
-                                        <div className="flex items-start" title="Program Duration">
-                                            <BookOpen className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0 mt-0.5" />
-                                            <span className="text-foreground/80">Duration: {uni.programDuration || 'N/A'}</span>
-                                        </div>
-                                        <div className="flex items-start" title="Tuition Category & Range">
-                                            <DollarSign className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0 mt-0.5" />
-                                            <span className="text-foreground/80">
-                                                Tuition: {uni.tuitionCategory || 'N/A'}
-                                                {uni.tuitionFeeRange && ` (${uni.tuitionFeeRange})`}
-                                                {uni.tuitionFeeRange && <span className="text-xs text-muted-foreground italic"> (Estimates, may vary. Check official site.)</span>}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-start" title="Next Intake Date">
-                                            <CalendarDays className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0 mt-0.5" />
-                                            <span className="text-foreground/80">Next Intake: {uni.nextIntakeDate || 'N/A'}</span>
-                                        </div>
-                                        <div className="flex items-start" title="English Test Requirements">
-                                            <ClipboardCheck className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0 mt-0.5" />
-                                            <span className="text-foreground/80">English Tests: {uni.englishTestRequirements || 'N/A'}</span>
-                                        </div>
-                                    </div>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-sm mb-3">
+                                <div className="flex items-start" title="University Location">
+                                  <MapPin className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0 mt-0.5" />
+                                  <span className="text-foreground/80">{uni.location || 'N/A'}</span>
                                 </div>
-                                <div className="mt-3 text-right space-x-2">
-                                    {uni.website && (
-                                      <Button asChild size="sm" variant="outline" className="text-primary hover:text-primary-foreground hover:bg-primary/10">
-                                        <a href={uni.website} target="_blank" rel="noopener noreferrer">
-                                            <ExternalLink className="mr-1.5 h-4 w-4" /> More Info
-                                        </a>
-                                      </Button>
-                                    )}
-                                    <Button asChild size="sm" variant="default" className="bg-accent text-accent-foreground hover:bg-accent/90">
-                                        <Link href={`/contact?service=university_guidance&collegeName=${encodeURIComponent(uni.name)}&country=${encodeURIComponent(pathwayForm.getValues('country'))}&field=${encodeURIComponent(pathwayForm.getValues('fieldOfStudy'))}&gpa=${encodeURIComponent(pathwayForm.getValues('gpa'))}&level=${encodeURIComponent(pathwayForm.getValues('targetEducationLevel'))}`}>
-                                            Book Consultation
-                                        </Link>
-                                    </Button>
+                                <div className="flex items-start" title="University Type">
+                                  <Briefcase className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0 mt-0.5" />
+                                  <span className="text-foreground/80">Type: {uni.type || 'N/A'}</span>
                                 </div>
-                            </li>
+                                <div className="flex items-start" title="Program Duration">
+                                  <BookOpen className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0 mt-0.5" />
+                                  <span className="text-foreground/80">Duration: {uni.programDuration || 'N/A'}</span>
+                                </div>
+                                <div className="flex items-start" title="Tuition Category & Range">
+                                  <DollarSign className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0 mt-0.5" />
+                                  <span className="text-foreground/80">
+                                    Tuition: {uni.tuitionCategory || 'N/A'}
+                                    {uni.tuitionFeeRange && ` (${uni.tuitionFeeRange})`}
+                                    {uni.tuitionFeeRange && <span className="text-xs text-muted-foreground italic"> (Estimates, may vary. Check official site.)</span>}
+                                  </span>
+                                </div>
+                                <div className="flex items-start" title="Next Intake Date">
+                                  <CalendarDays className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0 mt-0.5" />
+                                  <span className="text-foreground/80">Next Intake: {uni.nextIntakeDate || 'N/A'}</span>
+                                </div>
+                                <div className="flex items-start" title="English Test Requirements">
+                                  <ClipboardCheck className="mr-1.5 h-4 w-4 text-accent/80 flex-shrink-0 mt-0.5" />
+                                  <span className="text-foreground/80">English Tests: {uni.englishTestRequirements || 'N/A'}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="mt-3 text-right space-x-2">
+                              {uni.website && (
+                                <Button asChild size="sm" variant="outline" className="text-primary hover:text-primary-foreground hover:bg-primary/10">
+                                  <a href={uni.website} target="_blank" rel="noopener noreferrer">
+                                    <ExternalLink className="mr-1.5 h-4 w-4" /> More Info
+                                  </a>
+                                </Button>
+                              )}
+                              <Button asChild size="sm" variant="default" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                                <Link href={`/contact?service=university_guidance&collegeName=${encodeURIComponent(uni.name)}&country=${encodeURIComponent(pathwayForm.getValues('country'))}&field=${encodeURIComponent(pathwayForm.getValues('fieldOfStudy'))}&gpa=${encodeURIComponent(pathwayForm.getValues('gpa'))}&level=${encodeURIComponent(pathwayForm.getValues('targetEducationLevel'))}`}>
+                                  Book Consultation
+                                </Link>
+                              </Button>
+                            </div>
+                          </li>
                         ))}
-                        </ul>
+                      </ul>
                     ) : (
-                        <p className="text-foreground/70 text-center py-8">No university suggestions match your current query. Please try different criteria.</p>
+                      <p className="text-foreground/70 text-center py-8">No university suggestions match your current query. Please try different criteria.</p>
                     )}
-                    </CardContent>
+                  </CardContent>
                 </Card>
-                )}
-                {!isLoadingPathway && !pathwayError && !pathwayResult && (
-                    <Card className="shadow-xl bg-card flex flex-col items-center justify-center flex-grow min-h-[200px] md:min-h-0 w-full">
-                        <CardContent className="text-center p-6">
-                            <Search className="h-12 w-12 md:h-16 md:w-16 text-muted-foreground mx-auto mb-4" />
-                            <p className="text-muted-foreground">Your university suggestions will appear here.</p>
-                        </CardContent>
-                    </Card>
-                )}
+              )}
+              {!isLoadingPathway && !pathwayError && !pathwayResult && (
+                <Card className="shadow-xl bg-card flex flex-col items-center justify-center flex-grow min-h-[200px] md:min-h-0 w-full">
+                  <CardContent className="text-center p-6">
+                    <Search className="h-12 w-12 md:h-16 md:w-16 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground">Your university suggestions will appear here.</p>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           )}
         </div>
@@ -678,47 +677,52 @@ export default function HomePage() {
           <div
             ref={scrollContainerRef}
             className={cn(
-              "py-2 no-scrollbar", 
-              "flex flex-nowrap overflow-x-auto space-x-4 snap-x snap-mandatory scroll-smooth", 
-              "lg:grid lg:grid-cols-5 lg:gap-4 lg:space-x-0 lg:overflow-visible lg:snap-none" 
+              "py-2 no-scrollbar",
+              "flex flex-nowrap overflow-x-auto space-x-4 snap-x snap-mandatory scroll-smooth",
+              "lg:grid lg:grid-cols-5 lg:gap-4 lg:space-x-0 lg:overflow-visible lg:snap-none"
             )}
           >
             {upcomingIntakeData.map((intake: IntakeInfo, index: number) => {
               const [intakeCardRef, isIntakeCardVisibleInner] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
               const timeRemainingText = intakeTimes[intake.countrySlug]?.displayText || 'Calculating...';
-              
+
               return (
                 <div
                   key={intake.countrySlug}
                   ref={intakeCardRef}
                   className={cn(
                     "transition-all duration-500 ease-out snap-center",
-                    "flex-shrink-0 w-[250px] xs:w-[270px] sm:w-[290px]", 
-                    "lg:w-full lg:flex-shrink-1", 
+                    "flex-shrink-0 w-[250px] xs:w-[270px] sm:w-[290px]",
+                    "lg:w-full lg:flex-shrink-1",
                     isIntakeCardVisibleInner ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
                   )}
-                  style={{transitionDelay: `${index * 100}ms`}}
+                  style={{ transitionDelay: `${index * 100}ms` }}
                 >
-                  <Card className="bg-card shadow-lg hover:shadow-xl transition-shadow h-full flex flex-col">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="font-headline text-lg text-primary flex items-center">
-                        <span className="text-xl mr-2">{intake.flagEmoji}</span>{intake.countryName}
+                  <Card className="bg-card/80 backdrop-blur-sm border-white/20 shadow-lg group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 h-full flex flex-col rounded-xl overflow-hidden">
+                    <CardHeader className="pb-3 bg-gradient-to-r from-primary/5 to-accent/5">
+                      <CardTitle className="font-headline text-lg text-primary flex items-center justify-between">
+                        <span className="text-2xl filter drop-shadow-sm group-hover:scale-110 transition-transform">{intake.flagEmoji}</span>
+                        <span className="font-bold tracking-tight">{intake.countryName}</span>
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="flex-grow space-y-1.5 text-sm pt-0">
-                      <div className="flex items-center" title={`Specific intake period: ${intake.intakeNote}. Actual start: ${intake.nextIntakeDate ? format(new Date(intake.nextIntakeDate), "MMMM d, yyyy") : 'N/A'}`}>
-                        <CalendarDays className="h-4 w-4 text-accent mr-2 flex-shrink-0" />
-                        <span className="text-foreground/90 font-medium">{intake.intakeNote}</span>
+                    <CardContent className="flex-grow space-y-3 text-sm pt-4">
+                      <div className="flex items-start" title={`Specific intake period: ${intake.intakeNote}. Actual start: ${intake.nextIntakeDate ? format(new Date(intake.nextIntakeDate), "MMMM d, yyyy") : 'N/A'}`}>
+                        <div className="p-1.5 bg-accent/10 rounded-md mr-3">
+                          <CalendarDays className="h-4 w-4 text-accent flex-shrink-0" />
+                        </div>
+                        <span className="text-foreground/90 font-medium self-center">{intake.intakeNote}</span>
                       </div>
-                      <div className="flex items-center">
-                        <Clock className="h-4 w-4 text-accent mr-2 flex-shrink-0" />
-                        <span className="text-foreground/80">{timeRemainingText}</span>
+                      <div className="flex items-start">
+                        <div className="p-1.5 bg-primary/10 rounded-md mr-3">
+                          <Clock className="h-4 w-4 text-primary flex-shrink-0" />
+                        </div>
+                        <span className="text-foreground/80 self-center font-medium">{timeRemainingText}</span>
                       </div>
                     </CardContent>
-                    <CardFooter className="pt-2">
-                      <Button asChild variant="link" className="text-accent p-0 text-sm hover:text-primary">
-                         <Link href={`/country-guides#${intake.countrySlug}`}>
-                          Learn more <ArrowRight className="ml-1 h-4 w-4" />
+                    <CardFooter className="pt-2 pb-4 px-6 bg-muted/30">
+                      <Button asChild variant="ghost" className="w-full text-primary hover:text-primary hover:bg-primary/5 group-hover:translate-x-1 transition-all justify-between px-0">
+                        <Link href={`/country-guides#${intake.countrySlug}`}>
+                          Explore <ArrowRight className="ml-2 h-4 w-4 opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                         </Link>
                       </Button>
                     </CardFooter>
@@ -732,7 +736,7 @@ export default function HomePage() {
             variant="outline"
             size="icon"
             className="absolute -left-2 sm:-left-4 top-1/2 -translate-y-1/2 z-10 bg-card hover:bg-card/80 opacity-80 hover:opacity-100 shadow-md rounded-full p-2 h-10 w-10 lg:hidden"
-            onClick={() => handleScroll(-280)} 
+            onClick={() => handleScroll(-280)}
             aria-label="Scroll left"
           >
             <ChevronLeft className="h-6 w-6" />
@@ -741,7 +745,7 @@ export default function HomePage() {
             variant="outline"
             size="icon"
             className="absolute -right-2 sm:-right-4 top-1/2 -translate-y-1/2 z-10 bg-card hover:bg-card/80 opacity-80 hover:opacity-100 shadow-md rounded-full p-2 h-10 w-10 lg:hidden"
-            onClick={() => handleScroll(280)} 
+            onClick={() => handleScroll(280)}
             aria-label="Scroll right"
           >
             <ChevronRight className="h-6 w-6" />
@@ -759,24 +763,26 @@ export default function HomePage() {
       >
         <SectionTitle title="Why Choose Pixar Edu?" subtitle="Our track record speaks for itself. We are committed to student success." />
         <div className="container mx-auto px-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 text-center">
-              {stats.map((stat, index) => {
-                const Icon = stat.icon;
-                return (
-                  <div key={index} className="flex flex-col items-center p-4 bg-card rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
-                    <Icon className="h-10 w-10 md:h-12 md:w-12 text-primary mb-3" />
-                    <div className="text-3xl md:text-4xl font-bold text-accent">
-                      <Counter 
-                        target={stat.value}
-                        isInView={isWhyChooseUsSectionVisible}
-                        suffix={stat.suffix || ''}
-                      />
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1 text-balance h-10 flex items-center">{stat.label}</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 text-center">
+            {stats.map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <div key={index} className="group flex flex-col items-center p-6 bg-card/60 backdrop-blur-sm border border-white/40 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-1">
+                  <div className="mb-4 p-4 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 group-hover:from-primary/20 group-hover:to-accent/20 transition-colors">
+                    <Icon className="h-8 w-8 md:h-10 md:w-10 text-primary group-hover:scale-110 transition-transform duration-300" />
                   </div>
-                );
-              })}
-            </div>
+                  <div className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-primary to-accent mb-2">
+                    <Counter
+                      target={stat.value}
+                      isInView={isWhyChooseUsSectionVisible}
+                      suffix={stat.suffix || ''}
+                    />
+                  </div>
+                  <p className="text-sm md:text-base font-medium text-muted-foreground mt-1 text-balance h-10 flex items-center text-center">{stat.label}</p>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
 
@@ -790,14 +796,15 @@ export default function HomePage() {
       >
         <SectionTitle title="Our Core Services" subtitle="Comprehensive support to navigate your educational path." />
         <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-8">
-          {services.slice(0,3).map((service: Service, index: number) => {
-             const [cardRef, isServiceCardVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
+          {services.slice(0, 3).map((service: Service, index: number) => {
+            const [cardRef, isServiceCardVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
             return (
-              <div key={service.id} ref={cardRef} className={cn("transition-all duration-700 ease-out", isServiceCardVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")} style={{transitionDelay: `${index * 100}ms`}}>
-                <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-card h-full flex flex-col">
+              <div key={service.id} ref={cardRef} className={cn("transition-all duration-700 ease-out", isServiceCardVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")} style={{ transitionDelay: `${index * 100}ms` }}>
+                <Card className="group overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 bg-card border-0 h-full flex flex-col rounded-2xl">
                   {service.imageUrl && (
-                    <div className="relative h-48 w-full">
-                      <Image src={service.imageUrl} alt={service.title} layout="fill" objectFit="cover" data-ai-hint={service.dataAiHint || 'education service'} />
+                    <div className="relative h-56 w-full overflow-hidden">
+                      <Image src={service.imageUrl} alt={service.title} layout="fill" objectFit="cover" className="group-hover:scale-110 transition-transform duration-700 ease-in-out" data-ai-hint={service.dataAiHint || 'education service'} />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
                     </div>
                   )}
                   <CardHeader>
@@ -817,9 +824,9 @@ export default function HomePage() {
           })}
         </div>
         <div className="text-center mt-10">
-            <Button size="lg" asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
-                <Link href="/services">View All Services</Link>
-            </Button>
+          <Button size="lg" asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
+            <Link href="/services">View All Services</Link>
+          </Button>
         </div>
       </section>
 
@@ -839,12 +846,12 @@ export default function HomePage() {
                 <Card className="bg-card shadow-lg h-full flex flex-col">
                   <CardHeader className="flex flex-row items-center space-x-4 pb-2">
                     {testimonial.avatarUrl && (
-                      <Image 
-                        src={testimonial.avatarUrl} 
-                        alt={testimonial.name} 
-                        width={60} 
-                        height={60} 
-                        className="rounded-full" 
+                      <Image
+                        src={testimonial.avatarUrl}
+                        alt={testimonial.name}
+                        width={60}
+                        height={60}
+                        className="rounded-full"
                         data-ai-hint={testimonial.dataAiHint || "student person"}
                       />
                     )}
@@ -868,4 +875,3 @@ export default function HomePage() {
     </div>
   );
 }
-    

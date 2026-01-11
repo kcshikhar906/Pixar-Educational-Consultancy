@@ -10,20 +10,21 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import SectionTitle from '@/components/ui/section-title';
-import { Mail, MapPin, Phone, Send, Loader2, BookUser, StickyNote, Target, Languages, GraduationCap, CalendarIcon as CalendarIconLucide, Users, BookCopy, NotebookPen, ExternalLink, MessageSquare, Building, Home, PhoneCall, CalendarPlus, CheckCircle2, ArrowRight, Download, Wifi } from 'lucide-react';
+import { Mail, MapPin, Phone, Send, Loader2, BookUser, StickyNote, Target, Languages, GraduationCap, CalendarIcon as CalendarIconLucide, Users, BookCopy, NotebookPen, ExternalLink, MessageSquare, Building, Home, PhoneCall, CalendarPlus, CheckCircle2, ArrowRight, Download, Wifi, Clock } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from 'react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { cn } from '@/lib/utils';
-import { allEducationLevels, englishTestOptions, studyDestinationOptions, testPreparationOptions } from '@/lib/data.tsx';
+import { allEducationLevels, englishTestOptions, studyDestinationOptions, testPreparationOptions } from '@/lib/data';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { format } from 'date-fns';
+import { format, isValid } from 'date-fns';
 import { Separator } from '@/components/ui/separator';
 import { addStudent } from '@/app/actions';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useSearchParams } from 'next/navigation';
 
 // Schema for General Contact Form with conditional logic
 const generalContactFormSchema = z.object({
@@ -96,7 +97,7 @@ async function submitToPrepClassGoogleSheet(data: PreparationClassFormValues): P
     if (data.preferredStartDate) {
         formData.append(PREP_CLASS_PREFERRED_START_DATE_ENTRY_ID, format(data.preferredStartDate, "yyyy-MM-dd"));
     }
-    if (data.additionalNotes && PREP_CLASS_ADDITIONAL_NOTES_ENTRY_ID !== 'REPLACE_WITH_YOUR_ADDITIONAL_NOTES_FIELD_ENTRY_ID_FOR_PREP') {
+    if (data.additionalNotes) {
         formData.append(PREP_CLASS_ADDITIONAL_NOTES_ENTRY_ID, data.additionalNotes);
     }
 
@@ -133,7 +134,6 @@ const officeLocations: OfficeLocation[] = [
         address: "Kumaripati, Lalitpur 44600, Nepal",
         email: "study@pixaredu.com.au",
         phone: "015913809 / 9765833581",
-        // whatsappLink: "https://wa.me/+9779765833581",
         mapLink: "https://maps.app.goo.gl/8JBZXd3SxGq3NjPn7",
     },
     {
@@ -141,7 +141,6 @@ const officeLocations: OfficeLocation[] = [
         address: "Level 1/18 Montgomery St, Kogarah NSW 2217",
         email: "info@pixaredu.com.au",
         phone: "02 85939110 / 0425347175",
-        // whatsappLink: "https://wa.me/+61425347175", 
         mapLink: "https://maps.app.goo.gl/52hE2ptx3sw24irC9",
     },
 ];
@@ -154,7 +153,10 @@ interface SuccessViewState {
     data?: any;
 }
 
+
+
 export default function ContactPage() {
+    const searchParams = useSearchParams();
     const { toast } = useToast();
     const [isGeneralSubmitting, setIsGeneralSubmitting] = useState(false);
     const [isPrepClassSubmitting, setIsPrepClassSubmitting] = useState(false);
@@ -165,7 +167,7 @@ export default function ContactPage() {
         setIsClient(true);
     }, []);
 
-    const [titleSectionRef, isTitleSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true });
+    const [titleSectionRef, isTitleSectionVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true });
     const [formTabsRef, isFormTabsVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
     const [infoSectionRef, isInfoSectionVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.1 });
 
@@ -284,419 +286,539 @@ export default function ContactPage() {
                 />
             </div>
 
-            <div className="grid lg:grid-cols-2 gap-12 items-start max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div ref={formTabsRef} className={cn("transition-all duration-700 ease-out", isFormTabsVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")}>
-                    {successView ? (
-                        // Unified Success View
-                        <Card className="shadow-2xl border-t-4 border-t-green-500 bg-card/50 backdrop-blur-sm h-full flex flex-col justify-center items-center p-8 text-center animate-in fade-in zoom-in duration-500 min-h-[500px]">
-                            <CardHeader className="space-y-4">
-                                <div className="mx-auto w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center shadow-inner">
-                                    <CheckCircle2 className="h-10 w-10" />
+            <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start max-w-6xl mx-auto">
+                {/* Contact Information Column */}
+                <div
+                    ref={infoSectionRef}
+                    className={cn(
+                        "space-y-8 transition-all duration-700 ease-out",
+                        isInfoSectionVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-10"
+                    )}
+                >
+                    <Card className="bg-card/60 backdrop-blur-sm border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.04)] h-full rounded-2xl overflow-hidden">
+                        <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5 pb-6">
+                            <CardTitle className="font-headline text-2xl text-primary flex items-center">
+                                <MapPin className="mr-2 h-6 w-6 text-accent" /> Visit Our Office
+                            </CardTitle>
+                            <CardDescription>
+                                We are conveniently located in the heart of Putalisadak.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6 pt-6">
+                            {officeLocations.map((office, index) => (
+                                <div key={index}>
+                                    <h3 className="font-semibold text-lg flex items-center text-foreground/90 mb-2">
+                                        <Building className="h-5 w-5 mr-2 text-primary" /> {office.name}
+                                    </h3>
+                                    <p className="text-muted-foreground ml-7 leading-relaxed mb-3">
+                                        {office.address}
+                                    </p>
+                                    <div className="space-y-3 ml-7">
+                                        <div className="flex flex-col gap-2">
+                                            <a href={`tel:${office.phone.split('/')[0].trim()}`} className="flex items-center text-muted-foreground hover:text-accent transition-colors group">
+                                                <div className="p-1.5 bg-primary/5 rounded-full mr-3 group-hover:bg-primary/10 transition-colors">
+                                                    <Phone className="h-4 w-4" />
+                                                </div>
+                                                {office.phone}
+                                            </a>
+                                            <a href={`mailto:${office.email}`} className="flex items-center text-muted-foreground hover:text-accent transition-colors group">
+                                                <div className="p-1.5 bg-primary/5 rounded-full mr-3 group-hover:bg-primary/10 transition-colors">
+                                                    <Mail className="h-4 w-4" />
+                                                </div>
+                                                {office.email}
+                                            </a>
+                                        </div>
+                                        <div className="flex gap-3 mt-3">
+                                            {office.whatsappLink && (
+                                                <a href={office.whatsappLink} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-green-600 hover:text-green-700 flex items-center bg-green-50 px-3 py-1.5 rounded-full transition-colors">
+                                                    <MessageSquare className="h-4 w-4 mr-2" /> Chat on WhatsApp
+                                                </a>
+                                            )}
+                                            {office.mapLink && (
+                                                <a href={office.mapLink} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-primary hover:text-primary/80 flex items-center bg-primary/5 px-3 py-1.5 rounded-full transition-colors">
+                                                    <MapPin className="h-4 w-4 mr-2" /> View Location Map
+                                                </a>
+                                            )}
+                                        </div>
+                                    </div>
+                                    {index < officeLocations.length - 1 && <Separator className="bg-primary/10 my-6" />}
                                 </div>
-                                <CardTitle className="text-3xl font-bold text-green-700">{successView.title}</CardTitle>
-                                <CardDescription className="text-lg text-foreground/80 max-w-md mx-auto">
-                                    {successView.description}
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-6 w-full max-w-sm">
+                            ))}
 
-                                {/* 1. Office Visit Success Actions */}
-                                {successView.type === 'office' && (
-                                    <div className="p-4 bg-muted/50 rounded-lg border border-border text-left space-y-3">
-                                        <div className="flex items-center gap-3">
-                                            <Wifi className="h-5 w-5 text-primary" />
-                                            <div>
-                                                <p className="font-semibold text-sm">Free Guest Wi-Fi</p>
-                                                <p className="text-xs text-muted-foreground">Network: Pixar_Guest / Pass: Study@Pixar</p>
-                                            </div>
-                                        </div>
-                                        <Separator />
-                                        <div className="flex items-center gap-3">
-                                            <Building className="h-5 w-5 text-primary" />
-                                            <div>
-                                                <p className="font-semibold text-sm">Waiting Area</p>
-                                                <p className="text-xs text-muted-foreground">Please wait in the lobby. Tea/Coffee is available.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
+                            <Separator className="bg-primary/10" />
 
-                                {/* 2. Remote Visit Success Actions */}
-                                {successView.type === 'visit' && successView.date && (
-                                    <>
-                                        <div className="p-4 bg-muted/50 rounded-lg border border-border text-left space-y-2">
-                                            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Before you visit</p>
-                                            <ul className="text-sm space-y-1 list-disc list-inside text-foreground/90">
-                                                <li>Bring your academic transcripts</li>
-                                                <li>Bring a valid ID document</li>
-                                                <li>Write down any specific questions</li>
-                                            </ul>
-                                        </div>
-                                        <Button
-                                            className="w-full h-12 text-lg font-medium bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20"
-                                            onClick={() => {
-                                                const details = `Student Counselling Session with Pixar Educational Consultancy.\n\nName: ${successView.data.name}\n\nKey Contacts:\nPhone: 015907326\nEmail: info@pixaredu.com\n\nLocation:\nPixar Educational Consultancy (Head Office)\nNew Baneshwor, Kathmandu`;
-                                                window.open(generateGoogleCalendarUrl(successView.date!, "Pixar Edu Counselling Session", details), '_blank');
-                                            }}
-                                        >
-                                            <CalendarPlus className="mr-2 h-5 w-5" />
-                                            Add to Google Calendar
-                                        </Button>
-                                    </>
-                                )}
+                            <div>
+                                <h3 className="font-semibold text-lg flex items-center text-foreground/90 mb-2">
+                                    <Clock className="h-5 w-5 mr-2 text-primary" /> Office Hours
+                                </h3>
+                                <ul className="space-y-2 ml-7 text-muted-foreground text-sm">
+                                    <li className="flex justify-between items-center bg-background/50 p-2 rounded-md"><span>Monday - Friday:</span> <span className="font-medium text-foreground">9:00 AM - 6:00 PM</span></li>
+                                    <li className="flex justify-between items-center p-2"><span>Saturday:</span> <span className="font-medium text-foreground">10:00 AM - 3:00 PM</span></li>
+                                    <li className="flex justify-between items-center p-2 text-destructive/80"><span>Sunday:</span> <span>Closed</span></li>
+                                </ul>
+                            </div>
+                        </CardContent>
+                    </Card>
 
-                                {/* 3. Phone Success Actions */}
-                                {successView.type === 'phone' && (
-                                    <div className="space-y-4">
-                                        <div className="p-4 bg-muted/50 rounded-lg border border-border text-center">
-                                            <p className="text-sm font-medium">Want a quicker response?</p>
-                                            <p className="text-sm text-muted-foreground">You can chat with us directly on WhatsApp while you wait.</p>
-                                        </div>
-                                        <Button
-                                            className="w-full h-12 text-base font-medium bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/20"
-                                            onClick={() => window.open("https://wa.me/+9779761859757", '_blank')}
-                                        >
-                                            <MessageSquare className="mr-2 h-5 w-5" />
-                                            Open WhatsApp Chat
-                                        </Button>
-                                    </div>
-                                )}
+                    {/* Map Embed (Placeholder visual) */}
+                    <div className="rounded-2xl overflow-hidden shadow-lg border border-white/20 h-64 relative group">
+                        {/* Normally an iframe would go here */}
+                        <div className="absolute inset-0 bg-secondary/30 flex items-center justify-center group-hover:bg-secondary/20 transition-all cursor-pointer">
+                            <div className="text-center p-6 bg-background/80 backdrop-blur-sm rounded-xl shadow-lg">
+                                <MapPin className="h-10 w-10 text-primary mx-auto mb-2 animate-bounce" />
+                                <p className="font-medium text-primary">View on Google Maps</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                                {/* 4. Prep Class Success Actions */}
-                                {successView.type === 'prep-class' && (
-                                    <div className="space-y-4">
-                                        <div className="p-4 bg-muted/50 rounded-lg border border-border text-left space-y-2">
-                                            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Next Steps</p>
-                                            <ul className="text-sm space-y-1 list-disc list-inside text-foreground/90">
-                                                <li>We will confirm your seat availability shortly.</li>
-                                                <li>You can take a free mock test at our office.</li>
-                                            </ul>
-                                        </div>
-                                        {successView.date && (
-                                            <Button
-                                                className="w-full h-11 text-base font-medium border-primary text-primary hover:bg-primary/5"
-                                                variant="outline"
-                                                onClick={() => {
-                                                    const details = `English Test Preparation Class (${successView.data.test}) at Pixar Edu.\n\nStart Date: ${format(successView.date!, 'PPP')}\n\nLocation:\nPixar Educational Consultancy\nNew Baneshwor, Kathmandu`;
-                                                    window.open(generateGoogleCalendarUrl(successView.date!, `${successView.data.test} Class Start - Pixar Edu`, details), '_blank');
-                                                }}
-                                            >
-                                                <CalendarPlus className="mr-2 h-4 w-4" />
-                                                Save Start Date
-                                            </Button>
-                                        )}
-                                        <Button
-                                            className="w-full h-12 text-base font-medium bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
-                                            onClick={() => window.open("/courses", "_self")} // Placeholder link
-                                        >
-                                            <BookCopy className="mr-2 h-5 w-5" />
-                                            Explore Course Modules
-                                        </Button>
-                                    </div>
-                                )}
+                {/* Contact Form Column */}
+                <div ref={formTabsRef} className={cn("transition-all duration-700 ease-out", isFormTabsVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")}>
+                    <Tabs defaultValue={searchParams?.get('service') === 'test_prep' ? 'prep-class' : 'general'} className="w-full">
+                        <TabsList className="grid w-full grid-cols-2 mb-6 h-14 bg-secondary/30 p-1.5 rounded-full backdrop-blur-sm">
+                            <TabsTrigger value="general" className="rounded-full text-base data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-primary transition-all">General Inquiry</TabsTrigger>
+                            <TabsTrigger value="prep-class" className="rounded-full text-base data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-primary transition-all">Book Prep Class</TabsTrigger>
+                        </TabsList>
 
-                            </CardContent>
-                            <CardFooter>
-                                <Button variant="ghost" onClick={() => { setSuccessView(null); generalContactForm.reset(); prepClassForm.reset(); }} className="text-muted-foreground hover:text-foreground">
-                                    <ArrowRight className="mr-2 h-4 w-4" /> Submit another response
-                                </Button>
-                            </CardFooter>
-                        </Card>
-                    ) : (
-                        // Standard Tabs View
-                        <Tabs defaultValue="counselling-form" className="w-full">
-                            <TabsList className="grid w-full grid-cols-2 mb-8 h-12 bg-muted/50 p-1 rounded-xl">
-                                <TabsTrigger value="counselling-form" className="rounded-lg text-sm font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm"><BookUser className="mr-2 h-4 w-4" />Counselling Form</TabsTrigger>
-                                <TabsTrigger value="prep-class-booking" className="rounded-lg text-sm font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm"><BookCopy className="mr-2 h-4 w-4" />Book Prep Class</TabsTrigger>
-                            </TabsList>
+                        <TabsContent value="general">
+                            <Card className="shadow-2xl bg-card/60 backdrop-blur-xl border-white/20 rounded-2xl overflow-hidden">
+                                <CardHeader className="text-center pb-2 bg-gradient-to-b from-primary/5 to-transparent">
+                                    <CardTitle className="text-2xl font-headline text-primary">Get in Touch</CardTitle>
+                                    <CardDescription className="text-base text-muted-foreground/80">
+                                        We'd love to hear from you. Fill out the form below.
+                                    </CardDescription>
+                                </CardHeader>
+                                <Form {...generalContactForm}>
+                                    <form onSubmit={generalContactForm.handleSubmit(onGeneralContactSubmit)}>
+                                        <CardContent className="p-6 md:p-8 space-y-5">
+                                            {/* Connection Type Radio Card Selection */}
+                                            <FormField
+                                                control={generalContactForm.control}
+                                                name="connectionType"
+                                                render={({ field }) => (
+                                                    <FormItem className="space-y-3">
+                                                        <FormLabel className="text-base font-semibold">How would you like to connect?</FormLabel>
+                                                        <FormControl>
+                                                            <RadioGroup
+                                                                onValueChange={field.onChange}
+                                                                defaultValue={field.value}
+                                                                className="grid grid-cols-2 gap-4"
+                                                            >
+                                                                <FormItem>
+                                                                    <FormControl>
+                                                                        <RadioGroupItem value="office" className="peer sr-only" />
+                                                                    </FormControl>
+                                                                    <FormLabel className="flex flex-col items-center justify-between rounded-xl border-2 border-muted bg-popover p-4 hover:bg-accent/5 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 [&:has([data-state=checked])]:border-primary cursor-pointer transition-all">
+                                                                        <Building className="mb-2 h-6 w-6 text-muted-foreground peer-data-[state=checked]:text-primary" />
+                                                                        <span className="font-medium">I am at the Office</span>
+                                                                    </FormLabel>
+                                                                </FormItem>
+                                                                <FormItem>
+                                                                    <FormControl>
+                                                                        <RadioGroupItem value="remote" className="peer sr-only" />
+                                                                    </FormControl>
+                                                                    <FormLabel className="flex flex-col items-center justify-between rounded-xl border-2 border-muted bg-popover p-4 hover:bg-accent/5 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 [&:has([data-state=checked])]:border-primary cursor-pointer transition-all">
+                                                                        <Wifi className="mb-2 h-6 w-6 text-muted-foreground peer-data-[state=checked]:text-primary" />
+                                                                        <span className="font-medium">I am Online / Remote</span>
+                                                                    </FormLabel>
+                                                                </FormItem>
+                                                            </RadioGroup>
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
 
-                            {/* General Inquiry Tab Content */}
-                            <TabsContent value="counselling-form">
-                                <Card className="shadow-2xl border-t-4 border-t-primary bg-card/50 backdrop-blur-sm">
-                                    <CardHeader className="pb-8 text-center bg-muted/20 text-card-foreground">
-                                        <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-                                            <BookUser className="h-6 w-6 text-primary" />
-                                        </div>
-                                        <CardTitle className="font-headline text-2xl text-primary">Student Counselling Form</CardTitle>
-                                        <CardDescription className="text-base max-w-md mx-auto">This is the first step to begin your study abroad journey. Fill this out to register with us for counselling.</CardDescription>
-                                    </CardHeader>
-                                    <Form {...generalContactForm}>
-                                        <form onSubmit={generalContactForm.handleSubmit(onGeneralContactSubmit)}>
-                                            <CardContent className="space-y-6 pt-6 text-card-foreground">
+                                            {/* Conditional Fields Animation */}
+                                            {/* Conditional Fields Animation */}
+                                            <AnimatePresence mode='wait'>
+                                                {generalContactForm.watch('connectionType') === 'office' && (
+                                                    // No additional fields for office visit as they are already there
+                                                    null
+                                                )}
+                                                {generalContactForm.watch('connectionType') === 'remote' && (
+                                                    <motion.div
+                                                        initial={{ opacity: 0, height: 0 }}
+                                                        animate={{ opacity: 1, height: 'auto' }}
+                                                        exit={{ opacity: 0, height: 0 }}
+                                                        className="overflow-hidden space-y-3 mb-4"
+                                                    >
+                                                        <FormField
+                                                            control={generalContactForm.control}
+                                                            name="followUpType"
+                                                            render={({ field }) => (
+                                                                <FormItem className="space-y-1">
+                                                                    <FormLabel>How would you like to proceed?</FormLabel>
+                                                                    <div className="flex gap-4">
+                                                                        <Button
+                                                                            type="button"
+                                                                            variant={field.value === 'visit' ? 'default' : 'outline'}
+                                                                            className={cn("flex-1", field.value === 'visit' ? 'bg-primary hover:bg-primary/90' : '')}
+                                                                            onClick={() => field.onChange('visit')}
+                                                                        >
+                                                                            <CalendarPlus className="mr-2 h-4 w-4" /> Schedule Office Visit
+                                                                        </Button>
+                                                                        <Button
+                                                                            type="button"
+                                                                            variant={field.value === 'phone' ? 'default' : 'outline'}
+                                                                            className={cn("flex-1", field.value === 'phone' ? 'bg-primary hover:bg-primary/90' : '')}
+                                                                            onClick={() => field.onChange('phone')}
+                                                                        >
+                                                                            <PhoneCall className="mr-2 h-4 w-4" /> Request Phone Call
+                                                                        </Button>
+                                                                    </div>
+                                                                    <FormMessage />
+                                                                </FormItem>
+                                                            )}
+                                                        />
+
+                                                        <AnimatePresence>
+                                                            {generalContactForm.watch('followUpType') === 'visit' && (
+                                                                <motion.div
+                                                                    initial={{ opacity: 0, height: 0 }}
+                                                                    animate={{ opacity: 1, height: 'auto' }}
+                                                                    exit={{ opacity: 0, height: 0 }}
+                                                                    className="overflow-hidden mt-3"
+                                                                >
+                                                                    <FormField
+                                                                        control={generalContactForm.control}
+                                                                        name="appointmentDate"
+                                                                        render={({ field }) => (
+                                                                            <FormItem className="flex flex-col mb-4">
+                                                                                <FormLabel>Preferred Visit Date</FormLabel>
+                                                                                <Popover>
+                                                                                    <PopoverTrigger asChild>
+                                                                                        <FormControl>
+                                                                                            <Button
+                                                                                                variant={"outline"}
+                                                                                                className={cn(
+                                                                                                    "w-full pl-3 text-left font-normal h-11 bg-background/50 hover:bg-background/80 transition-colors border-input",
+                                                                                                    !field.value && "text-muted-foreground"
+                                                                                                )}
+                                                                                            >
+                                                                                                {field.value && isValid(field.value) ? (
+                                                                                                    format(field.value, "PPP")
+                                                                                                ) : (
+                                                                                                    <span>Pick a date</span>
+                                                                                                )}
+                                                                                                <CalendarIconLucide className="ml-auto h-4 w-4 opacity-50" />
+                                                                                            </Button>
+                                                                                        </FormControl>
+                                                                                    </PopoverTrigger>
+                                                                                    <PopoverContent className="w-auto p-0" align="start">
+                                                                                        <Calendar
+                                                                                            mode="single"
+                                                                                            selected={field.value || undefined}
+                                                                                            onSelect={field.onChange}
+                                                                                            disabled={(date) =>
+                                                                                                date < new Date() || date < new Date("1900-01-01")
+                                                                                            }
+                                                                                            initialFocus
+                                                                                        />
+                                                                                    </PopoverContent>
+                                                                                </Popover>
+                                                                                <FormMessage />
+                                                                            </FormItem>
+                                                                        )}
+                                                                    />
+                                                                </motion.div>
+                                                            )}
+                                                        </AnimatePresence>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+
+                                            <div className="grid md:grid-cols-2 gap-5">
                                                 <FormField
                                                     control={generalContactForm.control}
-                                                    name="connectionType"
+                                                    name="name"
                                                     render={({ field }) => (
-                                                        <FormItem className="space-y-3">
-                                                            <FormLabel className="text-base font-semibold text-primary/90">How are you connecting with us today?</FormLabel>
+                                                        <FormItem>
+                                                            <FormLabel>Full Name</FormLabel>
                                                             <FormControl>
-                                                                <RadioGroup
-                                                                    onValueChange={field.onChange}
-                                                                    defaultValue={field.value}
-                                                                    className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-                                                                >
-                                                                    <FormItem className="space-y-0">
-                                                                        <FormControl>
-                                                                            <RadioGroupItem value="office" className="peer sr-only" />
-                                                                        </FormControl>
-                                                                        <FormLabel className="flex flex-col items-center justify-center rounded-xl border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer transition-all">
-                                                                            <Building className="mb-2 h-6 w-6 text-foreground/70 peer-data-[state=checked]:text-primary" />
-                                                                            <span className="font-semibold text-sm">At Pixar Edu Office</span>
-                                                                        </FormLabel>
-                                                                    </FormItem>
-                                                                    <FormItem className="space-y-0">
-                                                                        <FormControl>
-                                                                            <RadioGroupItem value="remote" className="peer sr-only" />
-                                                                        </FormControl>
-                                                                        <FormLabel className="flex flex-col items-center justify-center rounded-xl border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer transition-all">
-                                                                            <Home className="mb-2 h-6 w-6 text-foreground/70 peer-data-[state=checked]:text-primary" />
-                                                                            <span className="font-semibold text-sm">From Home / Remote</span>
-                                                                        </FormLabel>
-                                                                    </FormItem>
-                                                                </RadioGroup>
+                                                                <Input placeholder="John Doe" {...field} className="h-11 bg-background/50 focus:bg-background transition-colors" />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
                                                     )}
                                                 />
-                                                <AnimatePresence>
-                                                    {connectionType === 'remote' && (
-                                                        <motion.div
-                                                            initial={{ opacity: 0, height: 0 }}
-                                                            animate={{ opacity: 1, height: 'auto' }}
-                                                            exit={{ opacity: 0, height: 0 }}
-                                                            transition={{ duration: 0.3 }}
-                                                            className="space-y-4 pt-2"
-                                                        >
-                                                            <FormField
-                                                                control={generalContactForm.control}
-                                                                name="followUpType"
-                                                                render={({ field }) => (
-                                                                    <FormItem className="space-y-3 p-5 rounded-xl border border-primary/20 bg-primary/5">
-                                                                        <FormLabel className="text-base font-semibold text-primary/90">How would you like us to follow up?</FormLabel>
-                                                                        <FormControl>
-                                                                            <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                                                                <FormItem className="space-y-0">
-                                                                                    <FormControl><RadioGroupItem value="visit" className="peer sr-only" /></FormControl>
-                                                                                    <FormLabel className="flex items-center gap-3 rounded-lg border border-transparent bg-background/50 p-3 hover:bg-background peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-background peer-data-[state=checked]:shadow-sm cursor-pointer transition-all">
-                                                                                        <div className="p-2 rounded-full bg-primary/10 text-primary"><CalendarPlus className="h-4 w-4" /></div>
-                                                                                        <span className="font-medium">Schedule Visit</span>
-                                                                                    </FormLabel>
-                                                                                </FormItem>
-                                                                                <FormItem className="space-y-0">
-                                                                                    <FormControl><RadioGroupItem value="phone" className="peer sr-only" /></FormControl>
-                                                                                    <FormLabel className="flex items-center gap-3 rounded-lg border border-transparent bg-background/50 p-3 hover:bg-background peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-background peer-data-[state=checked]:shadow-sm cursor-pointer transition-all">
-                                                                                        <div className="p-2 rounded-full bg-primary/10 text-primary"><PhoneCall className="h-4 w-4" /></div>
-                                                                                        <span className="font-medium">Phone Call</span>
-                                                                                    </FormLabel>
-                                                                                </FormItem>
-                                                                            </RadioGroup>
-                                                                        </FormControl>
-                                                                        <FormMessage />
-                                                                    </FormItem>
-                                                                )}
-                                                            />
-                                                            {followUpType === 'visit' && (
-                                                                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-                                                                    <FormField control={generalContactForm.control} name="appointmentDate" render={({ field }) => (
-                                                                        <FormItem className="flex flex-col"><FormLabel>Preferred Visit Date</FormLabel>
-                                                                            <Popover><PopoverTrigger asChild><FormControl>
-                                                                                <Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal h-12", !field.value && "text-muted-foreground")}>
-                                                                                    {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                                                                    <CalendarIconLucide className="ml-auto h-5 w-5 opacity-50" />
-                                                                                </Button>
-                                                                            </FormControl></PopoverTrigger>
-                                                                                <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))} initialFocus /></PopoverContent>
-                                                                            </Popover><FormMessage />
-                                                                        </FormItem>
-                                                                    )} />
-                                                                </motion.div>
-                                                            )}
-                                                        </motion.div>
+                                                <FormField
+                                                    control={generalContactForm.control}
+                                                    name="email"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Email Address</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder="john@example.com" {...field} className="h-11 bg-background/50 focus:bg-background transition-colors" />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
                                                     )}
-                                                </AnimatePresence>
+                                                />
+                                            </div>
 
-                                                <div className="space-y-4">
-                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                                        <FormField control={generalContactForm.control} name="name" render={({ field }) => (
-                                                            <FormItem><FormLabel className="flex items-center text-foreground/80">Full Name</FormLabel><FormControl><Input className="h-12 bg-muted/20" placeholder="e.g., Jane Doe" {...field} /></FormControl><FormMessage /></FormItem>
-                                                        )} />
-                                                        <FormField control={generalContactForm.control} name="email" render={({ field }) => (
-                                                            <FormItem><FormLabel className="flex items-center text-foreground/80">Email Address</FormLabel><FormControl><Input className="h-12 bg-muted/20" type="email" placeholder="you@example.com" {...field} /></FormControl><FormMessage /></FormItem>
-                                                        )} />
-                                                    </div>
-                                                    <FormField control={generalContactForm.control} name="phoneNumber" render={({ field }) => (
-                                                        <FormItem><FormLabel className="flex items-center text-foreground/80">Phone Number</FormLabel><FormControl><Input className="h-12 bg-muted/20" type="tel" placeholder="+977 98XXXXXXXX" {...field} /></FormControl><FormMessage /></FormItem>
-                                                    )} />
-                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                                        <FormField control={generalContactForm.control} name="lastCompletedEducation" render={({ field }) => (
-                                                            <FormItem><FormLabel className="flex items-center text-foreground/80">Recently Completed Education</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger className="h-12 bg-muted/20"><SelectValue placeholder="Select level" /></SelectTrigger></FormControl><SelectContent>{allEducationLevels.map(level => (<SelectItem key={level.value} value={level.value}>{level.name}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem>
-                                                        )} />
-                                                        <FormField control={generalContactForm.control} name="englishProficiencyTest" render={({ field }) => (
-                                                            <FormItem><FormLabel className="flex items-center text-foreground/80">English Proficiency Test</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger className="h-12 bg-muted/20"><SelectValue placeholder="Select status" /></SelectTrigger></FormControl><SelectContent>{englishTestOptions.map(option => (<SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem>
-                                                        )} />
-                                                    </div>
-                                                    <FormField control={generalContactForm.control} name="preferredStudyDestination" render={({ field }) => (
-                                                        <FormItem><FormLabel className="flex items-center text-foreground/80">Preferred Study Destination</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger className="h-12 bg-muted/20"><SelectValue placeholder="Select destination" /></SelectTrigger></FormControl><SelectContent>{studyDestinationOptions.map(option => (<SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem>
-                                                    )} />
-                                                    <FormField control={generalContactForm.control} name="additionalNotes" render={({ field }) => (
-                                                        <FormItem><FormLabel className="flex items-center text-foreground/80">Additional Notes (Optional)</FormLabel><FormControl><Textarea className="bg-muted/20 min-h-[100px]" placeholder="Any other details or specific questions..." rows={3} {...field} /></FormControl><FormMessage /></FormItem>
-                                                    )} />
-                                                </div>
-                                            </CardContent>
-                                            <CardFooter className="pt-6 pb-8">
-                                                <Button type="submit" disabled={isGeneralSubmitting} className="w-full h-12 text-lg font-medium shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">
-                                                    {isGeneralSubmitting ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Send className="mr-2 h-5 w-5" />}
-                                                    Submit for Counselling
-                                                </Button>
-                                            </CardFooter>
-                                        </form>
-                                    </Form>
-                                </Card>
-                            </TabsContent>
+                                            <div className="grid md:grid-cols-2 gap-5">
+                                                <FormField
+                                                    control={generalContactForm.control}
+                                                    name="phoneNumber"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Phone Number</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder="+977 9800000000" {...field} className="h-11 bg-background/50 focus:bg-background transition-colors" />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={generalContactForm.control}
+                                                    name="preferredStudyDestination"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Preferred Destination</FormLabel>
+                                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                                <FormControl>
+                                                                    <SelectTrigger className="h-11 bg-background/50 focus:bg-background transition-colors">
+                                                                        <SelectValue placeholder="Select country" />
+                                                                    </SelectTrigger>
+                                                                </FormControl>
+                                                                <SelectContent>
+                                                                    {studyDestinationOptions.map(option => (
+                                                                        <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                                                                    ))}
+                                                                </SelectContent>
+                                                            </Select>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
 
-                            {/* Preparation Class Booking Tab Content */}
-                            <TabsContent value="prep-class-booking">
-                                <Card className="shadow-2xl border-t-4 border-t-accent bg-card/50 backdrop-blur-sm">
-                                    <CardHeader className="pb-8 text-center bg-muted/20 text-card-foreground">
-                                        <div className="mx-auto w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mb-4">
-                                            <BookCopy className="h-6 w-6 text-accent" />
-                                        </div>
-                                        <CardTitle className="font-headline text-2xl text-accent-foreground">Book a Preparation Class</CardTitle>
-                                        <CardDescription className="text-base max-w-md mx-auto">Interested in our English test preparation classes? Fill this form.</CardDescription>
-                                    </CardHeader>
+                                            <div className="grid md:grid-cols-2 gap-5">
+                                                <FormField
+                                                    control={generalContactForm.control}
+                                                    name="lastCompletedEducation"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Education Level</FormLabel>
+                                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                                <FormControl>
+                                                                    <SelectTrigger className="h-11 bg-background/50 focus:bg-background transition-colors">
+                                                                        <SelectValue placeholder="Select level" />
+                                                                    </SelectTrigger>
+                                                                </FormControl>
+                                                                <SelectContent>
+                                                                    {allEducationLevels.map(level => (
+                                                                        <SelectItem key={level.value} value={level.value}>{level.name}</SelectItem>
+                                                                    ))}
+                                                                </SelectContent>
+                                                            </Select>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={generalContactForm.control}
+                                                    name="englishProficiencyTest"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>English Test</FormLabel>
+                                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                                <FormControl>
+                                                                    <SelectTrigger className="h-11 bg-background/50 focus:bg-background transition-colors">
+                                                                        <SelectValue placeholder="Select test" />
+                                                                    </SelectTrigger>
+                                                                </FormControl>
+                                                                <SelectContent>
+                                                                    {englishTestOptions.map(option => (
+                                                                        <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                                                                    ))}
+                                                                </SelectContent>
+                                                            </Select>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
+
+                                            <FormField
+                                                control={generalContactForm.control}
+                                                name="additionalNotes"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Additional Notes (Optional)</FormLabel>
+                                                        <FormControl>
+                                                            <Textarea placeholder="Tell us more about your study plans..." className="min-h-[100px] bg-background/50 focus:bg-background transition-colors resize-none" {...field} />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </CardContent>
+                                        <CardFooter className="pt-6 pb-8">
+                                            <Button type="submit" disabled={isGeneralSubmitting} className="w-full h-12 text-lg font-medium shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                                                {isGeneralSubmitting ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Send className="mr-2 h-5 w-5" />}
+                                                Submit for Counselling
+                                            </Button>
+                                        </CardFooter>
+                                    </form>
+                                </Form>
+                            </Card>
+                        </TabsContent>
+
+                        {/* Preparation Class Booking Tab Content */}
+                        <TabsContent value="prep-class">
+                            <Card className="shadow-2xl bg-card/60 backdrop-blur-xl border-white/20 rounded-2xl overflow-hidden">
+                                <CardHeader className="text-center pb-2 bg-gradient-to-b from-accent/5 to-transparent">
+                                    <CardTitle className="text-2xl font-headline text-accent font-bold">Book Preparation Class</CardTitle>
+                                    <CardDescription className="text-base text-muted-foreground/80">
+                                        Secure your spot for IELTS, PTE, or TOEFL classes.
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent className="p-6 md:p-8">
                                     <Form {...prepClassForm}>
-                                        <form onSubmit={prepClassForm.handleSubmit(onPrepClassSubmit)}>
-                                            <CardContent className="space-y-5 pt-6 text-card-foreground">
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                                    <FormField control={prepClassForm.control} name="name" render={({ field }) => (
-                                                        <FormItem><FormLabel className="flex items-center text-foreground/80">Full Name</FormLabel><FormControl><Input className="h-12 bg-muted/20" placeholder="e.g., Alex Rider" {...field} /></FormControl><FormMessage /></FormItem>
-                                                    )} />
-                                                    <FormField control={prepClassForm.control} name="email" render={({ field }) => (
-                                                        <FormItem><FormLabel className="flex items-center text-foreground/80">Email Address</FormLabel><FormControl><Input className="h-12 bg-muted/20" type="email" placeholder="alex@example.com" {...field} /></FormControl><FormMessage /></FormItem>
-                                                    )} />
-                                                </div>
-                                                <FormField control={prepClassForm.control} name="phoneNumber" render={({ field }) => (
-                                                    <FormItem><FormLabel className="flex items-center text-foreground/80">Phone Number</FormLabel><FormControl><Input className="h-12 bg-muted/20" type="tel" placeholder="+977 98XXXXXXXX" {...field} /></FormControl><FormMessage /></FormItem>
-                                                )} />
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                                    <FormField control={prepClassForm.control} name="preferredTest" render={({ field }) => (
-                                                        <FormItem><FormLabel className="flex items-center text-foreground/80">Preferred Test</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger className="h-12 bg-muted/20"><SelectValue placeholder="Select a test" /></SelectTrigger></FormControl><SelectContent>{testPreparationOptions.map(option => (<SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem>
-                                                    )} />
-                                                    <FormField control={prepClassForm.control} name="preferredStartDate" render={({ field }) => (
+                                        <form onSubmit={prepClassForm.handleSubmit(onPrepClassSubmit)} className="space-y-5">
+                                            <FormField
+                                                control={prepClassForm.control}
+                                                name="preferredTest"
+                                                render={({ field }) => (
+                                                    <FormItem className="mb-6">
+                                                        <FormLabel className="text-base font-semibold mb-3 block">Select Preparation Course</FormLabel>
+                                                        <FormControl>
+                                                            <RadioGroup
+                                                                onValueChange={field.onChange}
+                                                                defaultValue={field.value}
+                                                                className="grid grid-cols-2 md:grid-cols-4 gap-4"
+                                                            >
+                                                                {testPreparationOptions.map((option) => (
+                                                                    <FormItem key={option.value}>
+                                                                        <FormControl>
+                                                                            <RadioGroupItem value={option.value} className="peer sr-only" />
+                                                                        </FormControl>
+                                                                        <FormLabel className="flex flex-col items-center justify-center rounded-xl border-2 border-muted bg-popover p-4 hover:bg-accent/5 hover:text-accent-foreground peer-data-[state=checked]:border-accent peer-data-[state=checked]:bg-accent/5 [&:has([data-state=checked])]:border-accent cursor-pointer transition-all h-24 text-center">
+                                                                            <BookCopy className="mb-2 h-6 w-6 text-muted-foreground peer-data-[state=checked]:text-accent" />
+                                                                            <span className="font-bold">{option.label}</span>
+                                                                        </FormLabel>
+                                                                    </FormItem>
+                                                                ))}
+                                                            </RadioGroup>
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+
+                                            <div className="grid md:grid-cols-2 gap-5">
+                                                <FormField
+                                                    control={prepClassForm.control}
+                                                    name="name"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Full Name</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder="Jane Doe" {...field} className="h-11 bg-background/50 focus:bg-background transition-colors" />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={prepClassForm.control}
+                                                    name="phoneNumber"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Phone Number</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder="+977 98XXXXXXXX" {...field} className="h-11 bg-background/50 focus:bg-background transition-colors" />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
+
+                                            <div className="grid md:grid-cols-2 gap-5">
+                                                <FormField
+                                                    control={prepClassForm.control}
+                                                    name="email"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Email Address</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder="jane@example.com" {...field} className="h-11 bg-background/50 focus:bg-background transition-colors" />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={prepClassForm.control}
+                                                    name="preferredStartDate"
+                                                    render={({ field }) => (
                                                         <FormItem className="flex flex-col">
-                                                            <FormLabel className="flex items-center text-foreground/80">Preferred Start Date (Optional)</FormLabel>
+                                                            <FormLabel>Preferred Start Date</FormLabel>
                                                             <Popover>
                                                                 <PopoverTrigger asChild>
                                                                     <FormControl>
-                                                                        <Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal h-12 bg-muted/20 border-input", !field.value && "text-muted-foreground")}>
-                                                                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                                                            <CalendarIconLucide className="ml-auto h-5 w-5 opacity-50" />
+                                                                        <Button
+                                                                            variant={"outline"}
+                                                                            className={cn(
+                                                                                "w-full pl-3 text-left font-normal h-11 bg-background/50 hover:bg-background/80 transition-colors border-input",
+                                                                                !field.value && "text-muted-foreground"
+                                                                            )}
+                                                                        >
+                                                                            {field.value && isValid(field.value) ? (
+                                                                                format(field.value, "PPP")
+                                                                            ) : (
+                                                                                <span>Pick a date</span>
+                                                                            )}
+                                                                            <CalendarIconLucide className="ml-auto h-4 w-4 opacity-50" />
                                                                         </Button>
                                                                     </FormControl>
                                                                 </PopoverTrigger>
                                                                 <PopoverContent className="w-auto p-0" align="start">
-                                                                    {isClient && (
-                                                                        <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))} initialFocus />
-                                                                    )}
+                                                                    <Calendar
+                                                                        mode="single"
+                                                                        selected={field.value}
+                                                                        onSelect={field.onChange}
+                                                                        disabled={(date) =>
+                                                                            date < new Date() || date < new Date("1900-01-01")
+                                                                        }
+                                                                        initialFocus
+                                                                    />
                                                                 </PopoverContent>
                                                             </Popover>
                                                             <FormMessage />
                                                         </FormItem>
-                                                    )} />
-                                                </div>
-                                                <FormField control={prepClassForm.control} name="additionalNotes" render={({ field }) => (
-                                                    <FormItem><FormLabel className="flex items-center text-foreground/80">Additional Notes (Optional)</FormLabel><FormControl><Textarea className="bg-muted/20 min-h-[100px]" placeholder="Any specific requirements or questions about the class..." rows={3} {...field} /></FormControl><FormMessage /></FormItem>
-                                                )} />
-                                            </CardContent>
-                                            <CardFooter className="pt-6 pb-8">
-                                                <Button type="submit" disabled={isPrepClassSubmitting} className="w-full h-12 text-lg font-medium shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all bg-accent hover:bg-accent/90 text-accent-foreground">
-                                                    {isPrepClassSubmitting ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Users className="mr-2 h-5 w-5" />}
-                                                    Request Class Booking
-                                                </Button>
-                                            </CardFooter>
+                                                    )}
+                                                />
+                                            </div>
+
+                                            <FormField
+                                                control={prepClassForm.control}
+                                                name="additionalNotes"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Specific Requirements / Questions</FormLabel>
+                                                        <FormControl>
+                                                            <Textarea placeholder="I'm aiming for a score of 8.0..." className="min-h-[100px] bg-background/50 focus:bg-background transition-colors resize-none" {...field} />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+
+                                            <Button type="submit" className="w-full h-12 text-lg font-medium shadow-lg hover:shadow-xl transition-all bg-accent hover:bg-accent/90 text-accent-foreground" size="lg" disabled={isPrepClassSubmitting}>
+                                                {isPrepClassSubmitting ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <BookUser className="mr-2 h-5 w-5" />}
+                                                Book Preparation Class
+                                            </Button>
                                         </form>
                                     </Form>
-                                </Card>
-                            </TabsContent>
-                        </Tabs>
-                    )}
-                </div>
-
-                {/* Contact Information & Map Section */}
-                <div ref={infoSectionRef} className={cn("space-y-8 transition-all duration-700 ease-out", isInfoSectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")} style={{ transitionDelay: '100ms' }}>
-                    <Card className="shadow-xl bg-card border-l-4 border-l-primary/50">
-                        <CardHeader>
-                            <CardTitle className="font-headline text-primary text-xl">Our Contact Offices</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-8">
-                            {officeLocations.map((office, index) => (
-                                <div key={office.name} className="relative pl-4 border-l-2 border-muted hover:border-accent transition-colors">
-                                    <h3 className="text-lg font-bold text-foreground mb-3">{office.name}</h3>
-                                    <div className="space-y-3 text-sm text-muted-foreground">
-                                        <div className="flex items-start space-x-3 group">
-                                            <div className="mt-0.5 p-1.5 bg-primary/10 rounded-md text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors"><MapPin className="h-4 w-4" /></div>
-                                            <p className="leading-tight">{office.address}</p>
-                                        </div>
-                                        <div className="flex items-start space-x-3 group">
-                                            <div className="mt-0.5 p-1.5 bg-primary/10 rounded-md text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors"><Mail className="h-4 w-4" /></div>
-                                            <a href={`mailto:${office.email}`} className="hover:text-accent transition-colors leading-tight">{office.email}</a>
-                                        </div>
-                                        <div className="flex items-start space-x-3 group">
-                                            <div className="mt-0.5 p-1.5 bg-primary/10 rounded-md text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors"><Phone className="h-4 w-4" /></div>
-                                            <div className="leading-tight">
-                                                {office.phone.includes(' / ') ? (
-                                                    office.phone.split(' / ').map((num, i, arr) => (
-                                                        <span key={i}>
-                                                            <a href={`tel:${num.replace(/[^0-9+]/g, '')}`} className="hover:text-accent transition-colors">
-                                                                {num.trim()}
-                                                            </a>
-                                                            {i < arr.length - 1 && <span className="mx-1">/</span>}
-                                                        </span>
-                                                    ))
-                                                ) : (
-                                                    <a href={`tel:${office.phone.replace(/[^0-9+]/g, '')}`} className="hover:text-accent transition-colors">
-                                                        {office.phone}
-                                                    </a>
-                                                )}
-                                            </div>
-                                        </div>
-                                        {office.whatsappLink && (
-                                            <div className="flex items-start space-x-3 group">
-                                                <div className="mt-0.5 p-1.5 bg-green-100 rounded-md text-green-600 group-hover:bg-green-600 group-hover:text-white transition-colors"><MessageSquare className="h-4 w-4" /></div>
-                                                <a href={office.whatsappLink} target="_blank" rel="noopener noreferrer" className="hover:text-green-600 transition-colors leading-tight font-medium">Chat on WhatsApp</a>
-                                            </div>
-                                        )}
-                                        {office.mapLink && !office.mapEmbedUrl && (
-                                            <div className="flex items-start space-x-3 group">
-                                                <div className="mt-0.5 p-1.5 bg-primary/10 rounded-md text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors"><ExternalLink className="h-4 w-4" /></div>
-                                                <a href={office.mapLink} target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors leading-tight">View Location Map</a>
-                                            </div>
-                                        )}
-                                    </div>
-                                    {index < officeLocations.length - 1 && <Separator className="my-6 opacity-50" />}
-                                </div>
-                            ))}
-
-                            {/* Main Map Embed (e.g., Head Office) */}
-                            {officeLocations.find(loc => loc.mapEmbedUrl) && (
-                                <div className="mt-6 pt-6 border-t border-border">
-                                    <h3 className="text-lg font-semibold text-primary mb-3">Visit Head Office</h3>
-                                    <div className="rounded-xl overflow-hidden shadow-sm border border-border">
-                                        <iframe
-                                            src={officeLocations.find(loc => loc.mapEmbedUrl)!.mapEmbedUrl}
-                                            width="100%"
-                                            height="350"
-                                            style={{ border: 0 }}
-                                            allowFullScreen
-                                            loading="lazy"
-                                            referrerPolicy="no-referrer-when-downgrade"
-                                        ></iframe>
-                                    </div>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
+                                </CardContent>
+                            </Card>
+                        </TabsContent>
+                    </Tabs>
                 </div>
             </div>
         </div>

@@ -118,7 +118,7 @@ export default function DashboardPage() {
       if (!data) return [];
       return Object.entries(data)
         .map(([name, value]) => ({ [nameKey]: name, [valueKey]: value }))
-        .sort((a, b) => b[valueKey] - a[valueKey]);
+        .sort((a, b) => (b[valueKey] as number) - (a[valueKey] as number));
     };
 
     return {

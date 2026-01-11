@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Share2 } from 'lucide-react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { cn } from '@/lib/utils';
-import { socialPlatforms } from '@/lib/data.tsx';
+import { socialPlatforms } from '@/lib/data';
 
 export default function ConnectPage() {
   const [titleRef, isTitleVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true });
@@ -35,21 +35,21 @@ export default function ConnectPage() {
                 {socialPlatforms.map((platform, index) => {
                   const [itemRef, itemVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.2 });
                   return (
-                  <div key={platform.name} ref={itemRef} className={cn("transition-all duration-500 ease-out", itemVisible ? "opacity-100 scale-100" : "opacity-0 scale-90")} style={{transitionDelay: `${index * 100}ms`}}>
-                    <a
-                      href={platform.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={cn(
-                        "group flex flex-col items-center justify-center p-6 bg-background/70 dark:bg-secondary/30 rounded-lg shadow-md hover:shadow-xl transition-all transform hover:-translate-y-1 border border-transparent hover:border-primary/30",
-                        platform.colorClass
-                      )}
-                    >
-                      <platform.icon className="h-12 w-12 mb-3 text-primary transition-colors duration-300 group-hover:opacity-80" />
-                      <span className="text-lg font-semibold text-foreground transition-colors duration-300">{platform.name}</span>
-                       <p className="text-xs text-muted-foreground mt-1 text-center">Follow us on {platform.name}</p>
-                    </a>
-                  </div>
+                    <div key={platform.name} ref={itemRef} className={cn("transition-all duration-500 ease-out", itemVisible ? "opacity-100 scale-100" : "opacity-0 scale-90")} style={{ transitionDelay: `${index * 100}ms` }}>
+                      <a
+                        href={platform.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={cn(
+                          "group flex flex-col items-center justify-center p-6 bg-background/70 dark:bg-secondary/30 rounded-lg shadow-md hover:shadow-xl transition-all transform hover:-translate-y-1 border border-transparent hover:border-primary/30",
+                          platform.colorClass
+                        )}
+                      >
+                        <platform.icon className="h-12 w-12 mb-3 text-primary transition-colors duration-300 group-hover:opacity-80" />
+                        <span className="text-lg font-semibold text-foreground transition-colors duration-300">{platform.name}</span>
+                        <p className="text-xs text-muted-foreground mt-1 text-center">Follow us on {platform.name}</p>
+                      </a>
+                    </div>
                   );
                 })}
               </div>

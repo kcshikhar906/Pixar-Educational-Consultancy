@@ -9,8 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { countryData } from '@/lib/data.tsx';
-import type { CountryInfo, University } from '@/lib/data.tsx';
+import { countryData } from '@/lib/data';
+import type { CountryInfo, University } from '@/lib/data';
 import { cn } from '@/lib/utils';
 import { ExternalLink, DollarSign, Clock, FileSpreadsheet, UserCheck, KeyRound, GitCompareArrows, TrendingUp } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -19,7 +19,7 @@ import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 export default function CountryGuidesPage() {
   const [titleRef, isTitleSectionVisible] = useScrollAnimation<HTMLElement>({ triggerOnExit: true, threshold: 0.1, once: true });
   const [tabsRef, isTabsContainerVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnExit: true, threshold: 0.05 });
-  
+
   const defaultCountrySlug = countryData.length > 0 ? countryData[0].slug : 'compare';
   const [activeTab, setActiveTab] = useState<string>(defaultCountrySlug);
 
@@ -53,7 +53,7 @@ export default function CountryGuidesPage() {
       </div>
     </div>
   );
-  
+
   const KeyInfoItem = ({ icon: Icon, label, value }: { icon: React.ElementType, label: string, value: string | React.ReactNode | undefined }) => (
     <div className="flex items-start space-x-3 p-3 bg-secondary/30 rounded-md">
       <Icon className="h-6 w-6 text-accent mt-1 flex-shrink-0" />
@@ -191,9 +191,9 @@ export default function CountryGuidesPage() {
                 <h3 className="text-xl md:text-2xl font-headline font-semibold text-primary mb-4">Ready to Explore {countryInfo.name}?</h3>
                 <p className="text-foreground/80 mb-6 max-w-xl mx-auto">Find out more about your study options and get personalized advice.</p>
                 <Link href="/contact">
-                    <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                        Speak to an Advisor
-                    </Button>
+                  <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
+                    Speak to an Advisor
+                  </Button>
                 </Link>
               </section>
             </TabsContent>
@@ -259,17 +259,17 @@ export default function CountryGuidesPage() {
                       <ComparisonDetailItem icon={TrendingUp} label="Visa Approval Trends" value={country.visaApprovalTrends} />
                       <ComparisonDetailItem icon={DollarSign} label="Avg. Salary After Study" value={country.averageSalaryAfterStudy} />
                       <ComparisonDetailItem icon={KeyRound} label="PR Pathways" value={country.prPathways} />
-                       <div className="pt-2">
+                      <div className="pt-2">
                         <h5 className="font-semibold text-sm text-primary mb-1">Key Facts:</h5>
                         <ul className="list-disc list-inside pl-2 space-y-1 text-left">
                           {country.facts.slice(0, 3).map(fact => (
-                             <li key={fact.label} className="text-xs text-foreground/80">
-                               <span className="font-medium">{fact.label}:</span> {fact.value}
-                             </li>
+                            <li key={fact.label} className="text-xs text-foreground/80">
+                              <span className="font-medium">{fact.label}:</span> {fact.value}
+                            </li>
                           ))}
                         </ul>
                       </div>
-                       <div className="pt-2">
+                      <div className="pt-2">
                         <h5 className="font-semibold text-sm text-primary mb-1">Top Universities (Examples):</h5>
                         <ul className="list-disc list-inside pl-2 space-y-1 text-left">
                           {country.topUniversities.slice(0, 2).map(uni => (
@@ -282,22 +282,22 @@ export default function CountryGuidesPage() {
                 ))}
               </div>
             ) : selectedCountry1Slug && selectedCountry2Slug && selectedCountry1Slug === selectedCountry2Slug ? (
-                 <p className="text-center text-destructive py-10">Please select two different countries to compare.</p>
+              <p className="text-center text-destructive py-10">Please select two different countries to compare.</p>
             ) : (
-                 <div className="text-center py-10 text-foreground/60">
-                    <GitCompareArrows className="mx-auto h-12 w-12 mb-4" />
-                    <p>Please select two countries from the dropdowns above to see their comparison.</p>
-                </div>
+              <div className="text-center py-10 text-foreground/60">
+                <GitCompareArrows className="mx-auto h-12 w-12 mb-4" />
+                <p>Please select two countries from the dropdowns above to see their comparison.</p>
+              </div>
             )}
-             <section className="text-center pt-6">
-                <h3 className="text-xl md:text-2xl font-headline font-semibold text-primary mb-4">Need More Details?</h3>
-                <p className="text-foreground/80 mb-6 max-w-xl mx-auto">Our advisors can provide in-depth comparisons and personalized guidance.</p>
-                <Link href="/contact">
-                    <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                        Speak to an Advisor
-                    </Button>
-                </Link>
-              </section>
+            <section className="text-center pt-6">
+              <h3 className="text-xl md:text-2xl font-headline font-semibold text-primary mb-4">Need More Details?</h3>
+              <p className="text-foreground/80 mb-6 max-w-xl mx-auto">Our advisors can provide in-depth comparisons and personalized guidance.</p>
+              <Link href="/contact">
+                <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
+                  Speak to an Advisor
+                </Button>
+              </Link>
+            </section>
           </TabsContent>
         </Tabs>
       </div>
