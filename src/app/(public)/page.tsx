@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import SectionTitle from '@/components/ui/section-title';
 import { ArrowRight, CheckCircle, Star, Loader2, Sparkles, MapPin, BookOpen, University as UniversityIconLucide, Info as InfoIcon, Search, ExternalLink, Wand2, Briefcase, DollarSign, ClipboardCheck, CalendarDays, Award as AwardIconFromData, Clock, ChevronLeft, ChevronRight, GraduationCap, Building2, Globe, FileText, Users, Award } from 'lucide-react';
-import { testimonials, services, fieldsOfStudy, gpaScaleOptions, educationLevelOptions, upcomingIntakeData } from '@/lib/data.tsx';
+import { testimonials, services, fieldsOfStudy, gpaScaleOptions, educationLevelOptions, upcomingIntakeData } from '@/lib/data';
 import type { Testimonial, Service, IntakeInfo } from '@/lib/data.tsx';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
