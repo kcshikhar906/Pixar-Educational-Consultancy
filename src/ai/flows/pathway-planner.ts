@@ -54,7 +54,7 @@ export async function pathwayPlanner(input: PathwayPlannerInput): Promise<Pathwa
 
 const pathwayPlannerPrompt = ai.definePrompt({
   name: 'pathwayPlannerPrompt',
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: 'googleai/gemini-1.5-flash-001',
   input: {schema: PathwayPlannerInputSchema},
   output: {schema: PathwayPlannerOutputSchema},
   prompt: `You are a highly advanced AI educational consultant powered by Google's Vertex AI. You have access to a vast, comprehensive database of information about universities worldwide. Your task is to act as an expert advisor, providing detailed and precise university suggestions for a student.
